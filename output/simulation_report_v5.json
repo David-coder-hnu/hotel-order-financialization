@@ -1,0 +1,259 @@
+{
+  "simulation_date": "2026-04-24 22:08:10",
+  "simulation_version": "V5",
+  "analysis_type": "酒店订单金融化可行性分析 - 优化版",
+  "parameters": {
+    "control_group_users": 5000,
+    "experiment_group_users": 5000,
+    "discount_rate": 0.08,
+    "project_years": 1,
+    "safety_factor": 0.8,
+    "overbooking_multiplier": 0.8,
+    "promised_return_rate": 0.08,
+    "physical_discount_rate": 0.3,
+    "trading_fee_rate": 0.005,
+    "management_fee_rate": 0.01
+  },
+  "hotel_selection": [
+    {
+      "hotel_code": "H00003161608",
+      "hotel_name": "青城后山石见民宿(泰安古镇店)",
+      "avg_price": 144699.66,
+      "base_price": 12300.0,
+      "occupancy_rate": 1.0,
+      "revpar": 144699.66,
+      "room_count": 100
+    },
+    {
+      "hotel_code": "H00003176544",
+      "hotel_name": "岷江书院·院落式轻奢度假酒店",
+      "avg_price": 116150.0,
+      "base_price": 64900.0,
+      "occupancy_rate": 1.0,
+      "revpar": 116150.0,
+      "room_count": 100
+    },
+    {
+      "hotel_code": "H00005618565",
+      "hotel_name": "不想浅眠度假别墅(乐园路分店)",
+      "avg_price": 157721.26,
+      "base_price": 109548.0,
+      "occupancy_rate": 1.0,
+      "revpar": 157721.26,
+      "room_count": 100
+    },
+    {
+      "hotel_code": "H00003179897",
+      "hotel_name": "糊涂瞰山度假别墅(两盐路分店)",
+      "avg_price": 258183.5,
+      "base_price": 228880.0,
+      "occupancy_rate": 1.0,
+      "revpar": 258183.5,
+      "room_count": 100
+    },
+    {
+      "hotel_code": "H00003176312",
+      "hotel_name": "成都青城宋品酒店",
+      "avg_price": 222783.2,
+      "base_price": 173800.0,
+      "occupancy_rate": 1.0,
+      "revpar": 222783.2,
+      "room_count": 100
+    }
+  ],
+  "abs_pricing": [
+    {
+      "hotel_code": "H00003161608",
+      "expected_cashflow": 5281537434.43,
+      "issue_price_per_right": 48903124.39,
+      "total_issue_price": 3912249951.43,
+      "issue_quantity": 80
+    },
+    {
+      "hotel_code": "H00003176544",
+      "expected_cashflow": 4239475000.0,
+      "issue_price_per_right": 39254398.15,
+      "total_issue_price": 3140351851.85,
+      "issue_quantity": 80
+    },
+    {
+      "hotel_code": "H00005618565",
+      "expected_cashflow": 5756826073.77,
+      "issue_price_per_right": 53303945.13,
+      "total_issue_price": 4264315610.2,
+      "issue_quantity": 80
+    },
+    {
+      "hotel_code": "H00003179897",
+      "expected_cashflow": 9423697750.0,
+      "issue_price_per_right": 87256460.65,
+      "total_issue_price": 6980516851.85,
+      "issue_quantity": 80
+    },
+    {
+      "hotel_code": "H00003176312",
+      "expected_cashflow": 8131586680.33,
+      "issue_price_per_right": 75292469.26,
+      "total_issue_price": 6023397540.98,
+      "issue_quantity": 80
+    }
+  ],
+  "control_group": {
+    "total_revenue": 31464842082.8,
+    "total_cost": 20452147353.82,
+    "total_profit": 11012694728.98,
+    "npv": 10565710646.5,
+    "irr": 0,
+    "roi": 35.0
+  },
+  "experiment_group": {
+    "issue_phase": {
+      "total_issue_revenue": 24320831806.31,
+      "total_physical_rooms": 500,
+      "total_issue_quantity": 400,
+      "overbooking_ratio": 0.8
+    },
+    "trading_phase": {
+      "market_price_factor": 1.35,
+      "total_market_value": 32833122938.52,
+      "total_trading_fee": 164165614.69
+    },
+    "redemption_phase": {
+      "cash_redemption_rate": 0.3,
+      "physical_redemption_rate": 0.7,
+      "investor_cash_returns": 7879949505.25,
+      "investor_physical_savings": 35261874.5
+    },
+    "hotel": {
+      "revenue": 24320831806.31,
+      "cost": 7915211379.74,
+      "profit": 16405620426.57
+    },
+    "platform": {
+      "trading_fee": 164165614.69,
+      "management_fee": 243208318.06,
+      "spread_income": 8512291132.21,
+      "total_revenue": 8919665064.97
+    },
+    "investors": {
+      "cost": 32833122938.52,
+      "total_return": 7915211379.74,
+      "net_return": -24917911558.78,
+      "return_rate": -75.89,
+      "avg_return_per_user": 1583042.28
+    },
+    "financial_metrics": {
+      "npv": 16726939849.14,
+      "irr": -83.87,
+      "roi": 67.46
+    }
+  },
+  "incremental_analysis": {
+    "npv_increment": 6161229202.63,
+    "npv_increment_percent": 58.31,
+    "irr_increment": -83.87
+  },
+  "risk_assessment": {
+    "liquidity_risk": {
+      "daily_turnover_rate": 0.05,
+      "bid_ask_spread": 0.02,
+      "score": 100,
+      "assessment": "低风险"
+    },
+    "credit_risk": {
+      "default_probability": 0.03,
+      "credit_rating": "A",
+      "score": 100,
+      "assessment": "低风险"
+    },
+    "market_risk": {
+      "price_volatility": 0.15,
+      "var_95": 2491791155.88,
+      "score": 100,
+      "assessment": "低风险"
+    }
+  },
+  "stress_test": {
+    "occupancy_down_20": {
+      "npv": 16405620426.570248,
+      "pass": true
+    },
+    "discount_up_2": {
+      "npv": 14194635716.905289,
+      "pass": true
+    },
+    "redemption_up_10": {
+      "npv": 15614099288.595818,
+      "pass": true
+    }
+  },
+  "sensitivity_analysis": {
+    "occupancy": [
+      {
+        "occupancy": 0.5,
+        "npv": 16405620426.570248
+      },
+      {
+        "occupancy": 0.6,
+        "npv": 16405620426.570248
+      },
+      {
+        "occupancy": 0.7,
+        "npv": 16405620426.570255
+      },
+      {
+        "occupancy": 0.8,
+        "npv": 16405620426.570248
+      },
+      {
+        "occupancy": 0.9,
+        "npv": 16405620426.570248
+      }
+    ],
+    "discount_rate": [
+      {
+        "discount_rate": 0.06,
+        "npv": 15477000402.424757
+      },
+      {
+        "discount_rate": 0.07,
+        "npv": 15332355538.850695
+      },
+      {
+        "discount_rate": 0.08,
+        "npv": 15190389283.861336
+      },
+      {
+        "discount_rate": 0.09,
+        "npv": 15051027914.284626
+      },
+      {
+        "discount_rate": 0.1,
+        "npv": 14914200387.79113
+      }
+    ]
+  },
+  "feasibility_evaluation": {
+    "financial": {
+      "npv_positive": true,
+      "irr_above_10": false,
+      "roi_above_15": true,
+      "overall": false
+    },
+    "market": {
+      "liquidity_sufficient": true,
+      "price_stable": true,
+      "overall": true
+    },
+    "risk": {
+      "default_controllable": true,
+      "volatility_controllable": true,
+      "overall": true
+    },
+    "overall_score": 75,
+    "rating": "B",
+    "rating_description": "推荐",
+    "conclusion": "可行",
+    "recommendation": "可以推进实施，建议先进行小规模试点"
+  }
+}
