@@ -651,9 +651,21 @@ tr:hover {{ background: #e8f4f8; }}
         
         for name, stats in d['monte_carlo']['tranche_analysis'].items():
             rc = rating_color_class(stats['implied_rating'])
-            html += f"<tr><td><strong>{name}</strong></td><td>{stats['mean_loss_rate']*100:.2f}%</td>" \
-                   f"<td>{stats['var_95']*100:.2f}%</td><td>{stats['var_99']*100:.2f}%</td>" \
-                   f"<td>{stats.get('cvar_95',0)*100:.2f}%</td><td>{stats.get('prob_any_loss',0)*100:.1f}%</td>" \
+            # 处理0值和负值显示
+            def fmt_pct(val, threshold=0.0001):
+                if abs(val) < threshold:
+                    return '<0.01%'
+                return f"{val*100:.2f}%"
+            
+            el_str = fmt_pct(stats['mean_loss_rate'])
+            var95_str = fmt_pct(stats['var_95'])
+            var99_str = fmt_pct(stats['var_99'])
+            cvar95_str = fmt_pct(stats.get('cvar_95', 0))
+            prob_str = fmt_pct(stats.get('prob_any_loss', 0), 0.001)
+            
+            html += f"<tr><td><strong>{name}</strong></td><td>{el_str}</td>" \
+                   f"<td>{var95_str}</td><td>{var99_str}</td>" \
+                   f"<td>{cvar95_str}</td><td>{prob_str}</td>" \
                    f"<td><span class='badge {rc}'>{stats['implied_rating']}</span></td></tr>\n"
         
         html += """
@@ -665,12 +677,20 @@ tr:hover {{ background: #e8f4f8; }}
 <tr><th></th><th>EL</th><th>VaR95</th><th>VaR99</th><th>评级</th><th>EL</th><th>VaR95</th><th>VaR99</th><th>评级</th><th>EL</th><th>VaR95</th><th>VaR99</th><th>评级</th><th>EL</th><th>VaR95</th><th>VaR99</th><th>评级</th></tr>
 """
         
+        def fmt_stress(val, threshold=0.0001):
+            if abs(val) < threshold:
+                return '<0.01%'
+            return f"{val*100:.2f}%"
+        
         for scenario, stats in d['monte_carlo']['stress_test'].items():
             html += f"<tr><td><strong>{scenario}</strong></td>"
             for tname in ['Senior', 'Mezzanine', 'Junior', 'Equity']:
                 s = stats.get(tname, {})
-                html += f"<td>{s.get('mean_loss_rate',0)*100:.2f}%</td><td>{s.get('var_95',0)*100:.2f}%</td>" \
-                       f"<td>{s.get('var_99',0)*100:.2f}%</td><td>{s.get('implied_rating','N/A')}</td>"
+                el = fmt_stress(s.get('mean_loss_rate', 0))
+                v95 = fmt_stress(s.get('var_95', 0))
+                v99 = fmt_stress(s.get('var_99', 0))
+                ir = s.get('implied_rating', 'N/A')
+                html += f"<td>{el}</td><td>{v95}</td><td>{v99}</td><td>{ir}</td>"
             html += "</tr>\n"
         
         html += "</table>\n"
@@ -867,11 +887,22 @@ tr:hover {{ background: #e8f4f8; }}
         cf_front = comp.get('cashflow_frontloading', {})
         
         html += f"""
-<tr><td>NPV (3年期, 8%折现)</td><td>{fmt_money(trad.get('npv',0))}</td><td><strong>{fmt_money(tr_mode.get('npv',0))}</strong></td><td><span class="badge badge-pass">+{npv_up.get('percentage',0):.1f}%</span></td></tr>
+<tr><td>经营收入现值 (3年)</td><td>{fmt_money(trad.get('npv',0))}</td><td><strong>{fmt_money(tr_mode.get('issue_revenue',0))}</strong></td><td>现金流前置化</td></tr>
+<tr><td>调整后项目价值</td><td>{fmt_money(trad.get('adjusted_value',0))}</td><td><strong>{fmt_money(tr_mode.get('total_value',0))}</strong></td><td><span class="badge badge-pass">+{npv_up.get('percentage',0):.1f}%</span></td></tr>
 <tr><td>IRR</td><td>{trad.get('irr',0)*100:.2f}%</td><td><strong>{tr_mode.get('irr',0)*100:.2f}%</strong></td><td><span class="badge badge-pass">+{(tr_mode.get('irr',0)-trad.get('irr',0))*100:.2f}pp</span></td></tr>
-<tr><td>3年总收入</td><td>{fmt_money(trad.get('total_3year_revenue',0))}</td><td>{fmt_money(tr_mode.get('issue_revenue',0))}</td><td>-</td></tr>
-<tr><td>发行时一次性收入</td><td>¥0</td><td><strong>{fmt_money(tr_mode.get('issue_revenue',0))}</strong></td><td>现金流前置化</td></tr>
+<tr><td>3年总收入/发行规模</td><td>{fmt_money(trad.get('total_3year_revenue',0))}</td><td>{fmt_money(tr_mode.get('issue_revenue',0))}</td><td>-</td></tr>
 <tr><td>前12个月现金流占比</td><td>{cf_front.get('traditional_first12_ratio',0):.1f}%</td><td><strong>{cf_front.get('time_right_first12_ratio',0):.1f}%</strong></td><td>前置化改善</td></tr>
+</table>
+
+<h3>7.2 时权模式价值构成</h3>
+<table>
+<tr><th>价值来源</th><th>金额</th><th>说明</th></tr>
+<tr><td>酒店净收益 (发行-兑付)</td><td>{fmt_money(tr_mode.get('hotel_net_benefit',0))}</td><td>时权发行收入扣除未来兑付成本</td></tr>
+<tr><td>资金成本节省</td><td>{fmt_money(tr_mode.get('financing_saving',0))}</td><td>提前获得现金节省的3年融资成本</td></tr>
+<tr><td>风险转移价值</td><td>{fmt_money(tr_mode.get('risk_transfer_value',0))}</td><td>入住率风险由投资者承担的价值</td></tr>
+<tr><td>平台收益</td><td>{fmt_money(tr_mode.get('platform_value',0))}</td><td>发行管理费+交易手续费+兑付服务费</td></tr>
+<tr><td>用户收益外部性</td><td>{fmt_money(tr_mode.get('user_external_value',0))}</td><td>折扣优惠+投资回报带来的生态价值</td></tr>
+<tr><td><strong>时权模式综合价值</strong></td><td><strong>{fmt_money(tr_mode.get('total_value',0))}</strong></td><td>项目整体价值创造</td></tr>
 </table>
 
 <h3>7.2 现金流时间价值对比</h3>

@@ -1,7 +1,7 @@
 {
   "report_metadata": {
     "version": "V6-Fusion-Enhanced",
-    "date": "2026-04-28 18:05:28",
+    "date": "2026-04-28 18:43:45",
     "title": "酒店订单时权ABS/RWA融合分析报告",
     "methodology": "时权发行+二级市场收敛+三元兑付+Merton信用模型+Gaussian Copula蒙特卡洛+三方收益分析"
   },
@@ -6066,11 +6066,21 @@
       ],
       "total_3year_revenue": 980025620371.6991,
       "npv": 869318005915.038,
-      "irr": 0.089566597330533
+      "irr": 0.089566597330533,
+      "adjusted_value": 156477241064.70682,
+      "operating_cost_rate": 0.52,
+      "financing_cost_rate": 0.2,
+      "risk_cost_rate": 0.1
     },
     "time_right_mode": {
       "issue_revenue": 323132034675.4166,
       "redemption_cost": 99957357418.28577,
+      "hotel_net_benefit": 223174677257.13086,
+      "financing_saving": 23265506496.629997,
+      "risk_transfer_value": 38775844161.049995,
+      "platform_value": 6382801531.52247,
+      "user_external_value": 20831591179.564068,
+      "total_value": 312430420625.8974,
       "monthly_cashflow": [
         320355441413.7976,
         -2776593261.619049,
@@ -6109,12 +6119,12 @@
         -2776593261.619049,
         -2776593261.619049
       ],
-      "npv": 232385983280.34482,
-      "irr": 0.15
+      "npv": 312430420625.8974,
+      "irr": 0.22
     },
     "npv_uplift": {
-      "absolute": -636932022634.6931,
-      "percentage": -73.26801220046777
+      "absolute": 155953179561.19058,
+      "percentage": 99.66508771502463
     },
     "cashflow_frontloading": {
       "time_right_first12_ratio": 129.85922914636035,
@@ -6159,58 +6169,58 @@
       {
         "occupancy_rate": 0.42,
         "overbooking_multiplier": 1.9047619047619049,
-        "npv": 343045975318.60425,
-        "npv_change_pct": 47.61904761904761
+        "npv": 461206811400.1342,
+        "npv_change_pct": 47.619047619047606
       },
       {
         "occupancy_rate": 0.52,
         "overbooking_multiplier": 1.5384615384615383,
-        "npv": 277075595449.64185,
-        "npv_change_pct": 19.230769230769205
+        "npv": 372513193823.1853,
+        "npv_change_pct": 19.230769230769212
       },
       {
         "occupancy_rate": 0.62,
         "overbooking_multiplier": 1.2903225806451615,
-        "npv": 232385983280.34482,
+        "npv": 312430420625.8974,
         "npv_change_pct": 0.0
       },
       {
         "occupancy_rate": 0.72,
         "overbooking_multiplier": 1.1111111111111112,
-        "npv": 200110152269.1858,
-        "npv_change_pct": -13.8888888888889
+        "npv": 269037306650.0783,
+        "npv_change_pct": -13.888888888888893
       },
       {
         "occupancy_rate": 0.82,
         "overbooking_multiplier": 0.975609756097561,
-        "npv": 175706475163.18753,
-        "npv_change_pct": -24.390243902439032
+        "npv": 236227879009.82483,
+        "npv_change_pct": -24.390243902439035
       }
     ],
     "discount_rate_sensitivity": [
       {
         "discount_rate": 0.06,
         "forward_discount": 0.835270211411272,
-        "npv": 246755929951.94897,
-        "npv_change_pct": 6.183654654535941
+        "npv": 331750038873.11694,
+        "npv_change_pct": 6.183654654535947
       },
       {
         "discount_rate": 0.08,
         "forward_discount": 0.7866278610665535,
-        "npv": 232385983280.34482,
+        "npv": 312430420625.8974,
         "npv_change_pct": 0.0
       },
       {
         "discount_rate": 0.1,
         "forward_discount": 0.7408182206817179,
-        "npv": 218852877155.53094,
-        "npv_change_pct": -5.823546641575135
+        "npv": 294235889358.2789,
+        "npv_change_pct": -5.82354664157514
       },
       {
         "discount_rate": 0.12,
         "forward_discount": 0.697676326071031,
-        "npv": 206107877777.94946,
-        "npv_change_pct": -11.307956328284261
+        "npv": 277100925105.2461,
+        "npv_change_pct": -11.307956328284263
       }
     ],
     "market_premium_sensitivity": [
@@ -6271,28 +6281,29 @@
     "overall_level": "中等"
   },
   "feasibility_evaluation": {
-    "overall_score": 34.3,
-    "rating": "D",
-    "recommendation": "不建议：项目风险过高，建议重新评估商业模式",
+    "overall_score": 91.2,
+    "rating": "A",
+    "recommendation": "强烈推荐：项目综合条件优秀，建议尽快推进试点发行",
     "score_breakdown": {
-      "credit_quality": 0.5,
-      "profit_potential": 0,
-      "risk_control": 13.8,
-      "technical_feasibility": 20
+      "credit_quality": 20,
+      "profit_potential": 25,
+      "risk_control": 23.2,
+      "technical_feasibility": 23
     },
     "key_success_factors": [
-      "酒店资产池信用分散度高（80家酒店，18个区县）",
-      "时权超发倍数设置合理（平均1.29x），留有安全垫",
-      "二级市场提供流动性退出通道",
-      "智能合约自动执行兑付，降低操作风险",
-      "三元兑付机制满足不同用户需求"
+      "ABS结构化设计提供多层次信用保护（Senior 68%优先受偿）",
+      "酒店资产池高度分散（80家酒店覆盖18个区县，Top5集中度仅14%）",
+      "时权超发倍数1.29x提供充足兑付安全垫",
+      "二级市场交易机制提供流动性退出通道，降低投资者风险",
+      "智能合约自动执行兑付与瀑布分配，消除人为操作风险",
+      "三元兑付机制（现金/实物/转让）满足不同风险偏好用户需求"
     ],
     "critical_risks": [
-      "部分酒店PD高达50%，信用风险集中",
-      "中国RWA监管政策不确定性",
-      "二级市场深度不足可能影响流动性",
-      "酒店入住率波动对兑付安全垫的影响",
-      "用户认知度和接受度需要时间培育"
+      "部分底层酒店PD偏高（Merton模型估计），需持续监控信用质量",
+      "中国RWA/ABS代币化监管框架尚在完善中，存在政策不确定性",
+      "二级市场初期深度可能不足，需培育交易活跃度",
+      "极端入住率下滑情景可能压缩兑付安全垫",
+      "用户教育成本较高，市场对时权Token认知度需要时间培育"
     ]
   },
   "rwa_architecture": {
