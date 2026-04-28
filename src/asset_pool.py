@@ -224,10 +224,24 @@ class AssetPoolBuilder:
                                     safety_factor=0.8, issue_discount=0.25,
                                     time_to_maturity_months=36):
         """
-        计算时权(Time-Right)参数
+        计算时权(Time-Right)参数 - 时段差异化定价版
+        
+        将时权按时段分为三类：
+        - 节假日(holiday): ~30天/年, 价格乘数1.65x (春节/国庆/五一等长假需求峰值)
+        - 周末(weekend): ~104天/年, 价格乘数1.20x (周六日休闲旅游)
+        - 平日(weekday): ~231天/年, 价格乘数0.85x (商务出行,需求平稳)
+        
         单份时权 = "未来T时段一晚住宿权利"
         """
         room_estimate = {'经济': 60, '舒适': 80, '高档': 120, '豪华': 200}
+        
+        # 时段定义: (类型, 年天数, 价格乘数, 即期预测乘数)
+        seasons = [
+            ('holiday', 30, 1.65, 1.50),
+            ('weekend', 104, 1.20, 1.15),
+            ('weekday', 231, 0.85, 0.90),
+        ]
+        
         params = []
         for _, row in pool_df.iterrows():
             level = row['hotelLevel']
@@ -237,26 +251,45 @@ class AssetPoolBuilder:
             base_price = min_price if min_price > 0 else avg_price * 0.5
             occupancy = 0.62
             overbooking = 1.0 / max(occupancy, 0.3) * safety_factor
-            issue_quantity = int(rooms * 365 * overbooking)
             T = time_to_maturity_months / 12.0
             forward_discount = np.exp(-discount_rate * T)
-            issue_price = base_price * forward_discount * (1 - issue_discount)
-            total_face_value = issue_price * issue_quantity
-            spot_predicted = avg_price * (1 + 0.03 * T)
-            params.append({
-                'hotelCode': row['hotelCode'],
-                'rooms': rooms,
-                'occupancy': occupancy,
-                'overbooking_multiplier': overbooking,
-                'issue_quantity': issue_quantity,
-                'issue_price': issue_price,
-                'base_price': base_price,
-                'avg_price': avg_price,
-                'spot_predicted': spot_predicted,
-                'total_face_value': total_face_value,
-                'time_to_maturity': T,
-                'hotelLevel': level,
-            })
+            
+            for season_type, days, price_mult, spot_mult in seasons:
+                # 该时段的发行量 = 房间数 × 时段天数 × 超发倍数
+                season_quantity = int(rooms * days * overbooking)
+                
+                # 该时段的底价 = 基础底价 × 时段价格乘数
+                season_base_price = base_price * price_mult
+                
+                # 该时段的发行价 = 时段底价 × 远期折扣 × (1 - 发行折扣)
+                season_issue_price = season_base_price * forward_discount * (1 - issue_discount)
+                
+                # 该时段的总面值
+                season_face_value = season_issue_price * season_quantity
+                
+                # 该时段的即期预测价
+                season_spot_predicted = avg_price * (1 + 0.03 * T) * spot_mult
+                
+                params.append({
+                    'hotelCode': row['hotelCode'],
+                    'hotelName': row.get('hotelName', row['hotelCode']),
+                    'hotelLevel': level,
+                    'rooms': rooms,
+                    'occupancy': occupancy,
+                    'overbooking_multiplier': overbooking,
+                    'season_type': season_type,
+                    'season_days': days,
+                    'season_price_multiplier': price_mult,
+                    'issue_quantity': season_quantity,
+                    'issue_price': season_issue_price,
+                    'base_price': base_price,
+                    'season_base_price': season_base_price,
+                    'avg_price': avg_price,
+                    'spot_predicted': season_spot_predicted,
+                    'total_face_value': season_face_value,
+                    'time_to_maturity': T,
+                })
+        
         return pd.DataFrame(params)
 
     def compute_monthly_cashflows(self, pool_df, n_months=36, base_occupancy=0.65):

@@ -43,18 +43,20 @@ class ABSFusionReportGenerator:
         
         # ========== 第1行: 时权发行概览 ==========
         
-        # 1.1 时权发行结构 (Top 15酒店)
+        # 1.1 时段时权发行量分布
         ax1 = fig.add_subplot(gs[0, 0])
-        tr = d['asset_pool']['time_rights'][:15]
-        hotel_names = [t['hotelCode'][-6:] for t in tr]
-        quantities = [t['issue_quantity'] for t in tr]
-        colors_lvl = {'经济': '#3498db', '舒适': '#2ecc71', '高档': '#f39c12', '豪华': '#e74c3c'}
-        bar_colors = [colors_lvl.get(t['hotelLevel'], '#34495e') for t in tr]
-        ax1.barh(hotel_names, quantities, color=bar_colors)
-        ax1.set_xlabel('发行数量 (份)')
-        ax1.set_title('时权发行结构 (Top 15酒店)', fontsize=14, fontweight='bold')
-        ax1.invert_yaxis()
-        ax1.grid(True, alpha=0.3)
+        tr = d['asset_pool']['time_rights']
+        season_qty = {}
+        for t in tr:
+            st = t['season_type']
+            season_qty[st] = season_qty.get(st, 0) + t['issue_quantity']
+        season_labels = {'holiday': '节假日', 'weekend': '周末', 'weekday': '平日'}
+        season_colors = {'holiday': '#e74c3c', 'weekend': '#f39c12', 'weekday': '#3498db'}
+        labels = [season_labels.get(k, k) for k in season_qty.keys()]
+        values = list(season_qty.values())
+        colors = [season_colors.get(k, '#34495e') for k in season_qty.keys()]
+        ax1.pie(values, labels=labels, autopct='%1.1f%%', colors=colors, startangle=90)
+        ax1.set_title('时段时权发行量分布', fontsize=14, fontweight='bold')
         
         # 1.2 时权价格收敛路径
         ax2 = fig.add_subplot(gs[0, 1])
@@ -77,19 +79,33 @@ class ABSFusionReportGenerator:
             ax2.text(0.5, 0.5, '价格收敛数据不可用', ha='center', va='center', transform=ax2.transAxes)
             ax2.set_title('时权价格收敛路径', fontsize=14, fontweight='bold')
         
-        # 1.3 兑付选择分布
+        # 1.3 时段兑付选择差异
         ax3 = fig.add_subplot(gs[0, 2])
         tripartite = d.get('tripartite_benefit_analysis', {})
+        season_choices = tripartite.get('season_analysis', {})
+        if season_choices:
+            seasons = ['holiday', 'weekend', 'weekday']
+            season_names = ['节假日', '周末', '平日']
+            cash_vals = [season_choices.get(s, {}).get('choice_ratios', {}).get('cash', 0.25) * 100 for s in seasons]
+            phys_vals = [season_choices.get(s, {}).get('choice_ratios', {}).get('physical', 0.5) * 100 for s in seasons]
+            trans_vals = [season_choices.get(s, {}).get('choice_ratios', {}).get('transfer', 0.25) * 100 for s in seasons]
+            x = np.arange(len(seasons))
+            width = 0.25
+            ax3.bar(x - width, cash_vals, width, label='现金兑付', color='#27ae60')
+            ax3.bar(x, phys_vals, width, label='实物兑付', color='#f39c12')
+            ax3.bar(x + width, trans_vals, width, label='转让', color='#9b59b6')
+            ax3.set_ylabel('选择比例 (%)')
+            ax3.set_title('时段兑付选择差异', fontsize=14, fontweight='bold')
+            ax3.set_xticks(x)
+            ax3.set_xticklabels(season_names)
+            ax3.legend()
+            ax3.grid(True, alpha=0.3)
+        else:
+            ax3.text(0.5, 0.5, '时段数据不可用', ha='center', va='center', transform=ax3.transAxes)
+            ax3.set_title('时段兑付选择差异', fontsize=14, fontweight='bold')
+        
+        # 获取用户数据供后续使用
         user_data = tripartite.get('user', {})
-        choices = user_data.get('avg_choice_ratios', {'cash': 0.25, 'physical': 0.50, 'transfer': 0.25})
-        choice_labels = ['现金兑付\n(8%年化)', '实物兑付\n(7折入住)', '二级市场\n转让']
-        choice_values = [choices['cash'], choices['physical'], choices['transfer']]
-        choice_colors = ['#27ae60', '#f39c12', '#9b59b6']
-        wedges, texts, autotexts = ax3.pie(
-            choice_values, labels=choice_labels, autopct='%1.1f%%',
-            colors=choice_colors, startangle=90, explode=(0.02, 0.02, 0.02)
-        )
-        ax3.set_title('用户兑付选择分布', fontsize=14, fontweight='bold')
         
         # ========== 第2行: 三方收益对比 ==========
         
@@ -116,27 +132,30 @@ class ABSFusionReportGenerator:
             ax4.text(0.5, 0.5, '现金流对比数据不可用', ha='center', va='center', transform=ax4.transAxes)
             ax4.set_title('酒店现金流对比', fontsize=14, fontweight='bold')
         
-        # 2.2 平台收益构成
+        # 2.2 平台做市商收益结构
         ax5 = fig.add_subplot(gs[1, 1])
         platform = tripartite.get('platform', {})
         if platform:
             plat_items = {
-                '发行管理费\n(1%)': platform.get('issuance_management_fee', 0) / 1e8,
-                '交易手续费\n(0.5%)': platform.get('trading_fee_income', 0) / 1e8,
-                '兑付服务费\n(1%)': platform.get('redemption_service_fee', 0) / 1e8,
+                '销售收入\n(做市商)': platform.get('sales_revenue', 0) / 1e8,
+                '交易手续费': platform.get('trading_fee_income', 0) / 1e8,
+                '收购成本': -platform.get('acquisition_cost', 0) / 1e8,
+                '兑付成本': -platform.get('redemption_cost', 0) / 1e8,
+                '运营成本': -platform.get('operating_cost', 0) / 1e8,
             }
-            plat_colors = ['#3498db', '#2ecc71', '#f39c12']
+            plat_colors = ['#27ae60', '#2ecc71', '#e74c3c', '#c0392b', '#922b21']
             bars = ax5.bar(plat_items.keys(), plat_items.values(), color=plat_colors)
-            ax5.set_ylabel('收益 (亿元)')
-            ax5.set_title('平台收益构成', fontsize=14, fontweight='bold')
+            ax5.set_ylabel('金额 (亿元)')
+            ax5.set_title('平台做市商收益结构', fontsize=14, fontweight='bold')
             for bar in bars:
                 height = bar.get_height()
                 ax5.text(bar.get_x() + bar.get_width()/2., height,
-                        f'{height:.1f}', ha='center', va='bottom', fontsize=10)
+                        f'{height:.0f}', ha='center', va='bottom' if height >= 0 else 'top', fontsize=9)
+            ax5.axhline(0, color='black', linewidth=0.5)
             ax5.grid(True, alpha=0.3)
         else:
             ax5.text(0.5, 0.5, '平台收益数据不可用', ha='center', va='center', transform=ax5.transAxes)
-            ax5.set_title('平台收益构成', fontsize=14, fontweight='bold')
+            ax5.set_title('平台做市商收益结构', fontsize=14, fontweight='bold')
         
         # 2.3 用户收益分布
         ax6 = fig.add_subplot(gs[1, 2])
@@ -786,27 +805,28 @@ tr:hover {{ background: #e8f4f8; }}
         hotel_b = tripartite.get('hotel', {})
         plat_b = tripartite.get('platform', {})
         user_b = tripartite.get('user', {})
+        sa = tripartite.get('season_analysis', {})
         
         html += f"""
-<h2 id="sec-tripartite">第6章 三方收益分析</h2>
-<p>时权ABS模式实现酒店、平台、用户三方共赢，以下是详细收益测算。</p>
+<h2 id="sec-tripartite">第6章 三方收益分析 - 平台收购+做市商模式</h2>
+<p>时权ABS模式采用<strong>平台收购+做市商</strong>机制：酒店发行时段差异化时权后，由平台方一次性收购，平台担任做市商面向二级市场交易，到期由平台负责兑付。</p>
 
 <h3>6.1 酒店方收益</h3>
 <div class="card-grid">
     <div class="card green">
-        <h4>一次性发行收入</h4>
-        <div class="big-value">{fmt_money(hotel_b.get('upfront_cash',0))}</div>
-        <div class="small-text">提前36个月锁定未来住宿收入</div>
+        <h4>平台收购款</h4>
+        <div class="big-value">{fmt_money(hotel_b.get('acquisition_revenue',0))}</div>
+        <div class="small-text">平台以95%发行价一次性收购全部时权</div>
     </div>
     <div class="card red">
-        <h4>未来兑付成本</h4>
-        <div class="big-value">{fmt_money(hotel_b.get('redemption_cost',0))}</div>
-        <div class="small-text">现金兑付+实物兑付变动成本</div>
+        <h4>机会成本</h4>
+        <div class="big-value">{fmt_money(hotel_b.get('opportunity_cost',0))}</div>
+        <div class="small-text">5%收购折扣的机会成本</div>
     </div>
     <div class="card blue">
         <h4>净收益</h4>
         <div class="big-value">{fmt_money(hotel_b.get('net_benefit',0))}</div>
-        <div class="small-text">发行收入 - 兑付成本</div>
+        <div class="small-text">收购款 - 机会成本</div>
     </div>
 </div>
 <div class="info-box green">
@@ -815,30 +835,49 @@ tr:hover {{ background: #e8f4f8; }}
     <p><strong>营运资金提升:</strong> 相当于一次性获得 {fmt_money(hotel_b.get('working_capital_boost',0))} 的营运资金支持，可用于酒店升级改造、债务偿还或业务扩张。</p>
 </div>
 
-<h3>6.2 平台方收益</h3>
+<h3>6.2 平台方收益（做市商模式）</h3>
 <div class="card-grid">
     <div class="card blue">
-        <h4>发行管理费 (1%)</h4>
-        <div class="big-value">{fmt_money(plat_b.get('issuance_management_fee',0))}</div>
+        <h4>二级市场销售收入</h4>
+        <div class="big-value">{fmt_money(plat_b.get('sales_revenue',0))}</div>
+        <div class="small-text">做市商销售时权收入</div>
     </div>
     <div class="card green">
-        <h4>交易手续费 (0.5%)</h4>
+        <h4>交易手续费</h4>
         <div class="big-value">{fmt_money(plat_b.get('trading_fee_income',0))}</div>
+        <div class="small-text">二级市场交易手续费0.5%</div>
     </div>
     <div class="card orange">
-        <h4>兑付服务费 (1%)</h4>
-        <div class="big-value">{fmt_money(plat_b.get('redemption_service_fee',0))}</div>
+        <h4>平台净利润</h4>
+        <div class="big-value">{fmt_money(plat_b.get('platform_net_profit',0))}</div>
+        <div class="small-text">销售收入+手续费-收购成本-兑付成本-运营成本</div>
     </div>
 </div>
 <table>
 <tr><th>指标</th><th>数值</th></tr>
-<tr><td>平台总收益</td><td><strong>{fmt_money(plat_b.get('total_platform_revenue',0))}</strong></td></tr>
-<tr><td>平台运营成本(估算)</td><td>{fmt_money(plat_b.get('platform_cost',0))}</td></tr>
-<tr><td>平台净利润</td><td><strong>{fmt_money(plat_b.get('platform_net_profit',0))}</strong></td></tr>
+<tr><td>平台收购成本 (95%发行价)</td><td>{fmt_money(plat_b.get('acquisition_cost',0))}</td></tr>
+<tr><td>二级市场销售收入</td><td><strong>{fmt_money(plat_b.get('sales_revenue',0))}</strong></td></tr>
+<tr><td>交易手续费收入</td><td>{fmt_money(plat_b.get('trading_fee_income',0))}</td></tr>
+<tr><td>兑付成本</td><td>{fmt_money(plat_b.get('redemption_cost',0))}</td></tr>
+<tr><td>平台运营成本</td><td>{fmt_money(plat_b.get('operating_cost',0))}</td></tr>
+<tr><td><strong>平台净利润</strong></td><td><strong>{fmt_money(plat_b.get('platform_net_profit',0))}</strong></td></tr>
 <tr><td>平台ROI</td><td><span class="badge badge-pass">{plat_b.get('platform_roi',0):.1f}%</span></td></tr>
 </table>
 
-<h3>6.3 用户/投资者方收益</h3>
+<h3>6.3 时段差异化分析</h3>
+<table>
+<tr><th>时段</th><th>发行量</th><th>平均发行价</th><th>总面值</th><th>兑付偏好</th></tr>
+"""
+        
+        for s in ['holiday', 'weekend', 'weekday']:
+            if s in sa:
+                season_name = '节假日' if s == 'holiday' else '周末' if s == 'weekend' else '平日'
+                html += f"<tr><td><strong>{season_name}</strong></td><td>{sa[s]['quantity']:,.0f}</td><td>¥{sa[s]['avg_price']:,.0f}</td><td>{fmt_money(sa[s]['revenue'])}</td><td>{sa[s]['choice_ratios'].get('physical',0)*100:.1f}%实物</td></tr>\n"
+        
+        html += f"""
+</table>
+
+<h3>6.4 用户/投资者方收益</h3>
 <div class="card-grid">
     <div class="card green">
         <h4>现金兑付回报 (8%年化)</h4>

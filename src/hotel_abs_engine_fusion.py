@@ -167,32 +167,48 @@ class HotelTimeRightABSEngine:
     
     def _simulate_time_right_market(self, n_paths=5000, n_months=36):
         """
-        模拟时权二级市场交易和兑付
+        模拟时权二级市场交易和兑付 - 平台收购+做市商模式
         
         核心模型：
-        1. 时权价格随时间收敛到即期价格
-        2. 每期产生交易手续费
-        3. 到期时用户选择现金/实物/转让
+        1. 酒店发行时段差异化时权 → 平台方以95%发行价收购
+        2. 平台方担任做市商，在二级市场以时段差异化溢价销售
+        3. 到期时平台方负责兑付（现金/实物/转让）
         """
         np.random.seed(42)
-        n_hotels = len(self.time_right_df)
+        n_records = len(self.time_right_df)
         
         # 参数提取
         issue_prices = self.time_right_df['issue_price'].values
         spot_prices = self.time_right_df['spot_predicted'].values
         quantities = self.time_right_df['issue_quantity'].values
+        season_types = self.time_right_df['season_type'].values
         
-        # 时权价格收敛路径 (n_paths, n_hotels, n_months)
-        price_paths = np.zeros((n_paths, n_hotels, n_months))
+        # 时段做市商溢价率
+        season_premium = {'holiday': 0.25, 'weekend': 0.15, 'weekday': 0.08}
+        
+        # ===== 阶段1: 平台收购 =====
+        # 平台以95%发行价从酒店收购全部时权
+        platform_acquisition_rate = 0.95
+        total_face_value = np.sum(issue_prices * quantities)
+        platform_acquisition_cost = total_face_value * platform_acquisition_rate
+        hotel_upfront_revenue = platform_acquisition_cost
+        
+        # ===== 阶段2: 二级市场做市商定价 =====
+        # 时权价格收敛路径 (n_paths, n_records, n_months)
+        price_paths = np.zeros((n_paths, n_records, n_months))
         
         beta = 0.8  # 收敛速度
         for path in range(n_paths):
-            for i in range(n_hotels):
+            for i in range(n_records):
+                season = season_types[i]
+                premium = season_premium.get(season, 0.10)
                 for t in range(n_months):
                     convergence = (t / max(n_months - 1, 1)) ** beta
+                    # 做市商定价: 发行价 + (即期价 - 发行价) × 收敛 + 时段溢价
                     base_price_t = issue_prices[i] + (spot_prices[i] - issue_prices[i]) * convergence
+                    market_price = base_price_t * (1 + premium * (1 - convergence * 0.5))
                     noise = np.random.normal(1.0, 0.05)
-                    price_paths[path, i, t] = max(base_price_t * noise, issue_prices[i] * 0.5)
+                    price_paths[path, i, t] = max(market_price * noise, issue_prices[i] * 0.5)
         
         # 每期交易量（假设每期有5%的时权被交易）
         turnover_rate = 0.05
@@ -202,16 +218,22 @@ class HotelTimeRightABSEngine:
         trading_fee_rate = 0.005
         trading_fee_income = np.zeros((n_paths, n_months))
         
+        # 平台销售收入 (n_paths, n_months) - 做市商卖出收入
+        platform_sales_revenue = np.zeros((n_paths, n_months))
+        
         for path in range(n_paths):
             for t in range(n_months):
                 fees = 0
-                for i in range(n_hotels):
+                sales = 0
+                for i in range(n_records):
                     volume = trading_volumes[i, t]
                     price = price_paths[path, i, t]
                     fees += volume * price * trading_fee_rate
+                    sales += volume * price
                 trading_fee_income[path, t] = fees
+                platform_sales_revenue[path, t] = sales
         
-        # 到期兑付 (最后6个月开始)
+        # ===== 阶段3: 到期兑付 (最后6个月开始, 由平台承担) =====
         redemption_start = n_months - 6
         
         cash_redemption = np.zeros((n_paths, n_months))
@@ -220,19 +242,34 @@ class HotelTimeRightABSEngine:
         promised_return = 0.08  # 8%年化
         physical_discount = 0.30  # 7折
         
-        # 兑付选择比例统计
+        # 兑付选择比例统计（分时段）
         choice_ratios = {'cash': [], 'physical': [], 'transfer': []}
+        season_choice_ratios = {
+            'holiday': {'cash': [], 'physical': [], 'transfer': []},
+            'weekend': {'cash': [], 'physical': [], 'transfer': []},
+            'weekday': {'cash': [], 'physical': [], 'transfer': []},
+        }
         
         for path in range(n_paths):
             for t in range(redemption_start, n_months):
-                for i in range(n_hotels):
+                for i in range(n_records):
                     remaining = quantities[i] * (1 - (t - redemption_start) / 6)
                     if remaining <= 0:
                         continue
                     
-                    # 用户选择比例（随机化）
-                    alpha_cash = 0.25 + np.random.normal(0, 0.05)
-                    beta_physical = 0.50 + np.random.normal(0, 0.08)
+                    season = season_types[i]
+                    
+                    # 用户选择比例（随机化，节假日更倾向于实物兑付）
+                    if season == 'holiday':
+                        alpha_cash = 0.20 + np.random.normal(0, 0.05)
+                        beta_physical = 0.60 + np.random.normal(0, 0.08)
+                    elif season == 'weekend':
+                        alpha_cash = 0.25 + np.random.normal(0, 0.05)
+                        beta_physical = 0.55 + np.random.normal(0, 0.08)
+                    else:
+                        alpha_cash = 0.30 + np.random.normal(0, 0.05)
+                        beta_physical = 0.45 + np.random.normal(0, 0.08)
+                    
                     gamma_transfer = max(0, 1 - alpha_cash - beta_physical)
                     
                     alpha_cash = max(0.1, min(0.4, alpha_cash))
@@ -243,6 +280,9 @@ class HotelTimeRightABSEngine:
                         choice_ratios['cash'].append(alpha_cash)
                         choice_ratios['physical'].append(beta_physical)
                         choice_ratios['transfer'].append(gamma_transfer)
+                        season_choice_ratios[season]['cash'].append(alpha_cash)
+                        season_choice_ratios[season]['physical'].append(beta_physical)
+                        season_choice_ratios[season]['transfer'].append(gamma_transfer)
                     
                     # 现金兑付成本
                     cash_units = remaining * alpha_cash / 6
@@ -261,13 +301,25 @@ class HotelTimeRightABSEngine:
             'transfer': np.mean(choice_ratios['transfer']) if choice_ratios['transfer'] else 0.25,
         }
         
+        season_avg_choices = {}
+        for season in ['holiday', 'weekend', 'weekday']:
+            season_avg_choices[season] = {
+                'cash': np.mean(season_choice_ratios[season]['cash']) if season_choice_ratios[season]['cash'] else 0.25,
+                'physical': np.mean(season_choice_ratios[season]['physical']) if season_choice_ratios[season]['physical'] else 0.50,
+                'transfer': np.mean(season_choice_ratios[season]['transfer']) if season_choice_ratios[season]['transfer'] else 0.25,
+            }
+        
         return {
             'price_paths': price_paths,
             'trading_volumes': trading_volumes,
             'trading_fee_income': trading_fee_income,
+            'platform_sales_revenue': platform_sales_revenue,
             'cash_redemption': cash_redemption,
             'physical_redemption': physical_redemption,
             'avg_choice_ratios': avg_choices,
+            'season_choice_ratios': season_avg_choices,
+            'platform_acquisition_cost': float(platform_acquisition_cost),
+            'hotel_upfront_revenue': float(hotel_upfront_revenue),
             'n_paths': n_paths,
             'n_months': n_months,
         }
@@ -413,7 +465,7 @@ class HotelTimeRightABSEngine:
         }
     
     def _compute_tripartite_benefits(self):
-        """计算酒店/平台/用户三方收益分析"""
+        """计算酒店/平台/用户三方收益分析 - 平台收购+做市商模式"""
         total_issue_revenue = float(self.time_right_df['total_face_value'].sum())
         total_quantity = float(self.time_right_df['issue_quantity'].sum())
         avg_issue_price = float(self.time_right_df['issue_price'].mean())
@@ -421,42 +473,63 @@ class HotelTimeRightABSEngine:
         # 使用时权市场模拟数据
         if self.market_sim:
             avg_trading_fee = float(np.mean(np.sum(self.market_sim['trading_fee_income'], axis=1)))
+            avg_sales_revenue = float(np.mean(np.sum(self.market_sim['platform_sales_revenue'], axis=1)))
             avg_cash_redemption = float(np.mean(np.sum(self.market_sim['cash_redemption'], axis=1)))
             avg_physical_redemption = float(np.mean(np.sum(self.market_sim['physical_redemption'], axis=1)))
             avg_choices = self.market_sim['avg_choice_ratios']
+            season_choices = self.market_sim.get('season_choice_ratios', {})
+            platform_acquisition_cost = self.market_sim.get('platform_acquisition_cost', total_issue_revenue * 0.95)
+            hotel_upfront_revenue = self.market_sim.get('hotel_upfront_revenue', total_issue_revenue * 0.95)
         else:
             avg_trading_fee = total_issue_revenue * 0.005
+            avg_sales_revenue = total_issue_revenue * 1.15
             avg_cash_redemption = total_issue_revenue * 0.25
             avg_physical_redemption = total_issue_revenue * 0.10
             avg_choices = {'cash': 0.25, 'physical': 0.50, 'transfer': 0.25}
+            season_choices = {}
+            platform_acquisition_cost = total_issue_revenue * 0.95
+            hotel_upfront_revenue = total_issue_revenue * 0.95
         
         # ===== 酒店方 =====
-        hotel_upfront_cash = total_issue_revenue
-        hotel_redemption_cost = avg_cash_redemption + avg_physical_redemption
-        hotel_net_benefit = hotel_upfront_cash - hotel_redemption_cost
-        hotel_working_capital_boost = hotel_upfront_cash * 0.3  # 相当于30%营运资金提升
+        # 酒店将时权以95%价格卖给平台，一次性回款，不承担兑付风险
+        hotel_acquisition_revenue = hotel_upfront_revenue
+        hotel_opportunity_cost = total_issue_revenue * 0.05  # 5%折扣的机会成本
+        hotel_net_benefit = hotel_acquisition_revenue - hotel_opportunity_cost
+        hotel_working_capital_boost = hotel_acquisition_revenue * 0.35
         
-        # ===== 平台方 =====
-        issuance_mgmt_fee = total_issue_revenue * 0.01
-        redemption_svc_fee = (avg_cash_redemption + avg_physical_redemption) * 0.01
-        total_platform_revenue = issuance_mgmt_fee + avg_trading_fee + redemption_svc_fee
-        platform_cost = total_platform_revenue * 0.3  # 假设30%运营成本
-        platform_net = total_platform_revenue - platform_cost
-        platform_roi = (platform_net / platform_cost * 100) if platform_cost > 0 else 0
+        # ===== 平台方（做市商） =====
+        # 1. 收购成本
+        platform_acquisition = platform_acquisition_cost
+        
+        # 2. 二级市场销售收入
+        platform_sales = avg_sales_revenue
+        
+        # 3. 交易手续费收入
+        platform_trading_fee = avg_trading_fee
+        
+        # 4. 兑付成本（平台承担）
+        platform_redemption_cost = avg_cash_redemption + avg_physical_redemption
+        
+        # 5. 平台运营成本
+        platform_operating_cost = (platform_acquisition + platform_redemption_cost) * 0.08
+        
+        # 平台净收益 = 销售收入 + 手续费 - 收购成本 - 兑付成本 - 运营成本
+        platform_net = platform_sales + platform_trading_fee - platform_acquisition - platform_redemption_cost - platform_operating_cost
+        platform_roi = (platform_net / platform_acquisition * 100) if platform_acquisition > 0 else 0
         
         # ===== 用户/投资者方 =====
-        # 一级市场投资者以发行价购买
-        # 现金兑付：8%年化回报（36个月约25.9%）
-        cash_return_rate = (1.08 ** 3) - 1  # 3年累计
+        # 用户从平台做市商处购买，价格包含时段溢价
+        # 现金兑付：8%年化回报
+        cash_return_rate = (1.08 ** 3) - 1
         cash_investors = total_quantity * avg_choices['cash']
         cash_redemption_return = cash_investors * avg_issue_price * cash_return_rate
         
-        # 实物兑付：30%折扣 = 节省30%
+        # 实物兑付：30%折扣
         physical_investors = total_quantity * avg_choices['physical']
         physical_savings_rate = 0.30
         physical_redemption_savings = physical_investors * avg_issue_price * physical_savings_rate
         
-        # 二级市场转让收益：假设平均15%溢价
+        # 二级市场转让收益
         transfer_investors = total_quantity * avg_choices['transfer']
         secondary_premium_rate = 0.15
         secondary_market_premium = transfer_investors * avg_issue_price * secondary_premium_rate
@@ -465,25 +538,40 @@ class HotelTimeRightABSEngine:
         avg_user_return = total_user_benefit / max(total_quantity, 1)
         user_roi = (avg_user_return / avg_issue_price * 100) if avg_issue_price > 0 else 0
         
-        # 与传统模式对比：传统预订无折扣无回报
-        traditional_cost_per_night = avg_issue_price * 1.5  # 假设传统预订价格更高
+        # 与传统模式对比
+        traditional_cost_per_night = avg_issue_price * 1.5
         traditional_total_cost = total_quantity * traditional_cost_per_night
         user_savings_vs_traditional = traditional_total_cost - (total_quantity * avg_issue_price - total_user_benefit)
         
+        # 时段收益分析
+        season_analysis = {}
+        for season in ['holiday', 'weekend', 'weekday']:
+            season_df = self.time_right_df[self.time_right_df['season_type'] == season]
+            if len(season_df) > 0:
+                season_qty = float(season_df['issue_quantity'].sum())
+                season_rev = float(season_df['total_face_value'].sum())
+                season_price = float(season_df['issue_price'].mean())
+                season_analysis[season] = {
+                    'quantity': season_qty,
+                    'revenue': season_rev,
+                    'avg_price': season_price,
+                    'choice_ratios': season_choices.get(season, avg_choices),
+                }
+        
         return {
             'hotel': {
-                'upfront_cash': float(hotel_upfront_cash),
-                'redemption_cost': float(hotel_redemption_cost),
+                'acquisition_revenue': float(hotel_acquisition_revenue),
+                'opportunity_cost': float(hotel_opportunity_cost),
                 'net_benefit': float(hotel_net_benefit),
                 'working_capital_boost': float(hotel_working_capital_boost),
-                'cashflow_improvement_description': '发行时一次性获得未来3年住宿收入，提前锁定现金流，降低经营波动风险',
+                'cashflow_improvement_description': '平台一次性收购全部时权，酒店即时回款，无需承担兑付风险与入住率波动',
             },
             'platform': {
-                'issuance_management_fee': float(issuance_mgmt_fee),
-                'trading_fee_income': float(avg_trading_fee),
-                'redemption_service_fee': float(redemption_svc_fee),
-                'total_platform_revenue': float(total_platform_revenue),
-                'platform_cost': float(platform_cost),
+                'acquisition_cost': float(platform_acquisition),
+                'sales_revenue': float(platform_sales),
+                'trading_fee_income': float(platform_trading_fee),
+                'redemption_cost': float(platform_redemption_cost),
+                'operating_cost': float(platform_operating_cost),
                 'platform_net_profit': float(platform_net),
                 'platform_roi': float(platform_roi),
             },
@@ -497,6 +585,7 @@ class HotelTimeRightABSEngine:
                 'user_savings_vs_traditional': float(user_savings_vs_traditional),
                 'avg_choice_ratios': avg_choices,
             },
+            'season_analysis': season_analysis,
         }
     
     def _compute_sensitivity_analysis(self):
@@ -758,15 +847,23 @@ class HotelTimeRightABSEngine:
             avg_cash_monthly = np.mean(self.market_sim['cash_redemption'], axis=0).tolist()
             avg_physical_monthly = np.mean(self.market_sim['physical_redemption'], axis=0).tolist()
             
+            # 平均月度平台销售收入
+            avg_sales_monthly = np.mean(self.market_sim['platform_sales_revenue'], axis=0).tolist()
+            
             market_summary = {
                 'price_convergence_path': [float(x) for x in overall_price_path],
                 'trading_fee_income_monthly': [float(x) for x in avg_trading_fee_monthly],
+                'platform_sales_revenue_monthly': [float(x) for x in avg_sales_monthly],
                 'cash_redemption_monthly': [float(x) for x in avg_cash_monthly],
                 'physical_redemption_monthly': [float(x) for x in avg_physical_monthly],
                 'total_trading_fee_income': float(np.mean(np.sum(self.market_sim['trading_fee_income'], axis=1))),
+                'total_platform_sales_revenue': float(np.mean(np.sum(self.market_sim['platform_sales_revenue'], axis=1))),
                 'total_cash_redemption': float(np.mean(np.sum(self.market_sim['cash_redemption'], axis=1))),
                 'total_physical_redemption': float(np.mean(np.sum(self.market_sim['physical_redemption'], axis=1))),
+                'platform_acquisition_cost': self.market_sim.get('platform_acquisition_cost', 0),
+                'hotel_upfront_revenue': self.market_sim.get('hotel_upfront_revenue', 0),
                 'avg_choice_ratios': self.market_sim['avg_choice_ratios'],
+                'season_choice_ratios': self.market_sim.get('season_choice_ratios', {}),
             }
         
         report = {
