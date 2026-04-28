@@ -1,7 +1,7 @@
 {
   "report_metadata": {
     "version": "V6-Fusion",
-    "date": "2026-04-28 16:42:50",
+    "date": "2026-04-28 16:53:06",
     "title": "酒店订单时权ABS/RWA融合分析报告",
     "methodology": "时权发行+二级市场收敛+三元兑付+Merton信用模型+Gaussian Copula蒙特卡洛"
   },

@@ -1,7 +1,7 @@
 {
   "report_metadata": {
     "version": "V6",
-    "date": "2026-04-28 16:15:39",
+    "date": "2026-04-28 16:54:41",
     "title": "酒店订单ABS/RWA资产证券化专业分析报告",
     "methodology": "基于Merton模型的PD推导 + Gaussian Copula违约相关 + 现金流瀑布分配 + 10,000路径蒙特卡洛"
   },
