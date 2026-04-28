@@ -365,17 +365,17 @@ def generate_html_report():
             <tr>
                 <td>入住率下降20%</td>
                 <td>¥{data['stress_test']['occupancy_down_20']['npv']:,.0f}</td>
-                <td class="{'pass' if data['stress_test']['occupancy_down_20']['pass'] else 'fail'}">{'通过 ✓' if data['stress_test']['occupancy_down_20']['pass'] else '不通过 ✗'}</td>
+                <td class="{'pass' if data['stress_test']['occupancy_down_20']['pass'] else 'fail'}">{'通过 OK' if data['stress_test']['occupancy_down_20']['pass'] else '不通过 FAIL'}</td>
             </tr>
             <tr>
                 <td>折现率上升2%</td>
                 <td>¥{data['stress_test']['discount_up_2']['npv']:,.0f}</td>
-                <td class="{'pass' if data['stress_test']['discount_up_2']['pass'] else 'fail'}">{'通过 ✓' if data['stress_test']['discount_up_2']['pass'] else '不通过 ✗'}</td>
+                <td class="{'pass' if data['stress_test']['discount_up_2']['pass'] else 'fail'}">{'通过 OK' if data['stress_test']['discount_up_2']['pass'] else '不通过 FAIL'}</td>
             </tr>
             <tr>
                 <td>兑付成本上升10%</td>
                 <td>¥{data['stress_test']['redemption_up_10']['npv']:,.0f}</td>
-                <td class="{'pass' if data['stress_test']['redemption_up_10']['pass'] else 'fail'}">{'通过 ✓' if data['stress_test']['redemption_up_10']['pass'] else '不通过 ✗'}</td>
+                <td class="{'pass' if data['stress_test']['redemption_up_10']['pass'] else 'fail'}">{'通过 OK' if data['stress_test']['redemption_up_10']['pass'] else '不通过 FAIL'}</td>
             </tr>
         </table>
         
@@ -392,39 +392,39 @@ def generate_html_report():
                 <td rowspan="3">财务可行性</td>
                 <td>NPV > 0</td>
                 <td>¥{data['experiment_group']['financial_metrics']['npv']:,.0f}</td>
-                <td class="{'pass' if data['feasibility_evaluation']['financial']['npv_positive'] else 'fail'}">{'✓' if data['feasibility_evaluation']['financial']['npv_positive'] else '✗'}</td>
+                <td class="{'pass' if data['feasibility_evaluation']['financial']['npv_positive'] else 'fail'}">{'OK' if data['feasibility_evaluation']['financial']['npv_positive'] else 'FAIL'}</td>
             </tr>
             <tr>
                 <td>IRR > 10%</td>
                 <td>{data['experiment_group']['financial_metrics']['irr']:.2f}%</td>
-                <td class="{'pass' if data['feasibility_evaluation']['financial']['irr_above_10'] else 'fail'}">{'✓' if data['feasibility_evaluation']['financial']['irr_above_10'] else '✗'}</td>
+                <td class="{'pass' if data['feasibility_evaluation']['financial']['irr_above_10'] else 'fail'}">{'OK' if data['feasibility_evaluation']['financial']['irr_above_10'] else 'FAIL'}</td>
             </tr>
             <tr>
                 <td>ROI > 15%</td>
                 <td>{data['experiment_group']['financial_metrics']['roi']:.2f}%</td>
-                <td class="{'pass' if data['feasibility_evaluation']['financial']['roi_above_15'] else 'fail'}">{'✓' if data['feasibility_evaluation']['financial']['roi_above_15'] else '✗'}</td>
+                <td class="{'pass' if data['feasibility_evaluation']['financial']['roi_above_15'] else 'fail'}">{'OK' if data['feasibility_evaluation']['financial']['roi_above_15'] else 'FAIL'}</td>
             </tr>
             <tr>
                 <td rowspan="2">市场可行性</td>
                 <td>流动性充足</td>
                 <td>{data['risk_assessment']['liquidity_risk']['daily_turnover_rate']*100:.1f}%</td>
-                <td class="{'pass' if data['feasibility_evaluation']['market']['liquidity_sufficient'] else 'fail'}">{'✓' if data['feasibility_evaluation']['market']['liquidity_sufficient'] else '✗'}</td>
+                <td class="{'pass' if data['feasibility_evaluation']['market']['liquidity_sufficient'] else 'fail'}">{'OK' if data['feasibility_evaluation']['market']['liquidity_sufficient'] else 'FAIL'}</td>
             </tr>
             <tr>
                 <td>价格稳定</td>
                 <td>{data['risk_assessment']['market_risk']['price_volatility']*100:.1f}%</td>
-                <td class="{'pass' if data['feasibility_evaluation']['market']['price_stable'] else 'fail'}">{'✓' if data['feasibility_evaluation']['market']['price_stable'] else '✗'}</td>
+                <td class="{'pass' if data['feasibility_evaluation']['market']['price_stable'] else 'fail'}">{'OK' if data['feasibility_evaluation']['market']['price_stable'] else 'FAIL'}</td>
             </tr>
             <tr>
                 <td rowspan="2">风险可控性</td>
                 <td>违约概率 < 5%</td>
                 <td>{data['risk_assessment']['credit_risk']['default_probability']*100:.1f}%</td>
-                <td class="{'pass' if data['feasibility_evaluation']['risk']['default_controllable'] else 'fail'}">{'✓' if data['feasibility_evaluation']['risk']['default_controllable'] else '✗'}</td>
+                <td class="{'pass' if data['feasibility_evaluation']['risk']['default_controllable'] else 'fail'}">{'OK' if data['feasibility_evaluation']['risk']['default_controllable'] else 'FAIL'}</td>
             </tr>
             <tr>
                 <td>价格波动 < 20%</td>
                 <td>{data['risk_assessment']['market_risk']['price_volatility']*100:.1f}%</td>
-                <td class="{'pass' if data['feasibility_evaluation']['risk']['volatility_controllable'] else 'fail'}">{'✓' if data['feasibility_evaluation']['risk']['volatility_controllable'] else '✗'}</td>
+                <td class="{'pass' if data['feasibility_evaluation']['risk']['volatility_controllable'] else 'fail'}">{'OK' if data['feasibility_evaluation']['risk']['volatility_controllable'] else 'FAIL'}</td>
             </tr>
         </table>
         

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>酒店订单ABS/RWA资产证券化专业分析报告</title>
+<style>
+body { font-family: 'Microsoft YaHei', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 1400px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+.container { background: white; padding: 40px; box-shadow: 0 2px 20px rgba(0,0,0,0.08); border-radius: 8px; }
+h1 { color: #1a252f; text-align: center; border-bottom: 4px solid #2c3e50; padding-bottom: 20px; margin-bottom: 30px; font-size: 28px; }
+h2 { color: #2c3e50; border-left: 5px solid #3498db; padding-left: 15px; margin-top: 40px; font-size: 20px; background: #f8f9fa; padding: 10px 15px; }
+h3 { color: #34495e; margin-top: 25px; font-size: 16px; }
+.summary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 8px; margin: 20px 0; }
+.summary h3 { color: white; margin-top: 0; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; }
+th, td { border: 1px solid #e0e0e0; padding: 10px 12px; text-align: left; }
+th { background: #2c3e50; color: white; font-weight: 600; }
+tr:nth-child(even) { background: #f8f9fa; }
+tr:hover { background: #e8f4f8; }
+.metric { display: inline-block; margin: 8px; padding: 18px 22px; background: white; border-radius: 8px; border-left: 4px solid #3498db; box-shadow: 0 2px 8px rgba(0,0,0,0.08); min-width: 140px; }
+.metric-value { font-size: 22px; font-weight: bold; color: #2c3e50; }
+.metric-label { font-size: 11px; color: #7f8c8d; margin-top: 4px; }
+.pass { color: #27ae60; font-weight: bold; }
+.fail { color: #e74c3c; font-weight: bold; }
+.warning { color: #f39c12; font-weight: bold; }
+.chart-container { text-align: center; margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
+.chart-container img { max-width: 100%; height: auto; border-radius: 4px; }
+.rwa-box { background: #f0f7ff; border: 1px solid #b3d9ff; padding: 20px; border-radius: 8px; margin: 15px 0; }
+.rwa-box h4 { color: #0066cc; margin-top: 0; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 2px solid #ecf0f1; color: #7f8c8d; font-size: 12px; }
+.highlight { background: #fff3cd; padding: 2px 6px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>酒店订单ABS/RWA资产证券化<br>专业分析报告</h1>
+<p style="text-align:center;color:#7f8c8d;margin-top:-15px;">
+    酒店订单ABS/RWA资产证券化专业分析报告 | 版本: V6 | 
+    日期: 2026-04-28 16:15:39<br>
+    方法论: 基于Merton模型的PD推导 + Gaussian Copula违约相关 + 现金流瀑布分配 + 10,000路径蒙特卡洛
+</p>
+
+<h2>执行摘要</h2>
+<div class="summary">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-around;margin-top:15px;">
+        <div class="metric"><div class="metric-value">80</div><div class="metric-label">资产池酒店数</div></div>
+        <div class="metric"><div class="metric-value">¥0.15亿</div><div class="metric-label">资产池总面值</div></div>
+        <div class="metric"><div class="metric-value">33.89%</div><div class="metric-label">加权平均PD</div></div>
+        <div class="metric"><div class="metric-value">25.13%</div><div class="metric-label">加权平均EL</div></div>
+        <div class="metric"><div class="metric-value">Aaa</div><div class="metric-label">Senior隐含评级</div></div>
+    </div>
+</div>
+
+<h2>1. 资产池特征</h2>
+<h3>1.1 基本规模</h3>
+<table>
+<tr><th>指标</th><th>数值</th><th>指标</th><th>数值</th></tr>
+<tr><td>酒店数量</td><td>80 家</td><td>总面值</td><td>¥15,442,891</td></tr>
+<tr><td>平均面值</td><td>¥193,036</td><td>面值中位数</td><td>¥208,409</td></tr>
+<tr><td>覆盖区县数</td><td>18 个</td><td>地区HHI</td><td>0.220</td></tr>
+<tr><td>Top 5集中度</td><td>14.0%</td><td>Top 10集中度</td><td>23.5%</td></tr>
+</table>
+
+<h3>1.2 信用分布</h3>
+<table>
+<tr><th>评级</th><th>数量</th><th>占比</th><th>评级</th><th>数量</th><th>占比</th></tr>
+<tr><td>A</td><td>2</td><td>2.5%</td><td>B</td><td>3</td><td>3.8%</td></tr>
+<tr><td>BB</td><td>2</td><td>2.5%</td><td>BBB</td><td>1</td><td>1.2%</td></tr>
+<tr><td>C</td><td>55</td><td>68.8%</td><td>CC</td><td>14</td><td>17.5%</td></tr>
+<tr><td>CCC</td><td>3</td><td>3.8%</td><td></td><td></td><td></td></tr>
+
+</table>
+
+<h3>1.3 前10大借款人</h3>
+<table>
+<tr><th>排名</th><th>酒店代码</th><th>酒店名称</th><th>等级</th><th>面值</th><th>评级</th><th>PD</th></tr>
+<tr><td>1</td><td>H00003177763</td><td>成都释玥森林酒店</td><td>豪华</td><td>¥455,621</td><td>BBB</td><td>0.17%</td></tr>
+<tr><td>2</td><td>H00003161468</td><td>青城山奢享独栋泳池别墅(丽锦路分店)</td><td>经济</td><td>¥450,706</td><td>C</td><td>50.00%</td></tr>
+<tr><td>3</td><td>H00003185045</td><td>青城叁舍民宿(沙街路分店)</td><td>经济</td><td>¥434,211</td><td>C</td><td>50.00%</td></tr>
+<tr><td>4</td><td>H00004954873</td><td>汀枫渡民宿(万南路分店)</td><td>经济</td><td>¥428,880</td><td>C</td><td>50.00%</td></tr>
+<tr><td>5</td><td>H00004933529</td><td>小树特色民宿(重庆路分店)</td><td>经济</td><td>¥388,081</td><td>CCC</td><td>4.09%</td></tr>
+<tr><td>6</td><td>H00005617785</td><td>FengWei冯大哥度假别墅(青岗路分店)</td><td>经济</td><td>¥301,036</td><td>C</td><td>48.52%</td></tr>
+<tr><td>7</td><td>H00003163396</td><td>力饕度假别墅(净仙路分店)</td><td>经济</td><td>¥299,548</td><td>BB</td><td>0.94%</td></tr>
+<tr><td>8</td><td>H00005618838</td><td>溪溪家特色民宿(石两路2号分店)</td><td>经济</td><td>¥297,435</td><td>C</td><td>50.00%</td></tr>
+<tr><td>9</td><td>H00003181344</td><td>若竹的院子客栈(青正街东段分店)</td><td>经济</td><td>¥289,358</td><td>C</td><td>50.00%</td></tr>
+<tr><td>10</td><td>H00003165382</td><td>溪溪家度假别墅(泥两路分店)</td><td>经济</td><td>¥283,026</td><td>C</td><td>50.00%</td></tr>
+
+</table>
+
+<h2>2. ABS分层结构</h2>
+<h3>2.1 分层设计</h3>
+<table>
+<tr><th>层级</th><th>规模占比</th><th>规模(元)</th><th>票息(年化)</th><th>目标评级</th><th>信用支持</th><th>预期损失</th></tr>
+<tr><td><strong>Senior</strong></td><td>68.0%</td><td>¥10,501,166</td><td>4.50%</td><td>AAA</td><td>32.0%</td><td>43.71%</td></tr>
+<tr><td><strong>Mezzanine</strong></td><td>20.0%</td><td>¥3,088,578</td><td>6.50%</td><td>BBB</td><td>12.0%</td><td>18.50%</td></tr>
+<tr><td><strong>Junior</strong></td><td>8.0%</td><td>¥1,235,431</td><td>9.50%</td><td>B</td><td>4.0%</td><td>12.86%</td></tr>
+<tr><td><strong>Equity</strong></td><td>4.0%</td><td>¥617,716</td><td>0.00%</td><td>NR</td><td>0.0%</td><td>10.87%</td></tr>
+
+</table>
+
+<h3>2.2 信用增级机制</h3>
+<table>
+<tr><th>增级机制</th><th>比例</th><th>金额</th></tr>
+<tr><td>超额抵押 (OC)</td><td>2.0%</td><td>¥308,858</td></tr>
+<tr><td>储备金账户</td><td>3.0%</td><td>¥463,287</td></tr>
+<tr><td>超额利差 (12月)</td><td>1.5%</td><td>-</td></tr>
+<tr><td>Senior次级保护</td><td>32.0%</td><td>-</td></tr>
+<tr><td><strong>总信用支持</strong></td><td><strong>6.5%</strong></td><td><strong>¥1,003,788</strong></td></tr>
+</table>
+
+<h2>3. 蒙特卡洛模拟分析</h2>
+<p>基于 <strong>10,000</strong> 条蒙特卡洛路径 × <strong>36</strong> 期的违约模拟，使用 Gaussian Copula 模型。</p>
+
+<h3>3.1 分层损失统计</h3>
+<table>
+<tr><th>分层</th><th>预期损失(EL)</th><th>VaR 95%</th><th>VaR 99%</th><th>CVaR 95%</th><th>损失概率</th><th>隐含评级</th></tr>
+<tr><td><strong>Senior</strong></td><td>-0.00%</td><td>-0.00%</td><td>-0.00%</td><td>-0.00%</td><td>0.0%</td><td class='pass'>Aaa</td></tr>
+<tr><td><strong>Mezzanine</strong></td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>0.0%</td><td class='pass'>Aaa</td></tr>
+<tr><td><strong>Junior</strong></td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>0.0%</td><td class='pass'>Aaa</td></tr>
+<tr><td><strong>Equity</strong></td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>0.0%</td><td class='pass'>Aaa</td></tr>
+
+</table>
+
+<h3>3.2 压力测试对比</h3>
+<table>
+<tr><th>情景</th><th colspan="4">Senior层</th><th colspan="4">Mezzanine层</th></tr>
+<tr><th></th><th>EL</th><th>VaR95</th><th>VaR99</th><th>评级</th><th>EL</th><th>VaR95</th><th>VaR99</th><th>评级</th></tr>
+<tr><td><strong>基准情景</strong></td><td>-0.00%</td><td>-0.00%</td><td>-0.00%</td><td>Aaa</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>Aaa</td></tr>
+<tr><td><strong>轻度压力</strong></td><td>-0.00%</td><td>-0.00%</td><td>-0.00%</td><td>Aaa</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>Aaa</td></tr>
+<tr><td><strong>中度压力</strong></td><td>-0.00%</td><td>-0.00%</td><td>-0.00%</td><td>Aaa</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>Aaa</td></tr>
+<tr><td><strong>重度压力</strong></td><td>-0.00%</td><td>-0.00%</td><td>-0.00%</td><td>Aaa</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>Aaa</td></tr>
+<tr><td><strong>极端压力</strong></td><td>-0.00%</td><td>-0.00%</td><td>-0.00%</td><td>Aaa</td><td>0.00%</td><td>0.00%</td><td>0.00%</td><td>Aaa</td></tr>
+
+</table>
+
+<h2>4. RWA代币化架构</h2>
+<div class="rwa-box">
+<h4>链下架构</h4>
+<ul>
+<li><strong>SPV（特殊目的载体）</strong>：{d['rwa_architecture']['architecture']['off_chain']['spv']['jurisdiction']}注册，破产隔离，持有酒店未来住宿订单收益权</li>
+<li><strong>服务商</strong>：负责月度现金流归集、违约监控、储备金管理</li>
+<li><strong>受托人</strong>：代表投资者利益，监督SPV运营，执行触发器</li>
+</ul>
+</div>
+
+<div class="rwa-box">
+<h4>链上架构</h4>
+<ul>
+<li><strong>代币标准</strong>：{d['rwa_architecture']['architecture']['on_chain']['token_standard']}</li>
+<li><strong>区块链</strong>：{d['rwa_architecture']['architecture']['on_chain']['blockchain']}</li>
+<li><strong>代币种类</strong>：{len(d['rwa_architecture']['architecture']['on_chain']['tokens'])} 种（每档分层一种）</li>
+<li><strong>预言机</strong>：{d['rwa_architecture']['architecture']['on_chain']['oracle']['provider']}，月度更新</li>
+<li><strong>智能合约</strong>：代币合约 + 瀑布分配合约 + 储备金合约 + 触发器合约</li>
+</ul>
+</div>
+
+<div class="rwa-box">
+<h4>智能合约触发器逻辑</h4>
+<ul>
+<li>OC测试失败 (<100%) → 启动Early Amortization</li>
+<li>IC测试失败 (<100%) → 启动Early Amortization</li>
+<li>累计违约率 > 15% → Event of Default</li>
+<li>连续3期IC失败 → Event of Default</li>
+
+</ul>
+</div>
+
+<h2>5. 可视化分析</h2>
+<div class="chart-container">
+<img src="abs_visualization_v6.png" alt="ABS分析可视化">
+<p><em>图1: 酒店订单ABS/RWA分析综合可视化图表</em></p>
+</div>
+
+<h2>6. 免责声明与方法论</h2>
+<div style="background:#fff3cd;padding:15px;border-radius:8px;font-size:12px;color:#856404;">
+<p><strong>重要声明：</strong></p>
+<ul>
+<li>本报告基于历史价格数据的统计分析，不构成投资建议。</li>
+<li>违约概率(PD)由价格波动率通过Merton模型推导，假设期限结构稳定。</li>
+<li>蒙特卡洛模拟使用Gaussian Copula，假设相关性结构在压力情景下不变。</li>
+<li>酒店行业具有特殊性，历史4个月数据可能不足以捕捉完整周期风险。</li>
+<li>实际ABS发行需经过监管机构审批、律师事务所尽职调查、评级机构独立评估。</li>
+</ul>
+<p><strong>方法论：</strong>基于Merton模型的PD推导 + Gaussian Copula违约相关 + 现金流瀑布分配 + 10,000路径蒙特卡洛</p>
+</div>
+
+<div class="footer">
+<p>酒店订单ABS/RWA资产证券化专业分析报告 V6</p>
+<p>生成时间: 2026-04-28 16:16:06</p>
+</div>
+</div>
+</body>
+</html>

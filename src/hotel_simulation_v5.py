@@ -518,7 +518,7 @@ stress_results['occupancy_down_20'] = {
 
 print(f"  场景1 - 入住率下降20%:")
 print(f"    NPV: ¥{stress_npv_1:,.0f}")
-print(f"    评估: {'通过 ✓' if stress_npv_1 > 0 else '不通过 ✗'}")
+print(f"    评估: {'通过 OK' if stress_npv_1 > 0 else '不通过 FAIL'}")
 
 # 场景2：折现率上升2%
 stress_discount = discount_rate + 0.02
@@ -530,7 +530,7 @@ stress_results['discount_up_2'] = {
 
 print(f"  场景2 - 折现率上升2%:")
 print(f"    NPV: ¥{stress_npv_2:,.0f}")
-print(f"    评估: {'通过 ✓' if stress_npv_2 > 0 else '不通过 ✗'}")
+print(f"    评估: {'通过 OK' if stress_npv_2 > 0 else '不通过 FAIL'}")
 
 # 场景3：兑付成本上升10%
 stress_redemption = hotel_redemption_cost * 1.10
@@ -542,7 +542,7 @@ stress_results['redemption_up_10'] = {
 
 print(f"  场景3 - 兑付成本上升10%:")
 print(f"    NPV: ¥{stress_npv_3:,.0f}")
-print(f"    评估: {'通过 ✓' if stress_npv_3 > 0 else '不通过 ✗'}")
+print(f"    评估: {'通过 OK' if stress_npv_3 > 0 else '不通过 FAIL'}")
 
 # ========================
 # 6. 敏感性分析
@@ -605,28 +605,28 @@ financial_feasible = (financialized_npv > 0 and
                       financialized_roi > 15)
 
 print(f"\n  财务可行性:")
-print(f"    NPV > 0: {'✓' if financialized_npv > 0 else '✗'} (¥{financialized_npv:,.0f})")
-print(f"    IRR > 10%: {'✓' if financialized_irr > 10 else '✗'} ({financialized_irr:.2f}%)")
-print(f"    ROI > 15%: {'✓' if financialized_roi > 15 else '✗'} ({financialized_roi:.2f}%)")
-print(f"    综合评估: {'通过 ✓' if financial_feasible else '不通过 ✗'}")
+print(f"    NPV > 0: {'OK' if financialized_npv > 0 else 'FAIL'} (¥{financialized_npv:,.0f})")
+print(f"    IRR > 10%: {'OK' if financialized_irr > 10 else 'FAIL'} ({financialized_irr:.2f}%)")
+print(f"    ROI > 15%: {'OK' if financialized_roi > 15 else 'FAIL'} ({financialized_roi:.2f}%)")
+print(f"    综合评估: {'通过 OK' if financial_feasible else '不通过 FAIL'}")
 
 # 市场可行性
 market_feasible = (daily_turnover_rate > 0.03 and 
                    price_volatility < 0.20)
 
 print(f"\n  市场可行性:")
-print(f"    流动性充足: {'✓' if daily_turnover_rate > 0.03 else '✗'} ({daily_turnover_rate*100:.1f}%)")
-print(f"    价格稳定: {'✓' if price_volatility < 0.20 else '✗'} ({price_volatility*100:.1f}%)")
-print(f"    综合评估: {'通过 ✓' if market_feasible else '不通过 ✗'}")
+print(f"    流动性充足: {'OK' if daily_turnover_rate > 0.03 else 'FAIL'} ({daily_turnover_rate*100:.1f}%)")
+print(f"    价格稳定: {'OK' if price_volatility < 0.20 else 'FAIL'} ({price_volatility*100:.1f}%)")
+print(f"    综合评估: {'通过 OK' if market_feasible else '不通过 FAIL'}")
 
 # 风险可控性
 risk_controllable = (default_probability < 0.05 and 
                      price_volatility < 0.20)
 
 print(f"\n  风险可控性:")
-print(f"    违约概率 < 5%: {'✓' if default_probability < 0.05 else '✗'} ({default_probability*100:.1f}%)")
-print(f"    价格波动 < 20%: {'✓' if price_volatility < 0.20 else '✗'} ({price_volatility*100:.1f}%)")
-print(f"    综合评估: {'通过 ✓' if risk_controllable else '不通过 ✗'}")
+print(f"    违约概率 < 5%: {'OK' if default_probability < 0.05 else 'FAIL'} ({default_probability*100:.1f}%)")
+print(f"    价格波动 < 20%: {'OK' if price_volatility < 0.20 else 'FAIL'} ({price_volatility*100:.1f}%)")
+print(f"    综合评估: {'通过 OK' if risk_controllable else '不通过 FAIL'}")
 
 # 综合评分
 feasibility_score = 0
@@ -661,7 +661,7 @@ print(f"  评级: {rating}级（{rating_desc}）")
 # 可行性结论
 overall_feasible = feasibility_score >= 70
 print(f"\n【可行性结论】")
-print(f"  酒店订单金融化方案: {'可行 ✓' if overall_feasible else '不可行 ✗'}")
+print(f"  酒店订单金融化方案: {'可行 OK' if overall_feasible else '不可行 FAIL'}")
 print(f"  建议: {'可以推进实施，建议先进行小规模试点' if overall_feasible else '需要优化方案或等待更好的市场时机'}")
 
 # ========================
