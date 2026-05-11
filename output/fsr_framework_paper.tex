@@ -334,8 +334,11 @@ where $Z_{\text{sys}} \sim \mathcal{N}(0,1)$ is the systematic factor (70\% weig
 \section{Mechanism Design: Ternary Settlement}
 % ============================================================
 
-The ternary settlement mechanism (cash / physical redemption / secondary market transfer) is not merely an operational convenience---it is a mechanism design problem requiring formal analysis of incentive properties.
-We prove three properties of the mechanism.
+The ternary settlement mechanism operates \textbf{at contract maturity} and provides three options: cash redemption, physical stay at a fixed discount $\alpha$, or secondary-market transfer.
+This mechanism provides a \textbf{guaranteed floor} for Time-Right value: even in the worst case, the holder can always obtain at least $\max\{V_{\text{cash}}, \alpha \cdot P_{\text{spot}}, P_{\text{secondary}}\}$.
+Separately, and more importantly for practical usage, the \textbf{continuous secondary-market offset} (Section 5.2) allows holders to exit at market-determined prices at any time before maturity---the effective discount there is driven by supply and demand, not by the fixed parameter $\alpha$.
+The two mechanisms are complementary: $\alpha$ guarantees a floor; the secondary market provides liquidity and market-driven upside.
+We prove three incentive properties of the ternary settlement mechanism.
 
 \subsection{Model Setup}
 

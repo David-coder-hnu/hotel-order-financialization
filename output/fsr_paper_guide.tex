@@ -90,7 +90,11 @@
 
 第三步：用户买了时权后，\textbf{可以在任何时间}在二级市场卖出。卖出的钱直接当"住宿券"用——订任何酒店都能抵扣。优惠是市场给的（供需决定），不是酒店给的（酒店不收一分钱折扣）。
 
-\textbf{到期时，持有者还可以三选一：}住酒店(7折) / 换现金 / 转卖。
+\textbf{两种退出机制（这是理解系统的关键）：}
+\begin{itemize}[nosep]
+    \item \textbf{随时退出（主力）：}在二级市场卖出时权，卖得的钱直接当住宿券用。折扣由市场供需决定——不是固定数字，需求旺时折扣更大。
+    \item \textbf{到期退出（保底）：}持有到到期日，三选一——现金/7折入住/转卖。7折是固定保底价，保证时权不会变得一文不值。
+\end{itemize}
 
 \textbf{四方都赢：}
 \begin{itemize}[nosep]
@@ -245,9 +249,9 @@ $\sigma$ & 服务类型 & hotel & flight \\
     V_{\text{settle}} = \max\{\, V_{\text{cash}},\; \alpha \cdot P_{\text{spot}},\; P_{\text{secondary}} \,\}
 \end{equation}
 
-\textbf{人话：} 到期时自动选最划算的那个——拿现金、7折住房、还是二手卖掉。这个$\max$操作是整个机制设计的核心。
+\textbf{人话：} 到期时自动选最划算的那个——拿现金、固定折扣住房($\alpha$)、还是二手卖掉。$\max$操作保证时权有保底价值。\textbf{注意：这是到期保底机制，不是主力退出方式。}主力方式是随时在二级市场卖出（下一节详解）。
 
-\textbf{参数：}$\alpha=0.70$（7折入住）。现金兑付价值$V_{\text{cash}}$由合约约定。
+\textbf{参数：}$\alpha=0.70$（到期固定折扣，仅用于保底）。实际用户获得的折扣通常由市场决定而非$\alpha$。
 
 \begin{figure}[H]
 \centering
@@ -310,7 +314,7 @@ $\sigma$ & 服务类型 & hotel & flight \\
 \subsubsection{证明2：个体理性(Individual Rationality)}
 \textbf{命题：} $\mathbb{E}[V_{\text{settle}}] \geq P_{\text{issue}}$当$\alpha \geq \delta(T) \cdot (1-d_{\text{issue}})$。
 
-\textbf{证明思路：}期望兑付价值的下界是$\alpha \cdot \mathbb{E}[P_{\text{spot}}]$（至少可以7折入住）。发行价是$P_{\text{base}} \cdot \delta(T) \cdot (1-d_{\text{issue}})$。只要$\alpha$足够大——在我们的校准中$\alpha=0.70$，$\delta\cdot(1-d)\leq0.85$→条件满足。
+\textbf{证明思路：}期望兑付价值的下界是$\alpha \cdot \mathbb{E}[P_{\text{spot}}]$（保底：到期至少可以固定折扣入住）。但实际用户收益通常更高——因为可以在二级市场随时卖出，折扣由市场决定（见连续二级市场冲抵机制）。IR条件在$\alpha=0.70$时已满足；市场驱动路径下条件更宽松。
 
 \subsubsection{证明3：预算平衡(Budget Balance)}
 \textbf{命题：} 平台收入≥运营成本。
@@ -323,9 +327,9 @@ $\sigma$ & 服务类型 & hotel & flight \\
 
 \textbf{这是传统三元兑付之上的增强——也是用户成为独立利益方的关键。}
 
-传统三元兑付：\textbf{只能在到期时}选择现金/实物/转让。优惠是酒店给的固定7折。
+传统三元兑付（保底）：\textbf{只能在到期时}选择。优惠是酒店给的固定折扣$\alpha$——这是时权的价值地板，保证它不会一文不值。
 
-连续二级市场冲抵：\textbf{随时可以}在二级市场挂单卖出时权，卖出的钱直接当"住宿券"抵扣任何酒店的订房费。
+连续二级市场冲抵（主力）：\textbf{随时可以}在二级市场挂单卖出时权。折扣是\textbf{市场供需动态决定的}——需求旺时折扣大，需求弱时折扣小。酒店不承担任何折扣成本。
 
 \textbf{为什么这是革命性的？}
 \begin{enumerate}[nosep]
