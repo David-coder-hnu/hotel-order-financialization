@@ -441,7 +441,7 @@ class HotelTimeRightABSEngine:
         # ===== 核心对比指标 =====
         # 时权3年总收入（元）= 5年发行 - 兑付成本
         tr_total_3year_income = annual_issue * 5  # Y1+Y2+Y3+Y4+Y5
-        trad_total_3year_nominal = total_annual_revenue * 3  # 3年传统收入
+        trad_total_3year_nominal = traditional['annual_revenue'] * 3  # 3年传统收入
 
         # 收入倍数: 时权3年收集的年份收入 / 传统3年收入
         income_multiple = tr_total_3year_income / trad_total_3year_nominal if trad_total_3year_nominal > 0 else 0
@@ -480,14 +480,13 @@ class HotelTimeRightABSEngine:
         tr_total = sum(np.maximum(tr_cashflows, 0))  # 只算正现金流
         frontloading_ratio = (tr_first12 / tr_total * 100) if tr_total > 0 else 0
 
-        # ===== 时权模式分项拆解（仅使用引擎数据） =====
+        # ===== 时权模式分项拆解（统一转元） =====
         if self.market_sim:
-            total_cash_redemption = float(np.mean(np.sum(self.market_sim['cash_redemption'], axis=1)))
-            total_physical_redemption = float(np.mean(np.sum(self.market_sim['physical_redemption'], axis=1)))
+            total_cash_redemption = float(np.mean(np.sum(self.market_sim['cash_redemption'], axis=1))) / FEN_TO_YUAN
+            total_physical_redemption = float(np.mean(np.sum(self.market_sim['physical_redemption'], axis=1))) / FEN_TO_YUAN
             total_redemption_cost = total_cash_redemption + total_physical_redemption
-            # 平台收入来自交易手续费+销售收入
-            total_trading_fee = float(np.mean(np.sum(self.market_sim['trading_fee_income'], axis=1)))
-            total_sales_revenue = float(np.mean(np.sum(self.market_sim['platform_sales_revenue'], axis=1)))
+            total_trading_fee = float(np.mean(np.sum(self.market_sim['trading_fee_income'], axis=1))) / FEN_TO_YUAN
+            total_sales_revenue = float(np.mean(np.sum(self.market_sim['platform_sales_revenue'], axis=1))) / FEN_TO_YUAN
             platform_revenue = total_trading_fee + total_sales_revenue
         else:
             total_redemption_cost = total_issue_revenue * 0.35
@@ -512,9 +511,9 @@ class HotelTimeRightABSEngine:
                 'npv': float(tr_npv),
             },
             'npv_uplift': {
-                'absolute': float(npv_uplift),
+                'absolute': float(tr_npv - trad_npv),
                 'percentage': round(float(npv_uplift_pct), 1),
-                'note': 'Uplift driven primarily by cash-flow front-loading: issuance revenue arrives at t=0 while traditional revenue is spread over 36 months. This is a genuine time-value-of-money effect, not a value-creation claim.',
+                'note': 'NPV uplift reflects cash-flow front-loading and the 5-years-in-3 effect from rolling issuance. Time-right collects more years of (discounted) revenue in the same calendar period.',
             },
             'cashflow_frontloading': {
                 'time_right_first12_ratio': round(float(frontloading_ratio), 1),
