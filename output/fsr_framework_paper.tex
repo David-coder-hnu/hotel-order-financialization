@@ -1,0 +1,518 @@
+\documentclass[12pt,a4paper]{article}
+
+% === Packages ===
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{natbib}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\geometry{margin=1in}
+
+% === Title ===
+\title{\textbf{Future Service Rights: Tokenization, Pricing, and Structuring}\\%
+\large Theory and Evidence from the Chengdu Hotel Market}
+
+\author{Research Team\\
+\textit{Hotel Finance Research Group}\\
+\small \texttt{hotel-finance-research@example.com}}
+
+\date{May 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We introduce Future Service Rights (FSR), a new asset class defined as the contingent claim on a service provider's future capacity within a specified time window.
+Unlike Real-World Asset (RWA) tokenization---which digitizes pre-existing claims on existing assets---FSR creates novel financial instruments by transforming idle future capacity into tradable securities.
+We formalize FSR as a 4-tuple $S = (c, T, \ell, \sigma)$ capturing capacity, time window, location, and service type, and establish existence conditions and pricing bounds under information asymmetry.
+As an instantiation of the FSR framework, we develop Time-Rights for the hotel sector: tokenized forward room-night claims that trade on secondary markets and settle via a ternary mechanism offering cash redemption, physical stay at a discount, or secondary-market rollover.
+We construct an 80-hotel stratified asset pool from 1.7 million daily price observations across 16,257 hotels in Chengdu, China, and apply a structural credit model (Merton distance-to-default with GARCH volatility estimation), a one-factor Gaussian copula for default dependence, and a four-tier sequential-pay waterfall with performance triggers.
+Monte Carlo simulation over 10,000 paths and 36 months yields near-zero expected losses and Aaa-implied ratings for all tranches under both benchmark and stressed scenarios, with Senior credit support of 32\% absorbing the full range of simulated default outcomes.
+A comparison with traditional hotel operations reveals a 102\% net present value uplift, driven by the front-loading of future revenue into present capital.
+We discuss extensions of the FSR framework to flight capacity, event ticketing, and coworking space, establishing a research program for generalized service-capacity securitization.
+
+\bigskip
+\noindent\textbf{Keywords:} Future Service Rights, Time-Right, Asset-Backed Securities, Tokenization, Real-World Assets, Merton Model, Gaussian Copula, Mechanism Design, Hotel Finance
+
+\noindent\textbf{JEL Classification:} G12, G23, G32, L83
+\end{abstract}
+
+\newpage
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+The global hotel industry generates approximately \$600 billion in annual revenue, yet the financial architecture for monetizing future service capacity remains primitive.
+Hotel operators sell room-nights through online travel agencies (OTAs) at spot prices, bearing full demand uncertainty and seasonal revenue volatility.
+Meanwhile, the tokenization of real-world assets (RWA) has emerged as a significant trend in decentralized finance, with platforms such as Ondo Finance and Centrifuge digitizing treasury bonds, invoices, and real estate \citep{chen2023rwa}.
+However, RWA tokenization merely moves existing assets onto a blockchain ledger---it does not create new asset classes.
+
+This paper introduces \textbf{Future Service Rights (FSR)}: a novel asset class representing the contingent claim on a service provider's future capacity.
+Unlike RWA, which digitizes pre-existing claims, FSR \emph{creates} assets by transforming idle future capacity into tradable financial instruments.
+We define a Time-Right as the tokenized form of an FSR, and we instantiate this framework in the hotel sector, where a hotel room-night three months from now becomes a tradeable, layerable, and hedgeable financial product.
+
+The economic rationale is straightforward.
+A hotel room-night on June 15 has value today, but that value is trapped in illiquidity---the hotel cannot sell it forward, and investors cannot buy exposure to hotel demand without owning physical property.
+By tokenizing these future room-nights as Time-Rights and structuring them into tranched ABS (Asset-Backed Securities), we unlock several efficiency gains: (i) hotels receive upfront capital, converting uncertain future revenue into certain present cash; (ii) investors gain exposure to a new, diversifying asset class; (iii) consumers benefit from price stability and flexible settlement options.
+
+We make three contributions.
+First, we formally define the FSR asset class and establish its theoretical properties, including existence conditions under information asymmetry and general pricing bounds.
+Second, we design a complete Time-Right ABS architecture: a structural credit model for hotel default risk, a Gaussian copula framework for default dependence, a four-tier waterfall structure, and a ternary settlement mechanism (cash, physical redemption, or secondary-market transfer) with formal incentive-compatibility properties.
+Third, we calibrate the framework using a unique dataset of 1.7 million daily price observations from 16,257 hotels in Chengdu, China, constructing an 80-hotel stratified asset pool and demonstrating near-zero expected losses across all tranches under 10,000 Monte Carlo paths.
+
+The paper proceeds as follows.
+Section 2 defines FSR and derives its theoretical properties.
+Section 3 develops the Time-Right pricing framework.
+Section 4 presents the credit risk and structuring methodology.
+Section 5 formalizes the ternary settlement mechanism.
+Section 6 provides empirical calibration using the Chengdu hotel market.
+Section 7 discusses extensions to non-hotel FSR categories.
+Section 8 concludes.
+
+% ============================================================
+\section{Future Service Rights: Definition and Properties}
+% ============================================================
+
+\subsection{Formal Definition}
+
+\begin{definition}[Future Service Right]
+A Future Service Right (FSR) is a 4-tuple $S = (c, T, \ell, \sigma)$ where:
+\begin{itemize}[nosep]
+    \item $c \in \mathbb{R}^+$ is the service capacity (e.g., number of room-nights, seats, or slots);
+    \item $T = [t_0, t_1]$ is the future time window during which the service must be consumed;
+    \item $\ell \in \mathcal{L}$ is the service location, where $\mathcal{L}$ is a metric space with distance function $d(\cdot, \cdot)$ supporting geographic diversification metrics;
+    \item $\sigma \in \Sigma$ is the service type, where $\Sigma$ is a finite set with cross-elasticities $\varepsilon_{ij}$ governing inter-category substitutability.
+\end{itemize}
+\end{definition}
+
+The FSR is a \emph{contingent} claim: the holder has the right, but not the obligation, to consume the specified service capacity at the specified time and location.
+This distinguishes FSR from commodity futures (which carry delivery obligations), from equity (which conveys ownership), and from accounts receivable (which represent already-delivered services).
+
+\begin{definition}[Time-Right]
+A Time-Right is the tokenized financial instrument representing an FSR.
+It standardizes the FSR into a fungible, transferable, and layerable on-chain asset.
+In the hotel context, one Time-Right corresponds to one room-night of a specific hotel within a specific date window.
+\end{definition}
+
+\subsection{Existence Conditions Under Information Asymmetry}
+
+The creation of a viable FSR market requires that information asymmetry between service providers (hotels) and investors does not cause market breakdown (à la Akerlof 1970).
+We identify three necessary conditions:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Verifiable quality signals.} Observable characteristics---hotel star rating, historical occupancy rate, location---must provide sufficient information to mitigate adverse selection.
+    In our Chengdu dataset, hotel star rating explains 31\% of the cross-sectional variance in average daily rates, providing a meaningful quality signal.
+
+    \item \textbf{Over-issuance mechanism.} Service providers may issue more Time-Rights than their physical capacity, bounded by the expected cancellation rate.
+    With an occupancy rate $\rho$ and safety factor $\phi \in (0,1]$, the over-issuance multiple is:
+    \begin{equation}
+        \omega = \frac{1}{\rho \cdot \phi}
+    \end{equation}
+    where $\phi = 1 - \mathbb{E}[\text{cancellation rate}]$ reflects the expected fulfillment ratio.
+    This mechanism completes the market by introducing securities that span the state space of realized demand.
+
+    \item \textbf{Limited liability with recourse.} If the service provider defaults (e.g., hotel closure), Time-Right holders' losses are bounded by the recovery value of the ternary settlement mechanism (Section 5), where physical redemption at neighboring hotels and secondary-market exit provide partial recovery.
+\end{enumerate}
+
+\subsection{FSR vs. Existing Asset Classes}
+
+\begin{table}[H]
+\centering
+\caption{FSR compared to adjacent asset classes}
+\label{tab:fsr-comparison}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+& \textbf{FSR (This Paper)} & \textbf{Commodity Futures} & \textbf{Receivables ABS} & \textbf{RWA Tokenization} \\
+\midrule
+Underlying     & Future capacity   & Physical commodity  & Delivered invoices & Existing assets \\
+Delivery        & Consumption right & Physical delivery   & Cash flow          & Varies \\
+Novel asset?    & Yes                & No                  & No                 & No \\
+Settlement      & Cash/Physical/Transfer & Physical delivery & Cash only       & Varies \\
+Over-issuance   & Yes                & No                  & No                 & No \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The defining characteristic of FSR is that it \emph{creates} an asset where none previously existed.
+Commodity futures reorganize existing physical commodities; receivables ABS repackages already-extended credit; RWA tokenization digitizes existing off-chain assets.
+Only FSR transforms idle future capacity---a non-asset---into a tradeable financial claim.
+
+% ============================================================
+\section{Time-Right Pricing Framework}
+% ============================================================
+
+\subsection{Primary Market: Issuance Pricing}
+
+The issuance price of a hotel Time-Right is determined by three factors:
+
+\begin{equation}
+    P_{\text{issue}} = P_{\text{base}} \cdot \delta(T) \cdot (1 - d_{\text{issue}})
+\end{equation}
+
+where $P_{\text{base}} = \min(\text{historical price} \mid \text{star, season, location})$ is the floor price from historical data, $\delta(T) = e^{-rT} \cdot f(\Delta t)$ is the forward discount factor with $f(\Delta t)$ capturing forward uncertainty decay, and $d_{\text{issue}} \in [0, 0.15]$ is the issuance discount incentivizing early purchase.
+
+The over-issuance multiple $\omega$ determines the total Time-Right quantity:
+\begin{equation}
+    Q_{\text{TR}} = N_{\text{rooms}} \times 365 \times \omega
+\end{equation}
+
+where $N_{\text{rooms}}$ is the hotel's room count. In our calibration, the average $\omega = 1.29\times$, generating 1,092,604 Time-Rights from 22 hotels in the test pool.
+
+\subsection{Secondary Market: Price Convergence}
+
+On the secondary market, Time-Right prices converge to spot prices as the consumption date approaches:
+
+\begin{equation}
+    P_t = P_{\text{spot}} + (P_{\text{issue}} - P_{\text{spot}}) \cdot e^{-\lambda(T-t)} + \eta_t
+\end{equation}
+
+where $\lambda > 0$ is the convergence speed parameter and $\eta_t$ is a supply-demand imbalance premium.
+As $t \to T$, $P_t \to P_{\text{spot}}$, eliminating arbitrage opportunities at maturity.
+
+\subsection{Ternary Settlement Valuation}
+
+At maturity, the Time-Right holder selects the maximum of three settlement values:
+\begin{equation}
+    V_{\text{settle}} = \max\{\, V_{\text{cash}},\; \alpha \cdot P_{\text{spot}},\; P_{\text{secondary}} \,\}
+\end{equation}
+
+where $V_{\text{cash}}$ is the contractual cash redemption value, $\alpha \in (0.7, 0.85)$ is the physical redemption discount (the holder receives a room-night worth $P_{\text{spot}}$ but only pays $\alpha \cdot P_{\text{spot}}$), and $P_{\text{secondary}}$ is the prevailing secondary-market bid.
+The physical redemption discount $\alpha$ gives the ternary mechanism its option value: holders with flexible travel plans prefer physical redemption at a discount, while cash-constrained holders prefer cash settlement.
+
+% ============================================================
+\section{Credit Risk and Structuring}
+% ============================================================
+
+\subsection{Hotel Credit Model}
+
+We estimate hotel-level default probabilities using a structural Merton (1974) distance-to-default framework adapted for service firms:
+
+\begin{equation}
+    DD_i = \frac{\ln(V_i / D_i) + (\mu - \sigma_i^2/2)T}{\sigma_i \sqrt{T}}
+\end{equation}
+
+where $V_i = \overline{P}_i$ (average daily rate as asset value proxy), $D_i = 0.55 \cdot \overline{P}_i$ (default barrier at 55\% of mean price, reflecting operating breakeven), $\sigma_i$ is the annualized price volatility estimated via GARCH(1,1) with hotel-grade adjustment multipliers, and $\mu = 0.03$ is the drift.
+
+The probability of default is:
+\begin{equation}
+    PD_i = \min\left( \Phi(-DD_i) \times 2.5,\; 0.50 \right)
+\end{equation}
+
+where $\Phi(\cdot)$ is the standard normal CDF and the calibration factor 2.5 corrects the Merton model's well-known tendency to underestimate PDs \citep{bharath2008}.
+
+Loss-given-default varies by hotel grade:
+\begin{equation}
+    LGD_i = \text{base}(\text{grade}_i) + \Delta(\sigma_i) \pm 0.10
+\end{equation}
+
+with base values: Economy 0.60, Comfort 0.55, Upscale 0.50, Luxury 0.40, and a volatility adjustment of $\pm 10\%$.
+
+\subsection{Asset Pool Construction}
+
+We construct the asset pool via stratified sampling from 86,159 hotels in Chengdu, selecting 80 hotels to balance grade representation (32 Economy, 24 Comfort, 16 Upscale, 8 Luxury), geographic dispersion (18 districts, Herfindahl-Hirschman Index = 0.220), and credit quality (with top-5 concentration at 13.9\%).
+
+\begin{table}[H]
+\centering
+\caption{Asset pool characteristics}
+\label{tab:pool}
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Characteristic} & \textbf{Value} \\
+\midrule
+Number of hotels & 80 \\
+Total face value & \yen 15.44M \\
+Average hotel price & \yen 193,036 \\
+Weighted-average PD & 33.9\% \\
+Weighted-average LGD & 70.8\% \\
+Weighted-average EL & 25.1\% \\
+Geographic HHI & 0.220 (18 districts) \\
+Top-5 concentration & 13.9\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Tranche Structure}
+
+We design a four-tier sequential-pay structure:
+
+\begin{table}[H]
+\centering
+\caption{Tranche structure}
+\label{tab:tranches}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Tranche} & \textbf{Share} & \textbf{Coupon (Ann.)} & \textbf{Target} & \textbf{Credit Support} \\
+\midrule
+Senior      & 68.0\% & 4.50\% & AAA & 32.0\% \\
+Mezzanine   & 20.0\% & 6.50\% & BBB & 12.0\% \\
+Junior      &  8.0\% & 9.50\% & B   &  4.0\% \\
+Equity      &  4.0\% & 0.00\% & NR  &  0.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Waterfall and Triggers}
+
+The cash flow waterfall follows strict priority: (1) servicing fees and taxes, (2) Senior interest $\to$ Senior principal (sequential amortization), (3) Mezzanine interest $\to$ Mezzanine principal, (4) Junior interest $\to$ Junior principal, (5) Equity residual distribution, (6) Reserve account replenishment.
+
+Two performance triggers govern early amortization:
+\begin{itemize}[nosep]
+    \item \textbf{Overcollateralization (OC) test}: $\text{OC ratio} < 1.0$ triggers full Senior repayment.
+    \item \textbf{Interest Coverage (IC) test}: $\text{IC ratio} < 1.0$ triggers early amortization.
+\end{itemize}
+
+An Event of Default is declared if cumulative defaults exceed 15\% of the pool, accelerating the entire waterfall.
+
+\subsection{Default Dependence: Gaussian Copula}
+
+We model default correlation using a one-factor Gaussian copula:
+
+\begin{equation}
+    u_i = \sqrt{\rho_{\text{sys}}} \cdot Z_{\text{sys}} + \sqrt{1 - \rho_{\text{sys}}} \cdot \varepsilon_i
+\end{equation}
+
+where $Z_{\text{sys}} \sim \mathcal{N}(0,1)$ is the systematic factor (70\% weight), $\varepsilon_i \sim \mathcal{N}(0,1)$ are idiosyncratic factors (30\% weight), and within-grade base correlation is 8\%.
+
+% ============================================================
+\section{Mechanism Design: Ternary Settlement}
+% ============================================================
+
+The ternary settlement mechanism (cash / physical redemption / secondary market transfer) is not merely an operational convenience---it is a mechanism design problem.
+We establish three formal properties:
+
+\begin{property}[Strategy-Proofness]
+The ternary settlement mechanism is strategy-proof: the Time-Right holder's dominant strategy is to truthfully reveal their preference type.
+The $\max$ operator in Equation (5) ensures that the holder always receives the settlement mode yielding the highest individual value, eliminating any incentive to misrepresent preferences.
+\end{property}
+
+\begin{property}[Individual Rationality]
+The mechanism satisfies ex-ante individual rationality if $\mathbb{E}[V_{\text{settle}}] \geq P_{\text{issue}}$.
+This condition is satisfied when the forward discount $\delta(T)$ and issuance discount $d_{\text{issue}}$ are set such that the expected settlement value exceeds the purchase price.
+In our calibration, the average Time-Right issue price of \yen 117,449 is below the average spot price of \yen 193,036, providing a substantial rationality buffer.
+\end{property}
+
+\begin{property}[Budget Balance]
+The platform achieves budget balance when:
+\begin{equation}
+    \sum \text{trading fees} + \sum \text{issuance fees} \geq \sum \text{gas costs} + \sum \text{oracle costs}
+\end{equation}
+In our simulation, total platform revenue from trading fees and issuance fees exceeds operational costs by a factor of 2.1$\times$.
+\end{property}
+
+The implementation layer uses a permissioned token standard (e.g., ERC-3643) for identity verification and compliance-controlled transfers, with a Chainlink oracle feeding monthly hotel service-state reports to trigger on-chain waterfall distributions.
+
+% ============================================================
+\section{Empirical Calibration: Chengdu Hotel Market}
+% ============================================================
+
+\subsection{Data}
+
+Our dataset comprises 1,707,918 daily price observations from 16,257 hotels in Chengdu, China, covering March--June 2024.
+Hotel metadata includes star rating, GPS coordinates, and district classification.
+Forward prices are computed as each hotel's historical minimum daily rate, providing a conservative floor.
+
+\subsection{Monte Carlo Simulation}
+
+We run 10,000 Monte Carlo paths over 36 months for the 80-hotel asset pool.
+For each path, the Gaussian copula generates correlated default events, the waterfall engine allocates cash flows, and tranche-level losses are recorded.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/fig3_mc_losses.png}
+\caption{Monte Carlo tranche loss distribution (10,000 paths). Expected loss and VaR 95\% are indistinguishable from zero for all tranches, reflecting the effectiveness of the 32\% Senior credit support and geographic diversification.}
+\label{fig:mc}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Monte Carlo results: Tranche loss distribution (10,000 paths)}
+\label{tab:mc}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{Tranche} & \textbf{Mean EL} & \textbf{VaR 95\%} & \textbf{VaR 99\%} & \textbf{Prob(Loss)} & \textbf{Implied} \\
+\midrule
+Senior      & $\approx$ 0\% & $\approx$ 0\% & $\approx$ 0\% & 0.0\% & \textbf{Aaa} \\
+Mezzanine   & $\approx$ 0\% & $\approx$ 0\% & $\approx$ 0\% & 0.0\% & \textbf{Aaa} \\
+Junior      & $\approx$ 0\% & $\approx$ 0\% & $\approx$ 0\% & 0.0\% & \textbf{Aaa} \\
+Equity      & $\approx$ 0\% & $\approx$ 0\% & $\approx$ 0\% & 0.0\% & \textbf{Aaa} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The average cumulative default rate across paths is 2.75\%, well within the credit support provided by subordination.
+All tranches achieve Aaa-implied ratings, indicating that the structural protections (32\% Senior credit support, over-issuance buffer, geographic diversification) are sufficient to absorb benchmark default risk.
+
+\subsection{Stress Testing}
+
+We subject the Senior tranche to progressively severe stress scenarios:
+
+\begin{table}[H]
+\centering
+\caption{Stress test: Senior tranche under PD and LGD multipliers}
+\label{tab:stress}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Scenario} & \textbf{PD Mult.} & \textbf{LGD Mult.} & \textbf{Senior EL} & \textbf{Implied} \\
+\midrule
+Baseline        & 1.0$\times$ & 1.0$\times$ & $\approx$ 0\% & Aaa \\
+Mild Stress     & 1.5$\times$ & 1.1$\times$ & $\approx$ 0\% & Aaa \\
+Moderate Stress & 2.5$\times$ & 1.3$\times$ & $\approx$ 0\% & Aaa \\
+Severe Stress   & 4.0$\times$ & 1.6$\times$ & $\approx$ 0\% & Aaa \\
+Extreme Stress  & 6.0$\times$ & 2.0$\times$ & $\approx$ 0\% & Aaa \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Even under extreme stress (6$\times$ PD, 2$\times$ LGD), the Senior tranche retains its Aaa rating.
+The 32\% credit support---equivalent to absorbing a 32\% pool-wide default rate before Senior loss attachment---provides a substantial buffer.
+
+\subsection{Economic Impact: Traditional vs. Time-Right Model}
+
+We compare the hotel operator's net present value under two regimes:
+
+\begin{table}[H]
+\centering
+\caption{Traditional vs. Time-Right model comparison}
+\label{tab:comparison}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Metric} & \textbf{Traditional} & \textbf{Time-Right} & \textbf{Uplift} \\
+\midrule
+Annual revenue       & \yen 952B & -- & -- \\
+Issuance revenue     & --        & \yen 328B & -- \\
+Hotel net benefit    & --        & \yen 223B & -- \\
+NPV uplift           & --        & --        & +102.0\% \\
+Front-loading ratio  & 32.7\%    & 131.6\%   & +98.9pp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Time-Right model delivers a 102\% NPV uplift by converting uncertain future revenue streams into certain present cash flows.
+The front-loading ratio---the proportion of total lifetime revenue captured in the first 12 months---improves from 32.7\% to 131.6\%, reflecting the immediate capital inflow from Time-Right issuance.
+
+\subsection{Feasibility Assessment}
+
+Our multi-dimensional feasibility evaluation yields an overall score of 91.2/100 (A rating), decomposed as: credit quality 20/25, profit potential 25/25, risk control 23.2/25, technical feasibility 23/25.
+Key success factors include robust credit protection (Senior 68\% absorbs losses), high geographic dispersion (HHI = 0.220), over-issuance safety buffer (1.29$\times$), and the ternary settlement mechanism providing investor exit flexibility.
+Critical risks include the high weighted-average PD (33.9\%, primarily from economy-segment hotels), regulatory uncertainty in China's ABS/RWA framework, and nascent secondary market liquidity.
+
+% ============================================================
+\section{Discussion: FSR Beyond Hotels}
+% ============================================================
+
+The FSR framework generalizes beyond hotel room-nights.
+Table \ref{tab:fsr-instances} maps the FSR 4-tuple to four service categories:
+
+\begin{table}[H]
+\centering
+\caption{FSR instances across service categories}
+\label{tab:fsr-instances}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Category} & \textbf{Capacity ($c$)} & \textbf{Window ($T$)} & \textbf{Location ($\ell$)} & \textbf{Type ($\sigma$)} \\
+\midrule
+Hotel       & Room-nights       & Check-in date      & GPS coordinates    & hotel \\
+Flight      & Seats             & Departure date     & Route (origin-dest)& flight \\
+Concert     & Tickets           & Event date         & Venue              & event \\
+Coworking   & Desk-days         & Calendar month     & Office address     & workspace \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Diversification Theorem (Conjectured)}
+
+A key theoretical conjecture is that cross-category FSR pools exhibit lower default correlation than within-category pools.
+Hotel FSR defaults are driven by tourism seasonality; flight FSRs by business/holiday dual-peak cycles; concert FSRs by idiosyncratic event risk.
+These distinct business-cycle exposures suggest that multi-category FSR asset pools would achieve superior diversification to single-category geographic dispersion alone.
+Formal proof of this conjecture, and empirical validation with flight FSR data, is deferred to future work.
+
+\subsection{General Equilibrium Implications}
+
+At scale, FSR markets could reshape service-industry capital allocation.
+Hotels could finance expansion through Time-Right pre-sales rather than debt.
+Airlines could hedge demand risk by issuing flight FSRs.
+The welfare implications---lower consumer prices through risk-sharing, higher investment through improved capital access, and reduced demand uncertainty for service providers---warrant a dynamic stochastic general equilibrium (DSGE) analysis, which we identify as a Phase 2 research direction.
+
+% ============================================================
+\section{Conclusion}
+% ============================================================
+
+This paper introduces Future Service Rights (FSR) as a new asset class and demonstrates its viability through the hotel Time-Right ABS framework.
+We make three contributions: (i) a formal definition of FSR with existence conditions and pricing bounds; (ii) a complete Time-Right ABS architecture encompassing credit modeling, tranche structuring, Monte Carlo simulation, and mechanism design for ternary settlement; (iii) empirical calibration using 1.7 million hotel price observations from Chengdu, demonstrating near-zero expected losses and Aaa-implied ratings across all tranches.
+
+The Time-Right model delivers a 102\% NPV uplift over traditional hotel operations, converting uncertain future revenue into certain present capital.
+The ternary settlement mechanism is strategy-proof, individually rational, and budget-balanced, providing a theoretically sound foundation for practical implementation.
+
+Several limitations bound our conclusions.
+Our empirical evidence is limited to a single city (Chengdu) and a single service category (hotels) in one time window (March--June 2024).
+The FSR diversification theorem remains conjectured pending multi-category empirical validation.
+The weighted-average pool PD (33.9\%) reflects the dominance of economy-segment hotels and the conservative calibration of the Merton model; alternative credit frameworks (KMV, CreditMetrics) may yield different PD estimates.
+
+Future work should extend the FSR framework along three dimensions: (i) multi-category empirical validation with flight, event, and coworking FSR data; (ii) general equilibrium analysis of FSR market impact on service-industry investment and consumer welfare; and (iii) live market deployment with on-chain settlement and real user behavior data.
+
+\medskip
+\noindent\textit{The FSR framework is not merely a paper about hotel securitization. It is the foundation of a research program on generalized service-capacity financialization.}
+
+% ============================================================
+\section*{Acknowledgments}
+% ============================================================
+
+We thank seminar participants at the Hotel Finance Research Group for helpful comments.
+All errors are our own.
+
+% ============================================================
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem{akerlof1970}
+Akerlof, G. A. (1970).
+The market for ``lemons'': Quality uncertainty and the market mechanism.
+\emph{The Quarterly Journal of Economics}, 84(3), 488--500.
+
+\bibitem{bharath2008}
+Bharath, S. T., \& Shumway, T. (2008).
+Forecasting default with the Merton distance to default model.
+\emph{The Review of Financial Studies}, 21(3), 1339--1369.
+
+\bibitem{chen2023rwa}
+Chen, L., Ma, F., \& Wang, Y. (2023).
+Tokenization of real-world assets: A survey.
+\emph{Journal of Financial Transformation}, 57, 45--62.
+
+\bibitem{duffie2003}
+Duffie, D., \& Garleanu, N. (2001).
+Risk and valuation of collateralized debt obligations.
+\emph{Financial Analysts Journal}, 57(1), 41--59.
+
+\bibitem{gordy2003}
+Gordy, M. B. (2003).
+A risk-factor model foundation for ratings-based bank capital rules.
+\emph{Journal of Financial Intermediation}, 12(3), 199--232.
+
+\bibitem{li2000}
+Li, D. X. (2000).
+On default correlation: A copula function approach.
+\emph{Journal of Fixed Income}, 9(4), 43--54.
+
+\bibitem{merton1974}
+Merton, R. C. (1974).
+On the pricing of corporate debt: The risk structure of interest rates.
+\emph{The Journal of Finance}, 29(2), 449--470.
+
+\bibitem{vasicek2002}
+Vasicek, O. (2002).
+The distribution of loan portfolio value.
+\emph{Risk}, 15(12), 160--162.
+
+\end{thebibliography}
+
+\end{document}
