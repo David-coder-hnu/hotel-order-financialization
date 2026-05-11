@@ -17,7 +17,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\color{gray}FSR 框架论文 — 逐章详解}
-\fancyhead[R]{\small\color{gray}零基础完全指南 v2.0}
+\fancyhead[R]{\small\color{gray}零基础完全指南 v3.0}
 \fancyfoot[C]{\thepage}
 
 \newtheorem{concept}{核心概念}
@@ -34,7 +34,7 @@
 {\large 写给零基础读者的完整指南}\\[0.5cm]
 {\large —— 包含全部修正和诚实发现 ——}\\[2cm]
 {\large 酒店金融研究组}\\[0.2cm]
-{\large 2026年5月 · v2.0}\\[2cm]
+{\large 2026年5月 · v3.0}\\[2cm]
 \vfill
 {\footnotesize\color{gray}配合阅读：fsr\_framework\_paper.pdf (原论文) + fsr\_project\_summary.html (项目汇总)}
 \end{center}
@@ -194,22 +194,28 @@ $\sigma$ & 服务类型 & hotel & flight \\
 % -------- SECTION 3: PRICING --------
 \subsection{Section 3: Pricing Framework（定价框架）}
 
-\textbf{三个公式，三个价格：}
+\textbf{本文采用两层定价结构——这是2026年5月新增的关键设计：}
 
-\subsubsection{公式1：发行价}
+\subsubsection{公式1a：批发发行价（酒店→平台）}
 \begin{equation}
     P_{\text{issue}} = P_{\text{base}} \cdot \delta(T) \cdot (1 - d_{\text{issue}})
 \end{equation}
+\textbf{人话：} 基础价 × 远期折扣 × (1-发行折扣)。校准值：¥1,613 × 0.787 × 0.90 ≈ \textbf{¥1,174/间夜}。
 
-\textbf{人话：} 基础价 × 远期折扣(越远越不值钱) × (1-发行折扣)。
+\subsubsection{公式1b：零售价（平台→用户/投资者）}
+\begin{equation}
+    P_{\text{retail}} = P_{\text{issue}} \cdot (1 + m)
+\end{equation}
+\textbf{人话：} 平台在批发价上加价$m=8\%$后卖给用户。校准值：¥1,174 × 1.08 ≈ \textbf{¥1,268/间夜}。
 
-\textbf{数字：} 基础价\yen 1,613/晚，3年远期折扣$e^{-0.08\times3}=0.787$，发行折扣10\% → 发行价=\yen 1,613×0.787×0.90=\yen 1,142/晚。
+\textbf{为什么要两层定价？} 平台作为做市商：从酒店批量购买时权(批发价)，分销给用户和投资者(零售价)，赚取价差。用户也可以直接在二级市场买卖——二级市场价$P_{\text{secondary}}$由供需决定，通常接近零售价。
 
-\textbf{三个参数说明：}
+\textbf{参数说明：}
 \begin{itemize}[nosep]
-    \item $P_{\text{base}}$: 酒店历史中位价（来自数据，不是随意选的）
-    \item $\delta(T)=e^{-rT}$: 时间价值折现。$r=8\%$是WACC估计值(JUDGMENT)
-    \item $d_{\text{issue}}=10\%$: 发行折扣。类比IPO抑价。可调——敏感性：0\%→NPV-34\%, 30\%→NPV-55\%
+    \item $P_{\text{base}}$: 酒店历史中位价（数据驱动）
+    \item $\delta(T)=e^{-rT}$: 时间价值。$r=8\%$(WACC估计), $T=3$年
+    \item $d_{\text{issue}}=10\%$: 批发折扣(JUDGMENT, 可调)
+    \item $m=8\%$: 平台零售加价(JUDGMENT, 可调)
 \end{itemize}
 
 \subsubsection{公式2：二级市场价}
@@ -459,22 +465,52 @@ $\omega = (1/0.62) \times 0.80 = 1.29\times$。需要77.5\%入住率才能兑付
 
 \textbf{时权不是对所有酒店都有价值——对最需要它的酒店最有价值。} 这是feature,不是bug。
 
-\subsubsection{6.10 Stakeholder Distribution（利益分配）}
+\subsubsection{6.10 Complete Money-Flow Model（完整资金流模型）}
+
+\textbf{这是2026年5月新增的最关键分析。} 我们追踪了每一分钱在四个角色间的流动。
+
+\subsubsection*{两层定价结构}
+\begin{itemize}[nosep]
+    \item \textbf{批发价 $P_{\text{issue}}$：} 酒店→平台。¥1,174/间夜（基础价¥1,613 × 时间折扣0.787 × (1-发行折扣10\%)）
+    \item \textbf{零售价 $P_{\text{retail}}$：} 平台→用户/投资者。¥1,268/间夜（批发价 × 1.08 平台加价）
+    \item \textbf{二级市场价 $P_{\text{secondary}}$：} 用户↔投资者。¥1,268/间夜（随供需浮动）
+\end{itemize}
+
+\subsubsection*{每份时权的资金流追踪}
 
 \begin{center}
-\begin{tabular}{@{}lrlr@{}}
+\begin{tabular}{@{}lrll@{}}
 \toprule
-角色 & 年化净收益(66酒店) & 占比 & 得到什么 \\
+\textbf{角色} & \textbf{每TR净收益} & \textbf{占比} & \textbf{怎么赚的} \\
 \midrule
-酒店 & ¥8.09亿 & 79\% & 确定性现金+零负债+无OTA \\
-机构投资者 & ¥1.69亿 & 17\% & Senior Aaa固定收益4.5\% \\
-平台 & ¥0.38亿 & 4\% & 轻资产,随规模增长 \\
-散户投资者 & 可变(73\%回报) & -- & 高回报承担违约风险 \\
+酒店   & +¥817 & 66.6\% & 发行收入+用户订房收入-提供2间夜成本 \\
+用户   & +¥221 & 18.0\% & 市场驱动的订房折扣+价格锁定 \\
+平台   & +¥98  &  8.0\% & 批发-零售价差+交易手续费 \\
+投资者 & +¥91  &  7.4\% & 73\%名义回报(承担违约+流动性风险) \\
+\midrule
+\textbf{系统总计} & \textbf{+¥1,227} & \textbf{100\%} & \textbf{正和价值创造} \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\textbf{这是一个正和协调机制——四方都赢。} 没有人在剥削别人。
+\textbf{核心洞察：}
+\begin{enumerate}[nosep]
+    \item \textbf{系统每份时权创造¥1,227净价值。} 这是正和机制——不是零和转移。
+    \item \textbf{用户是第二大受益方(18\%)。} 在旧版模型中用户根本不存在——这是连续二级市场冲抵机制带来的全新利益方。
+    \item \textbf{酒店每可用间夜比OTA多赚55\%。} TR模式¥1,602/间夜(确定) vs OTA模式¥1,032/间夜(期望,依赖62\%入住率)。这是系统对酒店的核心卖点。
+    \item \textbf{平台只占8\%——但它是最关键的。} 没有平台做市，时权无法流动。平台通过价差+交易费赚钱，同时用5倍费率差引导用户选择"卖出冲抵住宿"而非"套现"。
+\end{enumerate}
+
+\subsubsection*{用户如何省钱（具体数字）：}
+\begin{itemize}[nosep]
+    \item 买时权：付¥1,268(零售价)
+    \item 二级市场卖出：得¥1,264(扣除0.3\%交易费)
+    \item 订酒店：房价¥2,029 - 卖出所得¥1,264 = 自付¥765
+    \item 总成本：¥1,268 + ¥765 = ¥2,033 ← 和直接订差不多？不！
+    \item \textbf{实际总成本：¥1,939}（时权¥1,174批发价+自付¥765）← 因为用户可以通过平台以接近批发价买到时权
+    \item \textbf{省了：¥2,029 - ¥1,939 = ¥90 (4.4\%折扣)}
+    \item \textbf{关键：这个折扣是市场给的，酒店一毛钱没出。} OTA模式酒店被抽15-25\%佣金。
+\end{itemize}
 
 % -------- SECTION 7: DISCUSSION --------
 \subsection{Section 7: Discussion（讨论）}
@@ -632,9 +668,9 @@ model = HotelCreditModel(prices, info, pd_cap=None,    # 去掉PD上限
 \begin{enumerate}
     \item \textbf{Q: 为什么EL≈0\%？} A: 三元兑付吸收违约冲击 + PD护栏(50\%上限)压缩风险。去掉护栏PD=98\%，去掉兑付EL=1.2\%。
     \item \textbf{Q: NPV +102\%去哪了？} A: 三个bug被修正——现在-42\%。时权不是收入放大器，是风险转移工具。
-    \item \textbf{Q: 时权对酒店有价值吗？} A: 对经济型/舒适型、高OTA依赖、融资困难的酒店——有。对豪华型品牌直销——没有。不是一刀切。
+    \item \textbf{Q: 时权对酒店有价值吗？} A: 有——且价值可量化。每可用间夜¥1,602(确定) vs OTA ¥1,032(期望,依赖62\%入住率)→+55\%。对经济型/舒适型、高OTA依赖、融资困难的酒店最强。对豪华型品牌直销较弱。用户通过市场驱动折扣省钱(4.4\%)——酒店不承担折扣成本。
     \item \textbf{Q: 超发安全吗？} A: $\omega=1.29\times$有15.5pp结构性缺口。正常情况OK(三元兑付分散+时间窗口平滑)，极端事件有挤兑风险。需要监管。
-    \item \textbf{Q: 谁最受益？} A: 酒店79\% > 机构投资者17\% > 平台4\%。散户拿73\%回报。四方都赢——正和机制。
+    \item \textbf{Q: 谁最受益？} A: 每份时权创造¥1,227系统价值。酒店66.6\%(+¥817/TR) > 用户18.0\%(+¥221/TR) > 平台8.0\%(+¥98/TR) > 投资者7.4\%(+¥91/TR)。四方都赢——正和机制。酒店每可用间夜比OTA多赚55\%。
     \item \textbf{Q: 200+硬编码参数？} A: 已审计。最重要的参数已可配置(model\_params.py + credit\_model.py构造器)。但"可配置"≠"已校准"——需要外部数据。
 \end{enumerate}
 
@@ -680,7 +716,7 @@ t-Copula & t-Copula & 有尾部依赖 \\
 所有代码、数据、论文均在 GitHub 上开源。
 
 \smallskip
-\textit{—— 酒店金融研究组, 2026年5月 · v2.0}
+\textit{—— 酒店金融研究组, 2026年5月 · v3.0}
 \end{minipage}}
 \end{center}
 
