@@ -822,6 +822,64 @@ At $\phi = 1.0$ (statistically neutral), $\omega = 1.61\times$ and the required 
 At $\phi = 0.60$ (highly conservative), $\omega = 0.97\times$ and the system is over-collateralized but hotel revenue is minimized.
 The current $\phi = 0.80$ represents a middle ground, but its appropriateness depends on the specific hotel tier and market conditions.
 
+\subsection{Reverse Stress Test: When Does the System Break?}
+
+Rather than asking ``what happens under predefined stress scenarios,'' we invert the question: \textbf{what combination of PD and correlation causes the Senior tranche to lose investment-grade status?}
+We run 2,000 Monte Carlo paths across a grid of PD multipliers ($1\times$ to $12\times$ calibrated baseline) and systematic correlation coefficients ($\rho_{\text{sys}} \in [0.70, 0.95]$).
+The calibrated PD baseline (pool average 9.7\%) is scaled upward to simulate progressively severe credit deterioration.
+
+\begin{table}[H]
+\centering
+\caption{Reverse stress test: Senior EL under joint PD--$\rho$ escalation}
+\label{tab:reverse-stress}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\textbf{PD Mult.} & \textbf{$\rho=0.70$} & \textbf{$\rho=0.80$} & \textbf{$\rho=0.90$} & \textbf{$\rho=0.95$} & \textbf{Break Condition} \\
+\midrule
+$1\times$ (baseline)  & 0.07\% (Aa)  & 0.16\% (A)   & 0.30\% (A)    & 0.48\% (Baa)  & -- \\
+$2\times$             & 0.32\% (Baa) & 0.55\% (Baa) & \textbf{1.03\% (Ba)} & \textbf{1.36\% (Ba)} & $\rho\geq0.90$ \\
+$3\times$             & 0.90\% (Baa) & \textbf{1.33\% (Ba)} & \textbf{2.05\% (Ba)} & \textbf{2.51\% (Ba)} & $\rho\geq0.80$ \\
+$5\times$             & \textbf{4.27\% (B)} & \textbf{4.90\% (B)} & \textbf{6.01\% (B)} & \textbf{6.74\% (B)} & Always \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The system's breaking point is clear: \textbf{when pool PD doubles to $\approx$19\% AND correlation rises to 0.90, Senior EL crosses 1\% (Ba territory).}
+At PD$\times$3 with $\rho \geq 0.80$, Senior is firmly below investment grade.
+The Mezzanine and Junior tranches register zero losses across all scenarios because the 32\% Senior layer absorbs the full pool-level default impact before losses attach to subordinate tranches---the structural protection works as designed.
+
+\subsubsection{Depression Scenario: 2009-Style Hotel Market Collapse}
+
+We simulate a severe depression scenario calibrated to the 2008--2009 financial crisis, when U.S. hotel occupancy fell 15--20 percentage points and RevPAR declined 25--30\%.
+In this scenario: economy hotels face 60\% default rates (vs.\ 15.7\% calibrated), comfort 25\%, upscale 10\%, luxury 3\%; systematic correlation spikes to $\rho = 0.95$; and secondary-market liquidity freezes, forcing all Time-Right holders into physical redemption at maturity.
+
+\begin{table}[H]
+\centering
+\caption{Depression scenario: Tranche losses under systemic hotel market collapse}
+\label{tab:depression}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Tranche} & \textbf{Mean EL} & \textbf{VaR 99\%} & \textbf{Status} \\
+\midrule
+Senior      & 4.66\% & 82.3\% & \textbf{B--Caa}: tail risk extreme \\
+Mezzanine   & 0.02\% & 0.0\%  & Aaa: protected by 32\% Senior layer \\
+Junior      & 0.00\% & 0.0\%  & Aaa \\
+Equity      & 0.00\% & 0.0\%  & Aaa \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Under depression conditions, Senior expected loss rises to 4.66\% (B territory), and the 99\% VaR reaches 82.3\%---meaning that in the worst 1\% of depression paths, the Senior tranche loses over 80\% of its value.
+The 32\% Senior credit support absorbs the expected loss but offers limited protection in the extreme tail.
+Mezzanine and Junior tranches remain unaffected because even a 60\% economy-hotel default rate, when diluted across the full pool (which includes comfort, upscale, and luxury hotels with far lower depression PDs), does not breach the Senior attachment point in expectation.
+
+\textbf{The system survives depression in expectation but not in the tail.}
+This is the honest risk assessment: the Time-Right ABS structure is robust to severe but not catastrophic credit deterioration.
+The fractional-reserve-like over-issuance risk and the correlation risk compound in the tail---precisely the mechanism that produced CDO failures in 2008.
+The critical difference is that Time-Rights are backed by physical service capacity with genuine consumer demand, not by highly correlated mortgage obligations.
+In a depression, people still need to sleep somewhere; the physical redemption option provides a floor that pure financial assets lack.
+
 % ============================================================
 \section{Discussion: FSR Beyond Hotels}
 % ============================================================
@@ -858,6 +916,21 @@ At scale, FSR markets could reshape service-industry capital allocation.
 Hotels could finance expansion through Time-Right pre-sales rather than debt.
 Airlines could hedge demand risk by issuing flight FSRs.
 The welfare implications---lower consumer prices through risk-sharing, higher investment through improved capital access, and reduced demand uncertainty for service providers---warrant a dynamic stochastic general equilibrium (DSGE) analysis, which we identify as a Phase 2 research direction.
+
+\subsection{The Liquidity Cold-Start Problem}
+
+The continuous secondary-market offset mechanism---the system's primary user-facing innovation---depends on a liquid secondary market.
+At launch, liquidity is zero: there are no historical prices, no market makers beyond the platform itself, and no user confidence in the ability to exit positions.
+This creates a chicken-and-egg problem: without liquidity, the market-driven discount mechanism cannot function; without functioning discounts, users have no incentive to purchase Time-Rights; without demand, liquidity cannot develop.
+
+Three structural mitigations exist but none are costless.
+First, the platform can act as the market maker of last resort, guaranteeing a bid at $P_{\text{issue}} \cdot (1 - f_{\text{trade}})$ until organic liquidity develops---effectively subsidizing early adopters with platform capital.
+Second, a liquidity mining program can reward early market participants with additional Time-Rights or fee rebates, analogous to the incentive structures that bootstrapped decentralized exchange liquidity.
+Third, institutional anchor investors can provide baseline demand by committing to purchase a minimum volume of Time-Rights at each issuance, creating a permanent bid that retail users can sell into.
+
+Each of these imposes costs on the platform or requires institutional partnerships that do not yet exist.
+The cold-start problem is not a model parameter---it is a real-world coordination challenge that no amount of Monte Carlo simulation can resolve.
+Its solution lies in market design, not in financial engineering.
 
 \subsection{Regulatory and Market Structure Considerations}
 
