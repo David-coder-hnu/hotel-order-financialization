@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(office-hours)",
+      "WebSearch",
+      "Bash(python *)",
+      "Bash(start *)",
+      "Bash(git clone *)",
+      "Bash(bash AcademicForge/scripts/install.sh --tool claude)",
+      "Bash(~/.claude/skills/gstack/bin/gstack-review-log {\"skill\":\"plan-eng-review\",\"timestamp\":\"2026-05-11T23:45:00\",\"status\":\"clean\",\"unresolved\":0,\"critical_gaps\":0,\"issues_found\":8,\"mode\":\"FULL_REVIEW\",\"commit\":\"7f88211\"} *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(where pdflatex *)",
+      "Bash(where xelatex *)",
+      "Bash(where texstudio *)",
+      "Bash(winget install *)",
+      "Bash(pdflatex -interaction=nonstopmode fsr_framework_paper.tex)",
+      "Read(//c/Program Files/MiKTeX/miktex/bin/x64/**)",
+      "Read(//c/Users/weida/AppData/Local/Programs/MiKTeX/miktex/bin/x64/**)",
+      "Bash(\"C:\\\\Users\\\\weida\\\\AppData\\\\Local\\\\Programs\\\\MiKTeX\\\\miktex\\\\bin\\\\x64\\\\pdflatex.exe\" -interaction=nonstopmode fsr_framework_paper.tex)",
+      "Bash(mkdir -p figures)",
+      "Bash(cp paper_figures/fig1_price_convergence.png figures/)",
+      "Bash(cp paper_figures/fig3_mc_losses.png figures/)",
+      "Bash(cp paper_figures/fig4_stress_test.png figures/)",
+      "Bash(cp paper_figures/fig5_npv_comparison.png figures/)",
+      "Bash(git rm *)",
+      "Skill(plan-ceo-review)",
+      "Bash(rm -f output/error_log.txt output/npv_corrected.json output/npv_final.json output/debug_redemption.json output/debug_npv.json)",
+      "Bash(git commit *)"
+    ]
+  }
+}
