@@ -22,6 +22,7 @@ wheels/
 
 # Virtual Environment
 venv/
+tmp_venv/
 ENV/
 env/
 .venv
@@ -46,6 +47,19 @@ Thumbs.db
 
 # Logs
 *.log
+
+# LaTeX build artifacts
+*.aux
+*.out
+*.toc
+*.bbl
+*.blg
+
+# Runtime cache
+.mc_default_cache.pkl
+
+# AcademicForge (installed via .claude/skills/)
+AcademicForge/
 
 # Jupyter Notebook
 .ipynb_checkpoints
