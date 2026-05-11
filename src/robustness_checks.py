@@ -39,8 +39,8 @@ class KMVCreditModel:
         if returns is None or len(returns) < 20:
             return None, None
 
-        # 年化波动率
-        sigma_annual = np.std(returns) * np.sqrt(52)
+        # 年化波动率 (日度收益率 → 年化: sqrt(252))
+        sigma_annual = np.std(returns) * np.sqrt(252)
 
         # 等级调整 (KMV 使用行业分类调整)
         level_multiplier = {'经济': 1.25, '舒适': 1.05, '高档': 0.85, '豪华': 0.65}
@@ -104,11 +104,12 @@ class KMVCreditModel:
             if len(df) < min_records:
                 continue
 
-            weekly = df.set_index('date').resample('W')['price'].median()
-            returns = np.log(weekly / weekly.shift(1)).dropna()
+            # 使用日度对数收益率（保留更多数据点）
+            daily_returns = np.log(df['price'] / df['price'].shift(1)).dropna()
 
-            if len(returns) < 20:
+            if len(daily_returns) < 30:
                 continue
+            returns = daily_returns
 
             avg_price = df['price'].mean()
             info = info_map.get(code, {})
