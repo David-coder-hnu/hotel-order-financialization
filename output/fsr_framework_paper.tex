@@ -233,7 +233,7 @@ The physical redemption discount $\alpha$ gives the ternary mechanism its option
 \section{Credit Risk and Structuring}
 % ============================================================
 
-\subsection{Hotel Credit Model}
+\subsection{Hotel Credit Model}\footnote{As Section 6.7 demonstrates, the Merton model produces largely uninformative PD estimates for this asset class: 65 of 66 pool hotels hit the 50\% PD ceiling. We present it as a benchmark and transition to a data-calibrated model in Section 6.7. Readers primarily interested in credit risk results may wish to proceed directly there.}
 
 We estimate hotel-level default probabilities using a structural Merton (1974) distance-to-default framework adapted for service firms:
 
@@ -1068,6 +1068,7 @@ $\rho_{\text{sys}}$  & 0.70             & JUDGMENT  & Sensitivity: 0.50--0.95 (S
 \midrule
 \multicolumn{4}{@{}l}{\textit{Pricing \& Issuance}} \\
 Discount rate $r$    & 0.08             & JUDGMENT  & Sensitivity: 5--12\% (Section 6.6) \\
+Convergence $\lambda$& 0.80             & JUDGMENT  & Price decay speed; not yet sensitivity-tested \\
 $d_{\text{issue}}$   & 0.10             & JUDGMENT  & Sensitivity: 0--30\% \\
 Platform markup $m$  & 0.08             & JUDGMENT  & Sensitivity not yet tested \\
 $\alpha$ (physical)  & 0.70             & JUDGMENT  & $\alpha \geq \delta(T)(1-d)$ for IR \\
