@@ -368,101 +368,127 @@ class HotelTimeRightABSEngine:
     
     def _compute_comparison_analysis(self):
         """计算传统模式 vs 时权模式对比分析
-        
-        核心经济逻辑：
-        - 传统模式：酒店逐月经营，需承担变动成本、资金成本和经营风险
-        - 时权模式：酒店提前锁定收入，转移风险，创造平台+用户增量价值
-        
-        比较基准：项目综合价值（不仅是酒店收入）
+
+        方法：等时间维度 DCF 对比 (36个月, 时权每12个月滚动发行一次)。
+        消除所有硬编码成本/收益乘数。仅使用引擎可量化数据。
+
+        关键假设（显式声明）：
+        - 折现率 r = 8% (中国酒店行业 WACC 估算)
+        - 兑付成本来自引擎市场模拟，否则按发行收入35%估算
+        - 时权每12个月滚动发行一次以保证与传统模式时间维度可比
+        - 入住率风险、运营成本隐含在酒店现金流预测中(季节+增长调整)
+        - 不叠加任何额外"风险转移"或"资金节省"乘数
         """
         traditional = self._compute_traditional_mode()
-        
+
         total_issue_revenue = float(self.time_right_df['total_face_value'].sum())
         total_quantity = float(self.time_right_df['issue_quantity'].sum())
-        
-        # 使用时权市场模拟的兑付成本
+        n_months = 36
+
+        # 折现率（月度）
+        base_annual_rate = 0.08
+        r_monthly = base_annual_rate / 12
+
+        # ===== 传统模式 DCF =====
+        trad_monthly = np.array(traditional['monthly_cashflow'])
+        trad_npv = sum(trad_monthly[t] / ((1 + r_monthly) ** (t + 1)) for t in range(n_months))
+
+        # ===== 时权模式 DCF =====
+        # 兑付成本：优先使用市场模拟数据，否则使用保守估算
         if self.market_sim:
-            avg_cash_redemption = float(np.mean(np.sum(self.market_sim['cash_redemption'], axis=1)))
-            avg_physical_redemption = float(np.mean(np.sum(self.market_sim['physical_redemption'], axis=1)))
-            total_redemption_cost = avg_cash_redemption + avg_physical_redemption
+            monthly_cash_redemption = np.mean(self.market_sim['cash_redemption'], axis=0)
+            monthly_physical_redemption = np.mean(self.market_sim['physical_redemption'], axis=0)
+            monthly_redemption = monthly_cash_redemption + monthly_physical_redemption
+        else:
+            # 回退：假设兑付成本均匀分布在36个月
+            total_redemption = total_issue_revenue * 0.35
+            monthly_redemption = np.ones(n_months) * total_redemption / n_months
+
+        # 时权现金流: 发行收入 - 逐月兑付成本
+        # 每12个月滚动发行一次, 保证时间维度与传统模式可比
+        tr_cashflows = np.zeros(n_months)
+        issue_cycles = 3  # 36个月 / 12个月 = 3个发行周期
+        for cycle in range(issue_cycles):
+            issue_month = cycle * 12
+            tr_cashflows[issue_month] += total_issue_revenue / issue_cycles
+        for t in range(n_months):
+            tr_cashflows[t] -= monthly_redemption[t]
+
+        tr_npv = sum(tr_cashflows[t] / ((1 + r_monthly) ** (t + 1)) for t in range(n_months))
+
+        # 归一化: 比较每酒店年均价值, 消除规模差异
+        n_hotels = len(self.pool_df)
+        trad_npv_per_hotel_per_year = trad_npv / n_hotels / 3  # 3年
+        tr_npv_per_hotel_per_year = tr_npv / n_hotels / 3
+
+        # ===== 归一化 NPV 提升 (per-hotel per-year) =====
+        npv_uplift = tr_npv_per_hotel_per_year - trad_npv_per_hotel_per_year
+        npv_uplift_pct = (npv_uplift / trad_npv_per_hotel_per_year * 100) if trad_npv_per_hotel_per_year > 0 else 0
+
+        # ===== 敏感性分析：折现率 ∈ [5%, 12%] =====
+        sensitivity = {}
+        for r_test in [0.05, 0.06, 0.07, 0.08, 0.09, 0.10, 0.11, 0.12]:
+            rm = r_test / 12
+            tnpv = sum(trad_monthly[t] / ((1 + rm) ** (t + 1)) for t in range(n_months))
+            trnpv = sum(tr_cashflows[t] / ((1 + rm) ** (t + 1)) for t in range(n_months))
+            up = (trnpv - tnpv) / tnpv * 100 if tnpv > 0 else 0
+            sensitivity[f'discount_rate_{r_test:.0%}'] = {
+                'traditional_npv': float(tnpv),
+                'time_right_npv': float(trnpv),
+                'uplift_pct': float(up),
+            }
+
+        # ===== 现金流前置化指标 =====
+        trad_first12 = sum(trad_monthly[:12])
+        trad_total = sum(trad_monthly)
+        trad_frontloading = (trad_first12 / trad_total * 100) if trad_total > 0 else 0
+
+        tr_first12 = tr_cashflows[0]  # 发行收入集中在第1期
+        tr_total = sum(np.maximum(tr_cashflows, 0))  # 只算正现金流
+        frontloading_ratio = (tr_first12 / tr_total * 100) if tr_total > 0 else 0
+
+        # ===== 时权模式分项拆解（仅使用引擎数据） =====
+        if self.market_sim:
+            total_cash_redemption = float(np.mean(np.sum(self.market_sim['cash_redemption'], axis=1)))
+            total_physical_redemption = float(np.mean(np.sum(self.market_sim['physical_redemption'], axis=1)))
+            total_redemption_cost = total_cash_redemption + total_physical_redemption
+            # 平台收入来自交易手续费+销售收入
+            total_trading_fee = float(np.mean(np.sum(self.market_sim['trading_fee_income'], axis=1)))
+            total_sales_revenue = float(np.mean(np.sum(self.market_sim['platform_sales_revenue'], axis=1)))
+            platform_revenue = total_trading_fee + total_sales_revenue
         else:
             total_redemption_cost = total_issue_revenue * 0.35
-        
-        # ===== 传统模式调整价值 =====
-        # 传统经营需承担：变动成本(~40%)、资金成本(~15%)、风险成本(~10%)
-        operating_cost_rate = 0.52      # 客房清洁、能耗、人工等变动成本
-        financing_cost_rate = 0.20      # 营运资金融资成本
-        risk_cost_rate = 0.10           # 入住率波动导致的收入不确定性
-        trad_adjusted_value = traditional['npv'] * (1 - operating_cost_rate - financing_cost_rate - risk_cost_rate)
-        
-        # ===== 时权模式综合价值 =====
-        # 1. 酒店净收益：发行收入 - 兑付成本
+            platform_revenue = 0
+
         hotel_net = total_issue_revenue - total_redemption_cost
-        
-        # 2. 资金成本节省：提前获得大量现金，无需融资
-        working_capital_boost = total_issue_revenue * 0.30
-        financing_saving = working_capital_boost * 0.08 * 3  # 3年利息节省
-        
-        # 3. 风险转移价值：入住率风险由投资者承担
-        risk_transfer_value = total_issue_revenue * 0.12
-        
-        # 4. 平台收益
-        plat = self.tripartite_benefits.get('platform', {}) if self.tripartite_benefits else {}
-        platform_value = plat.get('platform_net_profit', total_issue_revenue * 0.015)
-        
-        # 5. 用户收益外部性（部分转化为生态价值）
-        user = self.tripartite_benefits.get('user', {}) if self.tripartite_benefits else {}
-        user_external_value = user.get('total_user_benefit', total_issue_revenue * 0.025) * 0.25
-        
-        time_right_total_value = hotel_net + financing_saving + risk_transfer_value + platform_value + user_external_value
-        
-        # ===== NPV提升 =====
-        npv_uplift = time_right_total_value - trad_adjusted_value
-        npv_uplift_pct = (npv_uplift / trad_adjusted_value * 100) if trad_adjusted_value > 0 else 0
-        
-        # ===== 现金流前置化指标 =====
-        n_months = 36
-        time_right_monthly = [-total_redemption_cost / n_months] * n_months
-        time_right_monthly[0] += total_issue_revenue
-        
-        tr_first12 = sum(time_right_monthly[:12])
-        tr_total = sum(time_right_monthly)
-        frontloading_ratio = (tr_first12 / tr_total * 100) if tr_total > 0 else 0
-        
-        trad_first12 = sum(traditional['monthly_cashflow'][:12])
-        trad_total = sum(traditional['monthly_cashflow'])
-        trad_frontloading = (trad_first12 / trad_total * 100) if trad_total > 0 else 0
-        
+
         return {
+            'methodology': 'DCF comparison, data-driven, no arbitrary multipliers',
+            'discount_rate_annual': base_annual_rate,
+            'discount_rate_sensitivity': f'See sensitivity field for r ∈ [5%, 12%]',
             'traditional_mode': {
                 **traditional,
-                'adjusted_value': float(trad_adjusted_value),
-                'operating_cost_rate': operating_cost_rate,
-                'financing_cost_rate': financing_cost_rate,
-                'risk_cost_rate': risk_cost_rate,
+                'npv': float(trad_npv),
             },
             'time_right_mode': {
                 'issue_revenue': float(total_issue_revenue),
                 'redemption_cost': float(total_redemption_cost),
                 'hotel_net_benefit': float(hotel_net),
-                'financing_saving': float(financing_saving),
-                'risk_transfer_value': float(risk_transfer_value),
-                'platform_value': float(platform_value),
-                'user_external_value': float(user_external_value),
-                'total_value': float(time_right_total_value),
-                'monthly_cashflow': [float(x) for x in time_right_monthly],
-                'npv': float(time_right_total_value),
-                'irr': 0.22,
+                'platform_revenue': float(platform_revenue),
+                'monthly_cashflow': [float(x) for x in tr_cashflows],
+                'npv': float(tr_npv),
             },
             'npv_uplift': {
                 'absolute': float(npv_uplift),
-                'percentage': float(npv_uplift_pct),
+                'percentage': round(float(npv_uplift_pct), 1),
+                'note': 'Uplift driven primarily by cash-flow front-loading: issuance revenue arrives at t=0 while traditional revenue is spread over 36 months. This is a genuine time-value-of-money effect, not a value-creation claim.',
             },
             'cashflow_frontloading': {
-                'time_right_first12_ratio': float(frontloading_ratio),
-                'traditional_first12_ratio': float(trad_frontloading),
-                'improvement': float(frontloading_ratio - trad_frontloading),
+                'time_right_first12_ratio': round(float(frontloading_ratio), 1),
+                'traditional_first12_ratio': round(float(trad_frontloading), 1),
+                'improvement_pp': round(float(frontloading_ratio - trad_frontloading), 1),
             },
+            'sensitivity': sensitivity,
         }
     
     def _compute_tripartite_benefits(self):
