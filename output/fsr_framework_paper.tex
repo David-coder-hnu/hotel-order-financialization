@@ -84,7 +84,6 @@ Copula sensitivity analysis confirms that the Gaussian copula understates tail d
 A discounted cash-flow analysis reveals that Time-Right issuance generates lower absolute NPV than traditional hotel operations ($-42\%$ at baseline parameters), reflecting the forward discount that investors demand for bearing occupancy risk---Time-Rights are a risk-transfer and cash-flow-front-loading instrument, not a revenue-growth instrument.
 We further model the hotel as an active secondary-market participant (adding $\approx$3.7\% of annual issue revenue through buybacks and hot-market issuance) and analyze the over-issuance mechanism's fractional-reserve-like tail risk ($\omega = 1.29\times$; required occupancy 77.5\% vs.\ expected 62\%).
 
-A stakeholder analysis reveals a positive-sum coordination mechanism.
 A complete money-flow analysis reveals a positive-sum coordination mechanism creating \yen 1,227 of net value per Time-Right.
 Hotels capture 67\% of system benefits (\yen 817/TR) through guaranteed, front-loaded revenue that eliminates OTA commissions and occupancy risk.
 Per available room-night, the Time-Right model delivers 55\% more revenue than OTA distribution (\yen 1,602 vs.\ \yen 1,032).
@@ -195,7 +194,6 @@ Time-Rights flow through a two-tier market structure. Hotels sell Time-Rights to
 
 where $P_{\text{base}}$ is the hotel's historical median daily rate, $\delta(T) = e^{-rT}$ is the time-value discount factor ($r = 0.08$, $T = 3$ years, $\delta \approx 0.787$), $d_{\text{issue}} = 0.10$ is the wholesale issuance discount, and $m$ is the platform's retail markup.
 In our calibration, $P_{\text{base}} \approx \yen 1,613$, $P_{\text{issue}} \approx \yen 1,174$, and $P_{\text{retail}} \approx \yen 1,268$ (markup $m = 0.08$).
-\end{enumerate}
 
 The over-issuance multiple $\omega$ determines the total Time-Right quantity:
 \begin{equation}
@@ -390,7 +388,7 @@ The IR condition $\mathbb{E}[V_{\text{settle}}] \geq P_{\text{issue}}$ is satisf
     \alpha \cdot P_{\text{base}} \geq P_{\text{base}} \cdot \delta(T) \cdot (1 - d_{\text{issue}}) \quad\Longleftrightarrow\quad \alpha \geq \delta(T) \cdot (1 - d_{\text{issue}})
 \end{equation}
 With $\alpha \in [0.7, 0.85]$, $\delta(T) \leq 1$, and $d_{\text{issue}} \leq 0.15$, we have $\delta(T) \cdot (1 - d_{\text{issue}}) \leq 0.85 \leq \alpha$ for sufficiently large $\alpha$.
-In our calibration, $\mathbb{E}[P_{\text{spot}}] = \yen 193,036$ and $P_{\text{issue}} = \yen 117,449$, satisfying IR with a substantial buffer of $\yen 75,587$ (64\% of issue price).
+In our calibration, $\mathbb{E}[P_{\text{spot}}] = \yen 2,029$ and $P_{\text{issue}} = \yen 1,174$, satisfying IR with a buffer of $\yen 855$ (73\% of issue price). (Note: raw data in \textit{fen}; converted to yuan here.)
 \end{proof}
 \end{property}
 
@@ -622,7 +620,7 @@ $t=0$ covers Years 1--3, $t=12$ adds Year 4, and $t=24$ adds Year 5.
 Traditional operations collect exactly 3 years of revenue over the same period, month by month.
 
 This ``5-in-3'' effect is partially offset by the forward discount embedded in Time-Right pricing.
-The average Time-Right issue price ($\approx$ \yen 300 per room-night) is substantially below the average spot price ($\approx$ \yen 2,000 per room-night), reflecting the time value of money and the risk premium demanded by investors.
+The wholesale Time-Right issue price ($P_{\text{issue}} \approx \yen 1,174$ per room-night) reflects a $\approx$42\% discount from the average spot price ($P_{\text{spot}} \approx \yen 2,029$), compensating investors for the time value of money and occupancy risk.
 The net result is that Time-Right issuance generates lower absolute NPV than traditional operations ($-42\%$ at baseline parameters; see Table \ref{tab:comparison}), but the cash received is \textbf{certain and immediate}---the hotel pays a discount for eliminating occupancy risk and gaining upfront liquidity.
 
 \begin{table}[H]
@@ -862,10 +860,11 @@ A structural model of this equilibrium is a natural next step.
 % ============================================================
 
 This paper introduces Future Service Rights (FSR) as a new asset class and demonstrates its viability through the hotel Time-Right ABS framework.
-We make three contributions: (i) a formal definition of FSR with existence conditions and pricing bounds; (ii) a complete Time-Right ABS architecture encompassing credit modeling, tranche structuring, Monte Carlo simulation, and mechanism design for ternary settlement; (iii) empirical calibration using 1.7 million hotel price observations from Chengdu, demonstrating near-zero expected losses and Aaa-implied ratings across all tranches.
+We make four contributions: (i) a formal definition of FSR with existence conditions and pricing bounds; (ii) a complete Time-Right ABS architecture encompassing credit modeling, tranche structuring, Monte Carlo simulation, mechanism design, and the continuous secondary-market offset mechanism; (iii) empirical calibration using 1.7 million hotel price observations from Chengdu; and (iv) a complete money-flow stakeholder analysis demonstrating \yen 1,227 of net value creation per Time-Right and a 55\% hotel revenue advantage per available room-night over OTA distribution.
 
-The Time-Right model improves hotel cash-flow profiles through front-loading and risk transfer, converting uncertain future revenue into certain present capital without the need for debt financing.
-The ternary settlement mechanism is strategy-proof, individually rational, and budget-balanced, providing a theoretically sound foundation for practical implementation.
+The Time-Right model delivers a 55\% revenue increase per available room-night over OTA distribution (\yen 1,602 vs.\ \yen 1,032), because Time-Right revenue is guaranteed occupancy-independent while OTA revenue depends on realized occupancy.
+The continuous secondary-market offset mechanism transforms Time-Rights into a market-driven voucher system, where user discounts are funded by secondary-market liquidity rather than hotel margin compression.
+The ternary settlement mechanism is strategy-proof, individually rational, and budget-balanced.
 
 Several important limitations bound our conclusions.
 First, our empirical evidence is limited to a single city (Chengdu) and a single service category (hotels) in one time window (March--June 2024).
