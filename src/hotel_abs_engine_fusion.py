@@ -535,6 +535,114 @@ class HotelTimeRightABSEngine:
             'issue_discount_sensitivity_note': 'Run engine with engine.issue_discount = X before run_full_analysis() to test different values. Suggested range: 0.0 (no discount) to 0.30 (30% discount).',
             'hotel_secondary_participation': self._compute_hotel_secondary(tr_cashflows, annual_issue, FEN_TO_YUAN),
             'over_issuance_analysis': self._analyze_over_issuance(),
+            'user_secondary_settlement': self._compute_user_secondary_settlement(total_issue_revenue, FEN_TO_YUAN),
+        }
+
+    def _compute_user_secondary_settlement(self, total_issue_revenue, FEN_TO_YUAN):
+        """
+        用户二级市场对冲机制 (Tripartite Settlement Enhancement)
+
+        核心机制:
+        - 用户购买时权后, 可在任意时间在二级市场挂出卖单
+        - 卖出收益直接用于冲抵近期的酒店订单消费
+        - 效果: 类似"市场驱动的代金券"——优惠由市场供需决定, 非酒店固定折扣
+
+        与传统三元兑付的区别:
+        - 传统: 只能到期时选择(现金/实物/转让), 优惠是酒店给的固定7折
+        - 增强: 随时可卖, 收益直接抵住宿费, 优惠是市场给的(浮动)
+
+        平台激励机制:
+        - 二级市场交易费: 0.3% (低)
+        - 现金兑付手续费: 更高 (涉及法币通道/银行)
+        - → 平台鼓励用户在二级市场卖出冲抵消费, 而非直接套现
+
+        四方共赢:
+        - 用户: 随时变现, 优惠由市场决定(可能>固定7折)
+        - 酒店: 不承担折扣成本, 获得入住客流
+        - 平台: 交易费收入增加, 用户粘性增强
+        - 投资者: 二级市场买方增加, 流动性提升
+        """
+        # 模型参数
+        avg_spot_price = 2029  # 均价(元)
+        avg_issue_price = 1174  # 时权均价(元)
+        trading_fee_rate = 0.003  # 二级市场交易费 0.3%
+        cash_out_fee_rate = 0.015  # 现金兑付手续费 1.5% (更高)
+        market_premium_mean = 0.08  # 二级市场平均溢价(相对发行价)
+        market_premium_std = 0.15   # 溢价波动率
+
+        # 场景1: 用户持有到期 → 实物兑付(70% of spot)
+        physical_benefit_per_tr = avg_spot_price * 0.70 - avg_issue_price  # 节省金额
+        physical_discount_pct = (1 - avg_issue_price / (avg_spot_price * 0.70)) * 100
+        # 实际: ¥2,029 × 0.70 = ¥1,420 → 省了 ¥1,420 - ¥1,174 = ¥246
+
+        # 场景2: 用户在二级市场卖出 → 收益冲抵住宿费
+        # 假设: 二级市场价 = 发行价 × (1 + 溢价)
+        secondary_price = avg_issue_price * (1 + market_premium_mean)
+        sale_proceeds = secondary_price * (1 - trading_fee_rate)  # 扣除交易费
+        # 用户用这笔钱去订酒店: 节省 = sale_proceeds (直接抵扣住宿支出)
+        secondary_benefit_per_tr = sale_proceeds  # 可直接用于住宿消费的金额
+        effective_discount_vs_spot = (1 - (avg_issue_price / avg_spot_price)) * 100
+
+        # 场景3: 用户套现(不推荐——手续费更高)
+        cash_out_proceeds = avg_issue_price * (1 - cash_out_fee_rate)  # 扣除套现费
+
+        # 平台收入对比
+        platform_secondary_fee = avg_issue_price * trading_fee_rate
+        platform_cash_out_fee = avg_issue_price * cash_out_fee_rate
+
+        # 用户选择概率(基于理性经济决策)
+        # 当二级市场溢价高时 → 更多用户选择卖出冲抵
+        prob_sell_for_hotel = 0.45   # 45% 卖出冲抵住宿
+        prob_hold_physical = 0.35    # 35% 持有到期实物入住
+        prob_cash_out = 0.20         # 20% 套现
+
+        # 加权平均用户收益
+        avg_user_benefit = (
+            prob_sell_for_hotel * secondary_benefit_per_tr +
+            prob_hold_physical * physical_benefit_per_tr +
+            prob_cash_out * cash_out_proceeds
+        )
+
+        # 平台加权平均收入
+        avg_platform_revenue_per_tr = (
+            prob_sell_for_hotel * platform_secondary_fee +
+            prob_cash_out * platform_cash_out_fee
+        )
+
+        # 年化: 假设用户平均持有6个月后交易
+        total_tr_annual = total_issue_revenue / avg_issue_price  # 年发行量(份)
+        annual_user_benefit = avg_user_benefit * total_tr_annual * 0.5  # 50% 在年内交易
+
+        return {
+            'mechanism': 'Users can sell Time-Rights on secondary market at any time; proceeds offset hotel bookings directly — like market-driven vouchers',
+            'key_insight': 'Discount is market-driven (supply/demand), NOT hotel-funded. This decouples investment return from hotel stay.',
+            'per_time_right': {
+                'issue_price': avg_issue_price,
+                'spot_price': avg_spot_price,
+                'physical_redemption_value': round(avg_spot_price * 0.70, 0),
+                'secondary_market_price_avg': round(secondary_price, 0),
+                'sale_proceeds_after_fee': round(sale_proceeds, 0),
+                'cash_out_proceeds': round(cash_out_proceeds, 0),
+                'effective_user_discount_vs_spot_pct': round(effective_discount_vs_spot, 1),
+            },
+            'platform_incentive': {
+                'secondary_trading_fee_rate': f'{trading_fee_rate*100:.1f}%',
+                'cash_out_fee_rate': f'{cash_out_fee_rate*100:.1f}%',
+                'fee_differential': f'{cash_out_fee_rate/trading_fee_rate:.0f}x higher for cash-out',
+                'platform_preference': 'Encourage secondary market sales over cash-out — lower fee, higher volume, user retention',
+            },
+            'user_behavior_probabilities': {
+                'sell_for_hotel_booking': prob_sell_for_hotel,
+                'hold_to_physical': prob_hold_physical,
+                'cash_out': prob_cash_out,
+            },
+            'weighted_avg_user_benefit_per_tr': round(avg_user_benefit, 0),
+            'annual_user_benefit_estimate': round(annual_user_benefit, 0),
+            'comparison_with_ota': {
+                'ota_commission': '15-25% (paid by hotel)',
+                'time_right_user_discount': f'{effective_discount_vs_spot:.0f}% (market-driven, hotel pays NOTHING)',
+                'advantage': 'Hotel keeps full spot price; discount funded by market liquidity premium, not hotel margin',
+            },
         }
 
     def _compute_hotel_secondary(self, tr_cashflows, annual_issue, FEN_TO_YUAN):
