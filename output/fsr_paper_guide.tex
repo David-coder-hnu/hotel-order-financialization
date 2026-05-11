@@ -1,0 +1,639 @@
+\documentclass[12pt,a4paper]{ctexart}
+
+% === Packages ===
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\geometry{margin=2.2cm}
+\graphicspath{{./figures/}}
+
+\newtheorem{concept}{核心概念}
+\newtheorem{analogy}{类比理解}
+
+\definecolor{navy}{RGB}{11,30,61}
+\definecolor{blue}{RGB}{26,82,118}
+\definecolor{lightblue}{RGB}{46,134,193}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{gray}FSR 框架论文详解}
+\fancyhead[R]{\small\color{gray}零基础入门指南}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+\begin{titlepage}
+\vspace*{3cm}
+\begin{center}
+{\Huge\bfseries 未来服务权益 (FSR) 框架论文}\\[0.5cm]
+{\Large\bfseries 零基础完全详解}\\[2cm]
+
+{\large 写给大一学弟的入门指南}\\[1cm]
+{\large —— 从"什么是酒店"到"什么是时权ABS"——}\\[2cm]
+
+{\large 酒店金融研究组}\\[0.3cm]
+{\large 2026年5月}\\[3cm]
+
+\vfill
+{\footnotesize\color{gray}配合阅读：output/fsr\_framework\_paper.tex (原论文) + output/fsr\_project\_summary.html (项目汇总)}
+\end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{阅读指南：这本书怎么用}
+% ============================================================
+
+\textbf{如果你是大一新生，完全没有金融背景：}
+从头读到尾。每一章都从最基础的概念讲起。遇到数学公式不要怕——旁边都有"人话翻译"。
+
+\textbf{如果你已经学过一点金融/编程：}
+可以直接跳到第4章（论文核心）和第7章（代码实战）。
+
+\textbf{如果你想参与代码开发：}
+重点读第7章（代码结构）和第8章（贡献指南）。
+
+\smallskip
+\noindent\fbox{\begin{minipage}{0.92\textwidth}
+\textbf{本书的核心承诺：}\\
+看完这本书，你不仅能理解论文在说什么，还能自己跑代码、改参数、做分析。
+\end{minipage}}
+
+\newpage
+
+% ============================================================
+\section{场景引入：一个酒店老板的烦恼}
+% ============================================================
+
+\subsection{张三的酒店}
+
+假设你叫张三，在成都开了一家有50间房的酒店。
+
+\begin{itemize}[nosep]
+    \item 每间房每晚卖 \yen 300
+    \item 一年 365 天，理想情况下年收入 = $50 \times 365 \times 300 = 547.5$ 万
+    \item 但现实中，入住率只有 65\%，实际收入约 356 万
+\end{itemize}
+
+张三的烦恼：
+\begin{enumerate}[nosep]
+    \item \textbf{钱什么时候来？} 客人入住才有钱，淡季（冬天）现金流紧张
+    \item \textbf{明年能不能赚钱？} 不确定——旅游市场波动、竞争对手降价、疫情封控
+    \item \textbf{想扩大经营怎么办？} 银行不贷款给小型酒店，或者贷款利率太高
+\end{enumerate}
+
+\begin{analogy}
+\textbf{张三的酒店就像一块"未来收入的冰块"——它确实有价值，但在太阳底下（不确定性中）一直在融化。如果能把这冰块提前卖了换现金，既能锁定价值，又能投资扩张。}
+\end{analogy}
+
+\subsection{传统解决方案的问题}
+
+\begin{itemize}[nosep]
+    \item \textbf{OTA 平台（携程、美团）：} 抽成 15-25\%，而且只解决"找到客人"，不解决"现金流"
+    \item \textbf{银行贷款：} 需要有抵押物（房产），而且审批慢
+    \item \textbf{预售（提前卖房券）：} 最接近我们的想法！但现有预售是一次性的、不可交易的、不可分层的
+\end{itemize}
+
+\subsection{本文的方案：把"未来房间"变成"金融产品"}
+
+想象一下：
+
+\begin{center}
+\fbox{\begin{minipage}{0.85\textwidth}
+\textbf{张三把明年 6 月 15 日的 50 间房，变成 50 份"时权 Token"，每份代表"6月15日入住张三家酒店一晚的权利"。
+
+这些 Token 可以：}
+\begin{itemize}[nosep]
+    \item 提前卖给投资者，张三现在拿到现金
+    \item 在二级市场自由买卖（像股票一样）
+    \item 到期时持有者可以：住酒店 / 换现金 / 转卖给下一个人
+\end{itemize}
+
+\textbf{张三提前锁定了收入，投资者获得了酒店市场敞口，消费者保留灵活选择权。}
+\end{minipage}}
+\end{center}
+
+这就是\textbf{时权 (Time-Right)}的核心思想。本文将这个概念推广为\textbf{未来服务权益 (FSR)}的通用理论框架。
+
+\newpage
+
+% ============================================================
+\section{知识准备：你需要懂的五个基本概念}
+% ============================================================
+
+\subsection{什么是"资产"？}
+
+\begin{concept}
+\textbf{资产} = 能给你带来未来经济利益的东西。\\
+你的手机是资产（可以卖掉换钱），你的技能是资产（可以工作赚钱），\\
+"明年6月15日住一晚张三家酒店的权利"也是一个资产。
+\end{concept}
+
+\subsection{什么是"证券化(ABS)"？}
+
+\begin{concept}
+\textbf{资产证券化} = 把一堆未来能产生现金流的资产打包，切成不同风险等级的"片"，卖给不同风险偏好的投资者。\\
+就像把一头猪分解成：里脊肉(最贵)、五花肉(中等)、猪蹄(便宜)、猪下水(最便宜)。不同部位卖给不同的人。
+\end{concept}
+
+\begin{analogy}
+\textbf{班级午餐券的例子}
+\begin{itemize}[nosep]
+    \item 全班 50 个同学每人承诺"明天我给你带一份午餐"
+    \item 但这 50 个承诺里，有的人靠谱(90\%会带)，有的人不太靠谱(50\%会带)
+    \item 把 50 个承诺打包，切成 3 层：
+    \begin{itemize}[nosep]
+        \item \textbf{Senior (高级层)：} "谁带不带午餐我先不管，反正卖掉午餐券的钱优先还我" → 最安全，利息最低
+        \item \textbf{Mezzanine (中级层)：} "Senior 拿完了到我" → 中等安全，利息中等
+        \item \textbf{Junior (初级层)：} "最后才到我，但如果午餐都带了，我赚最多" → 风险最大，利息最高
+    \end{itemize}
+    \item 这 3 层的风险-收益平衡各不相同 = \textbf{分层结构 (Tranching)}
+\end{itemize}
+\end{analogy}
+
+\subsection{什么是"信用风险"？}
+
+\begin{concept}
+\textbf{信用风险} = 对方不履行承诺的可能性。\\
+酒店可能关门 → 时权到期无法入住 → 违约。\\
+我们需要一个模型来估算"每家酒店违约的概率有多大"。
+\end{concept}
+
+\subsection{什么是"蒙特卡洛模拟"？}
+
+\begin{concept}
+\textbf{蒙特卡洛模拟} = 用计算机生成成千上万种"可能发生的未来"，看每种情况下结果是什么，最后统计分布。\\
+不是预测一个未来，而是看所有可能的未来，评估最坏的情况有多坏。
+\end{concept}
+
+\begin{analogy}
+\textbf{天气预报 vs 蒙特卡洛}
+\begin{itemize}[nosep]
+    \item 天气预报："明天下雨概率 30\%"（一次预测）
+    \item 蒙特卡洛："我模拟了 10,000 个明天的天气，其中 3,000 个明天下雨，最坏的 100 个明天里风速 120km/h → 你的屋顶能承受吗？"
+\end{itemize}
+\end{analogy}
+
+\subsection{什么是"Copula"（相关性模型）？}
+
+\begin{concept}
+\textbf{Copula} = 描述"多个事件同时发生的概率"的数学工具。\\
+"酒店A违约"和"酒店B违约"不是独立的——如果成都地震了，两家酒店可能同时违约。\\
+Copula 就是用来建模这种"一起出事"的概率。
+\end{concept}
+
+\begin{analogy}
+\textbf{多米诺骨牌}
+\begin{itemize}[nosep]
+    \item \textbf{Gaussian Copula：} 假设骨牌之间距离较远，一张倒了不太容易带倒旁边的 → 低估连锁反应
+    \item \textbf{t-Copula：} 假设骨牌距离更近，一张倒了更大可能带倒旁边的 → 更好地模拟极端情况
+    \item 2008 年金融危机的一个关键教训：用 Gaussian Copula 导致 CDO 评级过高
+\end{itemize}
+\end{analogy}
+
+\newpage
+
+% ============================================================
+\section{论文核心：FSR 框架全解}
+% ============================================================
+
+\subsection{核心创新：什么是"未来服务权益(FSR)"？}
+
+\begin{concept}
+\textbf{FSR = 一个数学公式描述的、全新的资产类别}
+
+\[
+S = (c, T, \ell, \sigma)
+\]
+
+\begin{itemize}[nosep]
+    \item $c$ (capacity) = 容量 —— 多少间房？多少个座位？
+    \item $T$ (time) = 时间窗口 —— 什么时候可以用？
+    \item $\ell$ (location) = 地点 —— 在哪里？
+    \item $\sigma$ (service\ type) = 服务类型 —— 酒店？机票？演唱会？
+\end{itemize}
+\end{concept}
+
+\textbf{FSR 和 RWA（现实资产代币化）的区别：}
+\begin{itemize}[nosep]
+    \item RWA：把"已经存在的东西"搬上区块链（国债、房产证、发票）
+    \item FSR：把"还没发生但将来会发生的东西"变成资产（未来的酒店房间、未来的机票座位）
+    \item \textbf{RWA 是搬运工，FSR 是创造者}
+\end{itemize}
+
+\subsection{FSR 的三层架构}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/fig6_fsr_framework.png}
+\caption{FSR 框架全景：定义 → 定价+机制设计 → 实证校准}
+\end{figure}
+
+\textbf{第一层：定义层}
+—— FSR 是什么。用数学语言精确描述一个新资产类别。
+
+\textbf{第二层：定价与机制层}
+—— FSR 怎么交易。一级发行价怎么定？二级市场价怎么变？到期怎么结算？
+
+\textbf{第三层：实证层}
+—— FSR 是否真的可行。用成都 16,257 家酒店、1,707,918 条真实价格数据验证。
+
+\subsection{时权(Time-Right)定价的三个价格}
+
+任何金融产品最核心的问题就是："值多少钱？"时权有三个关键价格：
+
+\begin{enumerate}[nosep]
+    \item \textbf{发行价 (Issue Price)：}
+    \[
+    P_{\text{issue}} = P_{\text{base}} \times \delta(T) \times (1 - d_{\text{issue}})
+    \]
+    \textbf{人话：} 基础价 × 远期折扣(越远期越不值钱) × (1-发行折扣)
+
+    \item \textbf{二级市场价 (Secondary Price)：}
+    \[
+    P_t = P_{\text{spot}} + (P_{\text{issue}} - P_{\text{spot}}) \times e^{-\lambda(T-t)}
+    \]
+    \textbf{人话：} 越接近使用日期，价格越接近真实的酒店当天价格。像倒计时一样收敛。
+
+    \item \textbf{兑付价值 (Settlement Value)：}
+    \[
+    V_{\text{settle}} = \max\{ \text{现金}, \alpha \times \text{酒店价}, \text{二手价} \}
+    \]
+    \textbf{人话：} 到期时，持有者自动拿到"最合算的那个选项"。
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig1_price_convergence.png}
+\caption{时权价格随到期日逼近而收敛到即期酒店价格}
+\end{figure}
+
+\subsection{三元兑付：时权最巧妙的设计}
+
+到期时，时权持有者有三个选择，系统自动给最优的那个：
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{选项} & \textbf{怎么做} & \textbf{适合谁} \\
+\midrule
+现金兑付 & 拿回约定金额的钱 & 不打算住酒店的人 \\
+实物兑付 & 7折入住酒店 & 计划出行的人 \\
+二级市场转让 & 把时权卖给下一个人 & 想要流动性的投资者 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{为什么三元兑付是"机制设计"问题？}
+
+\textbf{策略防护 (Strategy-Proofness)：} 你诚实说出你想要什么，系统自动给你最优的那个——不存在"说谎能拿到更多"的可能性。因为系统用的是 max\{ 现金, 7折房价, 二手价 \}。
+
+\textbf{个体理性 (Individual Rationality)：} 买时权一定比直接订酒店划算——因为发行价(平均 \yen 117,449)远低于酒店即期价格(平均 \yen 193,036)。
+
+\textbf{预算平衡 (Budget Balance)：} 平台的交易手续费和发行费足够覆盖运营成本——不是烧钱模式。
+
+\subsection{信用风险模型的四个步骤}
+
+\begin{enumerate}[nosep]
+    \item \textbf{计算价格波动率：} 看每家酒店过去的价格波动有多大（用 GARCH 模型）
+    \item \textbf{计算违约距离 (Distance-to-Default)：}
+    \[
+    DD = \frac{\ln(V/D) + (\mu - \sigma^2/2)T}{\sigma\sqrt{T}}
+    \]
+    \textbf{人话：} 酒店当前的"财务健康度"距离"经营困难"有多远。\\
+    波动越大的酒店，违约距离越小。
+    \item \textbf{映射到违约概率 (PD)：}
+    \[
+    PD = \min(\Phi(-DD) \times 2.5,\ 0.50)
+    \]
+    PD 范围在 0.1\% 到 50\% 之间。
+    \item \textbf{计算违约损失率 (LGD)：} 违约后投资者能拿回多少。高档酒店 LGD = 40\%(能拿回60\%)，经济酒店 LGD = 60\%(只能拿回40\%)。
+\end{enumerate}
+
+\subsection{分层结构：ABCD 四个等级}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/fig2_tranche_structure.png}
+\caption{四层结构：Senior 68\% | Mezzanine 20\% | Junior 8\% | Equity 4\%}
+\end{figure}
+
+\textbf{为什么 Senior 最安全？} 因为池子里的损失先由 Junior 和 Equity 吸收。只有当损失超过池子 32\% 时，Senior 才开始亏钱。
+
+\textbf{实际数据：} 在我们的成都酒店池子里，蒙特卡洛模拟的平均累计违约率只有 2.75\%——也就是说 Senior 的保护垫（32\%）是实际损失的 11 倍。
+
+\subsection{蒙特卡洛模拟：如果未来重来一万次}
+
+流程：
+\begin{enumerate}[nosep]
+    \item 用 Copula 模型生成 80 家酒店"违约或不违约"的随机场景
+    \item 对每种场景，按瀑布规则分配现金流
+    \item 统计每层到底亏了多少
+    \item 重复 10,000 次
+    \item 得到损失分布 → 预期损失(EL)、最坏5\%情况(VaR 95\%)、最坏1\%情况(VaR 99\%)
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig3_mc_losses.png}
+\caption{蒙特卡洛结果：四层分层的 EL 和 VaR 95\% 都接近零}
+\end{figure}
+
+\subsection{稳健性检验：我们的结果可信吗？}
+
+我们做了三件事来验证结果是否可靠：
+
+\textbf{1. 换成 t-Copula（考虑极端事件同时发生）}
+\begin{itemize}[nosep]
+    \item Gaussian Copula 说 Senior 在 99\% 最坏情况下亏 24.5\%
+    \item t-Copula 说 50.4\% —— 是 Gaussian 的两倍！
+    \item \textbf{结论：} Gaussian 确实低估了极端风险，但即使按 t-Copula 算，Senior 的信用支持也够用
+\end{itemize}
+
+\textbf{2. 调整系统风险因子（rho 从 0.5 到 0.9）}
+\begin{itemize}[nosep]
+    \item rho=0.5 (低相关性): Senior EL = 0.23\%
+    \item rho=0.9 (高相关性): Senior EL = 2.75\%
+    \item \textbf{结论：} 在最坏假设下仍在投资级范围内
+\end{itemize}
+
+\textbf{3. Bootstrap 统计检验（2000次重采样）}
+\[
+\text{Senior EL} = 1.20\%, \quad \text{CI}_{95} = [0.93\%, 1.50\%]
+\]
+\textbf{结论：} Senior 的损失不是偶然的零，而是统计上显著的 1.2\%——但在全引擎（含三元兑付）中因机制设计被吸收了。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{figures/fig4_robustness.png}
+\caption{稳健性检验：(左) $\rho$ 敏感性 (右) Gaussian vs t-Copula 尾部风险}
+\end{figure}
+
+\subsection{经济效果：时权 vs 传统}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{figures/fig5_npv_comparison.png}
+\caption{时权模式的NPV是传统模式的2倍}
+\end{figure}
+
+\textbf{为什么提升这么显著？}
+因为时权把未来分散在各个月份的收入"提前兑现"了。传统酒店每个月收一点钱，时权模式把未来收入折现到今天。
+
+\newpage
+
+% ============================================================
+\section{数据：我们用的成都酒店数据从哪来}
+% ============================================================
+
+\begin{table}[H]
+\centering
+\caption{数据集概况}
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{数据} & \textbf{数量} \\
+\midrule
+酒店信息库 & 86,159 家 \\
+有价格记录的酒店 & 16,257 家 \\
+日价格记录 & 1,707,918 条 \\
+时间范围 & 2024年3月--6月 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{资产池怎么建的？}
+
+不是随便挑 80 家，而是\textbf{分层抽样}：
+\begin{itemize}[nosep]
+    \item 经济型：32 家 (40\%) —— 代表市场主流
+    \item 舒适型：24 家 (30\%) —— 中等档次
+    \item 高档型：16 家 (20\%) —— 品质住宿
+    \item 豪华型：8 家 (10\%) —— 高端市场
+\end{itemize}
+
+同时确保覆盖 18 个成都区县，避免"所有酒店都在春熙路"。
+
+\newpage
+
+% ============================================================
+\section{论文阅读指南：怎么读懂英文原论文}
+% ============================================================
+
+\subsection{论文结构一览}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{章节} & \textbf{标题} & \textbf{一句话总结} \\
+\midrule
+1 & Introduction & 我们在做什么，为什么重要 \\
+2 & FSR: Definition & 严格定义"未来服务权益"这个新资产 \\
+3 & Pricing Framework & 时权怎么定价（三个公式） \\
+4 & Credit \& Structuring & 酒店违约风险怎么算，四层怎么分 \\
+5 & Mechanism Design & 三元兑付的数学证明（策略防护等） \\
+6 & Empirical Calibration & 用成都数据跑模型，看结果 \\
+7 & Discussion & 除了酒店，机票演唱会也能用 \\
+8 & Conclusion & 总结+限制+未来工作 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{关键公式速查}
+
+\begin{enumerate}[nosep]
+    \item \textbf{FSR 定义：} $S = (c, T, \ell, \sigma)$
+    \item \textbf{发行价：} $P_{\text{issue}} = P_{\text{base}} \cdot \delta(T) \cdot (1 - d_{\text{issue}})$
+    \item \textbf{价格收敛：} $P_t = P_{\text{spot}} + (P_{\text{issue}} - P_{\text{spot}}) \cdot e^{-\lambda(T-t)}$
+    \item \textbf{兑付价值：} $V_{\text{settle}} = \max\{\, V_{\text{cash}},\; \alpha \cdot P_{\text{spot}},\; P_{\text{secondary}}\, \}$
+    \item \textbf{Merton违约距离：} $DD_i = \frac{\ln(V_i / D_i) + (\mu - \sigma_i^2/2)T}{\sigma_i \sqrt{T}}$
+    \item \textbf{违约概率：} $PD_i = \min(\Phi(-DD_i) \times 2.5, 0.50)$
+    \item \textbf{Copula 相关：} $u_i = \sqrt{\rho_{\text{sys}}} \cdot Z_{\text{sys}} + \sqrt{1 - \rho_{\text{sys}}} \cdot \varepsilon_i$
+\end{enumerate}
+
+\newpage
+
+% ============================================================
+\section{代码实战：从0到1跑通引擎}
+% ============================================================
+
+\subsection{项目代码结构}
+
+\begin{verbatim}
+src/
+├── config.py                     # 路径配置（不要改）
+├── clean_and_generate_prices.py  # 数据清洗
+├── credit_model.py               # 信用评分模型（Merton DD + GARCH）
+├── asset_pool.py                 # 资产池构建（分层抽样）
+├── time_right_pool.py            # 时权发行参数计算
+├── tranche_structure.py          # ABS 分层结构设计
+├── waterfall_engine.py           # 现金流瀑布引擎
+├── monte_carlo_simulator.py      # 蒙特卡洛模拟器（并行版）
+├── hotel_abs_engine_fusion.py    # 主引擎（串联所有模块）
+├── report_generator_v6_fusion.py # HTML 报告生成器
+├── robustness_checks.py          # 稳健性检验（KMV + t-Copula）
+└── extract_metrics.py            # 数据提取工具
+\end{verbatim}
+
+\subsection{踩坑预警：作为新手最容易犯的错}
+
+\begin{enumerate}[nosep]
+    \item \textbf{千万不要在代码里硬编码路径！} 已经用 \texttt{config.py} 统一管理
+    \item \textbf{蒙特卡洛第一次跑很慢} —— 因为有 GARCH 拟合+违约矩阵生成。后续有 checkpoint 缓存
+    \item \textbf{如果你看到 NaN} —— 说明某家酒店价格数据有问题，代码已加了 NaN 检测会自动跳过
+    \item \textbf{并行化配置} —— \texttt{monte\_carlo\_simulator.py} 用了 \texttt{joblib}，\texttt{n\_jobs=-1} 会用全部CPU核心
+\end{enumerate}
+
+\subsection{论文结果复现指南}
+
+\begin{table}[H]
+\centering
+\caption{关键参数速查表}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{参数} & \textbf{论文中使用的值} \\
+\midrule
+资产池酒店数 & 80 \\
+蒙特卡洛路径数 & 10,000 (全引擎) / 1,000-2,000 (稳健性) \\
+模拟月数 & 36 \\
+分层比例 & Senior 68\% / Mezz 20\% / Jr 8\% / Eq 4\% \\
+系统因子权重 ($\rho_{sys}$) & 0.7 \\
+GARCH 参数 & $\omega$=0.00001, $\alpha$=0.10, $\beta$=0.85 \\
+Merton 违约边界 & 平均房价的 55\% \\
+物理兑付折扣 ($\alpha$) & 70--85\% \\
+发行折扣 ($d_{issue}$) & ≤ 15\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ============================================================
+\section{贡献指南：你可以从哪里开始}
+% ============================================================
+
+\subsection{Level 1：看懂 → 跑通 (0基础, 1-2天)}
+
+\begin{enumerate}[nosep]
+    \item 确保安装了 Python 3.8+、pip
+    \item 安装依赖：\texttt{pip install pandas numpy scipy matplotlib tqdm joblib}
+    \item 跑主引擎：\texttt{python src/hotel\_abs\_engine\_fusion.py}
+    \item 打开 \texttt{output/fsr\_project\_summary.html} 看结果
+    \item 打开 \texttt{output/fsr\_framework\_paper.pdf} 对照论文
+\end{enumerate}
+
+\subsection{Level 2：理解 → 修改 (有一点编程基础, 3-5天)}
+
+\begin{enumerate}[nosep]
+    \item \textbf{改参数：} 在 \texttt{hotel\_abs\_engine\_fusion.py} 的 \texttt{run\_full\_analysis()} 里改 \texttt{pool\_size} 和 \texttt{n\_paths}
+    \item \textbf{改违约模型：} 在 \texttt{credit\_model.py} 里改 \texttt{liability\_ratio}（当前 0.55），看结果怎么变
+    \item \textbf{改分层比例：} 在 \texttt{tranche\_structure.py} 里改各层占比
+    \item \textbf{看稳健性：} 跑 \texttt{robustness\_checks.py} 里的 Copula 对比
+\end{enumerate}
+
+\subsection{Level 3：贡献 → 扩展 (有编程+金融基础, 1-2周)}
+
+\begin{enumerate}[nosep]
+    \item \textbf{加 KMV 模型：} \texttt{robustness\_checks.py} 里已有框架，修数据匹配 bug
+    \item \textbf{加机票 FSR：} 找公开机票数据，按论文 Section 7 的映射表校准
+    \item \textbf{加交互仪表盘：} 用 plotly/D3.js 做参数敏感性拖拽面板
+    \item \textbf{改 Copula：} 在 \texttt{monte\_carlo\_simulator.py} 里加 Clayton Copula
+\end{enumerate}
+
+\subsection{需要学什么（按优先级排序）}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Python 基础：} numpy, pandas, matplotlib —— 必须先会
+    \item \textbf{金融数学：} 概率分布(正态/t分布)、期望值、分位数(VaR)
+    \item \textbf{固定收益：} ABS/MBS/CDO 基础概念、分层、瀑布
+    \item \textbf{信用风险：} Merton 模型、GARCH、Copula
+    \item \textbf{区块链：} ERC-3643、智能合约(进阶)
+\end{enumerate}
+
+\newpage
+
+% ============================================================
+\section{常见问题 FAQ}
+% ============================================================
+
+\begin{enumerate}
+    \item \textbf{Q: 为什么所有分层的预期损失都是零？这不科学吧？}
+
+    A: 因为完整引擎里有三元兑付机制——现金/实物/二级市场转让的 max 操作吸收了违约冲击。在简化模型（不含三元兑付）里，Senior EL 是 1.2\%。这个 \textbf{1.2\% vs ≈0\% 的差距本身就体现了三元兑付的经济价值}。
+
+    \item \textbf{Q: 加权平均 PD 33.9\% 很高啊，为什么分层还这么安全？}
+
+    A: 因为 PD 是\textbf{个体度量}（每家酒店单独看），而分层安全靠的是\textbf{多样化+优先级}。80 家酒店不太可能同时违约，32\% 的信用支持吸收了不到 3\% 的实际违约率。
+
+    \item \textbf{Q: 这个模型真的能用在现实世界吗？}
+
+    A: 目前是\textbf{研究框架}。最大的现实障碍：中国尚未有明确的 RWA/ABS 代币化监管框架；酒店违约数据没有公开的校准基准；二级市场流动性需要冷启动。论文的可行性评分 91.2/100 是针对理论层面，不是实操层面。
+
+    \item \textbf{Q: 论文里为什么有时说 80 家酒店有时说 66 家？}
+
+    A: 80 家是原来的 V6-Fusion 引擎跑的结果。66 家是稳健性检验用的简化 Copula 模型——因为池子构建是分层抽样的，每次跑略有不同。
+
+    \item \textbf{Q: 我想加个新的 FSR 品类（比如高铁票），从哪里开始？}
+
+    A: 按论文 Table 7 的映射 $(c, T, \ell, \sigma)$ 定义好参数 → 找到公开价格数据 → 参照 \texttt{robustness\_checks.py} 的 \texttt{CopulaSensitivityAnalyzer} 结构写校准代码。
+\end{enumerate}
+
+\newpage
+
+\section{附录：术语中英对照表}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{中文} & \textbf{English} & \textbf{一句话解释} \\
+\midrule
+未来服务权益 & Future Service Right (FSR) & 本文定义的新资产类别 \\
+时权 & Time-Right & FSR 的 Token 化形式 \\
+资产证券化 & Asset-Backed Securities (ABS) & 把资产打包分层卖 \\
+违约概率 & Probability of Default (PD) & 酒店违约的可能性 \\
+违约损失率 & Loss Given Default (LGD) & 违约后损失多少 \\
+预期损失 & Expected Loss (EL) & PD × LGD \\
+距离违约 & Distance-to-Default (DD) & Merton模型的健康度指标 \\
+分层 & Tranche & ABS 的风险等级切片 \\
+瀑布 & Waterfall & 现金流的优先级分配 \\
+超额担保 & Overcollateralization (OC) & 资产池 > 证券面值的安全垫 \\
+利息覆盖 & Interest Coverage (IC) & 收入能否覆盖应付利息 \\
+高斯 Copula & Gaussian Copula & 标准相关性模型（无尾部依赖） \\
+t-Copula & t-Copula & 有尾部依赖的相关性模型 \\
+尾部风险 & Tail Risk & 极端事件的风险 \\
+在险价值 & Value-at-Risk (VaR) & 最坏 X\% 情况下的损失 \\
+三元兑付 & Ternary Settlement & 现金/实物/转让三选一 \\
+策略防护 & Strategy-Proofness & 诚实是最优策略 \\
+个体理性 & Individual Rationality & 参与比不参与好 \\
+预算平衡 & Budget Balance & 收入 ≥ 成本 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{1cm}
+\begin{center}
+\fbox{\begin{minipage}{0.85\textwidth}
+\centering
+{\large\textbf{祝学习愉快！}}
+
+\smallskip
+有问题提 Issue，有想法就写代码。\\
+这篇论文是一个研究纲领的起点，不是终点。
+
+\smallskip
+\textit{—— 酒店金融研究组, 2026年5月}
+\end{minipage}}
+\end{center}
+
+\end{document}
