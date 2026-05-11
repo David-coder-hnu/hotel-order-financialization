@@ -1,0 +1,80 @@
+{
+  "Calibrated (survival data)": {
+    "Senior": {
+      "mean_el": 0.16,
+      "var95": 0.0,
+      "var99": 3.98,
+      "prob_loss": 3.4
+    },
+    "Mezzanine": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    },
+    "Junior": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    },
+    "Equity": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    }
+  },
+  "KMV (9.8% avg)": {
+    "Senior": {
+      "mean_el": 0.09,
+      "var95": 0.0,
+      "var99": 1.98,
+      "prob_loss": 1.9
+    },
+    "Mezzanine": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    },
+    "Junior": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    },
+    "Equity": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    }
+  },
+  "Merton capped (49.4% avg)": {
+    "Senior": {
+      "mean_el": 1.61,
+      "var95": 9.11,
+      "var99": 37.12,
+      "prob_loss": 18.5
+    },
+    "Mezzanine": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    },
+    "Junior": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    },
+    "Equity": {
+      "mean_el": 0.0,
+      "var95": 0.0,
+      "var99": 0.0,
+      "prob_loss": 0.0
+    }
+  }
+}
