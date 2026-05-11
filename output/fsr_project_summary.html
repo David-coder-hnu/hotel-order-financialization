@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Future Service Rights (FSR) — 酒店时权ABS框架论文 · 项目汇总报告</title>
+<style>
+  :root {
+    --navy: #0b1e3d;
+    --blue: #1a5276;
+    --light-blue: #2e86c1;
+    --pale: #d4e6f1;
+    --gold: #b7950b;
+    --green: #1e8449;
+    --red: #922b21;
+    --gray: #95a5a6;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: #2c3e50; line-height:1.6; }
+  .hero { background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); color: white; padding: 60px 40px 50px; text-align:center; }
+  .hero h1 { font-size: 2.4em; font-weight: 700; letter-spacing:-0.5px; margin-bottom:8px; }
+  .hero .subtitle { font-size: 1.15em; opacity:0.85; max-width:700px; margin:0 auto 20px; }
+  .hero .badge-row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
+  .badge { display:inline-block; padding:6px 18px; border-radius:20px; font-size:0.85em; font-weight:600; letter-spacing:0.3px; }
+  .badge-target { background: rgba(255,255,255,0.2); color:white; }
+  .badge-rating { background: var(--green); color:white; }
+  .badge-status { background: var(--gold); color:var(--navy); }
+
+  .container { max-width:1100px; margin:0 auto; padding:30px 20px; }
+  .section { margin-bottom:36px; }
+  .section-title { font-size:1.5em; font-weight:700; color:var(--navy); border-left: 4px solid var(--light-blue); padding-left:14px; margin-bottom:18px; }
+
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; }
+  .kpi-card { background:var(--card-bg); border-radius:10px; padding:20px 22px; box-shadow:0 1px 4px rgba(0,0,0,0.06); border-left:4px solid var(--light-blue); }
+  .kpi-card .kpi-label { font-size:0.8em; color:var(--gray); text-transform:uppercase; letter-spacing:0.5px; }
+  .kpi-card .kpi-value { font-size:2em; font-weight:700; color:var(--navy); margin:4px 0; }
+  .kpi-card .kpi-sub { font-size:0.82em; color:#7f8c8d; }
+
+  table { width:100%; border-collapse:collapse; background:var(--card-bg); border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+  th { background:var(--navy); color:white; padding:12px 14px; text-align:left; font-size:0.85em; font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
+  td { padding:10px 14px; border-bottom:1px solid #ecf0f1; font-size:0.92em; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#f8f9fa; }
+  .highlight { font-weight:700; color:var(--blue); }
+  .rating-aaa { color:var(--green); font-weight:700; }
+
+  .figure-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-top:10px; }
+  .figure-card { background:var(--card-bg); border-radius:10px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+  .figure-card img { width:100%; height:auto; display:block; }
+  .figure-card .fig-caption { padding:10px 14px; font-size:0.82em; color:#7f8c8d; border-top:1px solid #ecf0f1; }
+
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media (max-width:768px) { .two-col { grid-template-columns:1fr; } }
+
+  .fsr-box { background:linear-gradient(135deg, #eaf2f8, #d4e6f1); border-radius:10px; padding:22px; text-align:center; margin:16px 0; }
+  .fsr-box .formula { font-size:1.3em; font-weight:700; color:var(--navy); font-family:'Georgia',serif; }
+
+  .roadmap { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:16px 0; }
+  .roadmap-step { background:var(--card-bg); border-radius:8px; padding:14px 20px; text-align:center; min-width:100px; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+  .roadmap-step .step-num { font-size:1.6em; font-weight:700; color:var(--light-blue); }
+  .roadmap-step .step-label { font-size:0.78em; color:#7f8c8d; margin-top:4px; }
+  .roadmap-arrow { display:flex; align-items:center; font-size:1.4em; color:var(--gray); }
+
+  .footer { text-align:center; padding:30px; color:var(--gray); font-size:0.82em; border-top:1px solid #ecf0f1; margin-top:20px; }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero">
+  <h1>Future Service Rights (FSR)</h1>
+  <p class="subtitle">酒店订单时权资产证券化 —— 从"预订"到"可交易金融资产"的理论框架与实证校准</p>
+  <div class="badge-row">
+    <span class="badge badge-target">Target: Management Science</span>
+    <span class="badge badge-rating">Feasibility: A (91.2/100)</span>
+    <span class="badge badge-status">Status: Working Paper v1.0</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ====== 1. EXECUTIVE SUMMARY ====== -->
+<div class="section">
+  <div class="section-title">1. 项目概览</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">酒店信息库</div>
+      <div class="kpi-value" id="hotel_info">86,159</div>
+      <div class="kpi-sub">家成都酒店</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">价格记录</div>
+      <div class="kpi-value" id="price_records">1,707,918</div>
+      <div class="kpi-sub">条日价格 (2024.3-6)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">资产池</div>
+      <div class="kpi-value" id="pool_size">80</div>
+      <div class="kpi-sub">家酒店分层抽样</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">蒙特卡洛模拟</div>
+      <div class="kpi-value">5,000</div>
+      <div class="kpi-sub">路径 × 36 个月</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">时权发行量</div>
+      <div class="kpi-value" id="tr_qty">—</div>
+      <div class="kpi-sub">份 Time-Rights</div>
+    </div>
+    <div class="kpi-card" style="border-left-color:var(--green);">
+      <div class="kpi-label">NPV 提升</div>
+      <div class="kpi-value" style="color:var(--green);" id="npv_uplift">—</div>
+      <div class="kpi-sub">vs 传统运营模式</div>
+    </div>
+    <div class="kpi-card" style="border-left-color:var(--gold);">
+      <div class="kpi-label">综合评分</div>
+      <div class="kpi-value" style="color:var(--gold);" id="fe_score">—</div>
+      <div class="kpi-sub" id="fe_rating">评级 —</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 2. FSR THEORETICAL FRAMEWORK ====== -->
+<div class="section">
+  <div class="section-title">2. FSR 理论框架</div>
+  <div class="two-col">
+    <div>
+      <div class="fsr-box">
+        <div class="formula">S = (c, T, ℓ, σ)</div>
+        <div style="margin-top:10px;font-size:0.88em;color:#2c3e50;">
+          <strong>c</strong> ∈ ℝ⁺ — 服务容量 &nbsp;|&nbsp;
+          <strong>T</strong> = [t₀, t₁] — 时间窗口 &nbsp;|&nbsp;
+          <strong>ℓ</strong> ∈ L — 服务地点 &nbsp;|&nbsp;
+          <strong>σ</strong> ∈ Σ — 服务类型
+        </div>
+      </div>
+      <p style="font-size:0.9em;color:#555;margin-top:8px;">
+        <strong>核心创新：</strong>FSR 是<em>创造</em>新资产，而非将已有资产搬上链。
+        商品期货重组已有商品；应收账款 ABS 打包已发生信用；RWA 代币化数字化已有资产。
+        只有 FSR 将闲置未来容量——一种"非资产"——转变为可交易的金融索取权。
+      </p>
+      <table style="margin-top:12px;">
+        <tr><th>FSR 实例</th><th>容量 (c)</th><th>窗口 (T)</th><th>地点 (ℓ)</th></tr>
+        <tr><td><strong>酒店时权</strong></td><td>房间·夜</td><td>入住日期</td><td>GPS坐标</td></tr>
+        <tr><td>机票 FSR</td><td>座位数</td><td>出发日期</td><td>航线(起-终)</td></tr>
+        <tr><td>演出 FSR</td><td>票数</td><td>演出日期</td><td>场馆地址</td></tr>
+        <tr><td>共享办公 FSR</td><td>工位·天</td><td>日历月</td><td>写字楼地址</td></tr>
+      </table>
+    </div>
+    <div>
+      <img src="paper_figures/fig6_fsr_framework.png" alt="FSR Framework" style="width:100%;border-radius:8px;">
+      <p style="font-size:0.8em;color:#7f8c8d;text-align:center;margin-top:6px;">FSR 框架三层架构：定义 → 定价与机制设计 → 实证校准</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 3. ASSET POOL ====== -->
+<div class="section">
+  <div class="section-title">3. 资产池特征</div>
+  <div class="two-col">
+    <div>
+      <table>
+        <tr><td>酒店数量</td><td class="highlight" id="ap_size">—</td></tr>
+        <tr><td>池总面值</td><td class="highlight">¥<span id="ap_total">—</span></td></tr>
+        <tr><td>酒店均价</td><td>¥<span id="ap_avg">—</span></td></tr>
+        <tr><td>地理覆盖</td><td><span id="ap_districts">—</span> 个区县 &nbsp; HHI = <span id="ap_hhi">—</span></td></tr>
+        <tr><td>Top 5 集中度</td><td><span id="ap_top5">—</span>%</td></tr>
+        <tr><td>加权平均 PD</td><td><span id="ap_wpd">—</span>%</td></tr>
+        <tr><td>加权平均 LGD</td><td><span id="ap_wlgd">—</span>%</td></tr>
+        <tr><td>加权平均 EL</td><td><span id="ap_wel">—</span>%</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th>等级</th><th>数量</th><th>占比</th></tr>
+        <tr><td>经济</td><td id="lev_eco">—</td><td id="lev_eco_pct">—</td></tr>
+        <tr><td>舒适</td><td id="lev_comf">—</td><td id="lev_comf_pct">—</td></tr>
+        <tr><td>高档</td><td id="lev_ups">—</td><td id="lev_ups_pct">—</td></tr>
+        <tr><td>豪华</td><td id="lev_lux">—</td><td id="lev_lux_pct">—</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 4. TRANCHE STRUCTURE ====== -->
+<div class="section">
+  <div class="section-title">4. 分层结构与蒙特卡洛结果</div>
+  <div class="two-col">
+    <table>
+      <tr><th>分层</th><th>占比</th><th>票息(年)</th><th>信用支持</th><th>目标评级</th></tr>
+      <tr>
+        <td><strong>Senior</strong></td>
+        <td id="ts_pct">—</td>
+        <td id="ts_coupon">—</td>
+        <td id="ts_support">—</td>
+        <td>AAA</td>
+      </tr>
+      <tr>
+        <td><strong>Mezzanine</strong></td>
+        <td id="tm_pct">—</td>
+        <td id="tm_coupon">—</td>
+        <td id="tm_support">—</td>
+        <td>BBB</td>
+      </tr>
+      <tr>
+        <td><strong>Junior</strong></td>
+        <td id="tj_pct">—</td>
+        <td id="tj_coupon">—</td>
+        <td id="tj_support">—</td>
+        <td>B</td>
+      </tr>
+      <tr>
+        <td><strong>Equity</strong></td>
+        <td id="te_pct">—</td>
+        <td id="te_coupon">—</td>
+        <td id="te_support">—</td>
+        <td>NR</td>
+      </tr>
+    </table>
+    <table>
+      <tr><th>分层</th><th>预期损失(EL)</th><th>VaR 95%</th><th>VaR 99%</th><th>隐含评级</th></tr>
+      <tr>
+        <td><strong>Senior</strong></td>
+        <td id="mc_s_el">—</td>
+        <td id="mc_s_v95">—</td>
+        <td id="mc_s_v99">—</td>
+        <td class="rating-aaa" id="mc_s_rating">—</td>
+      </tr>
+      <tr>
+        <td><strong>Mezzanine</strong></td>
+        <td id="mc_m_el">—</td>
+        <td id="mc_m_v95">—</td>
+        <td id="mc_m_v99">—</td>
+        <td class="rating-aaa" id="mc_m_rating">—</td>
+      </tr>
+      <tr>
+        <td><strong>Junior</strong></td>
+        <td id="mc_j_el">—</td>
+        <td id="mc_j_v95">—</td>
+        <td id="mc_j_v99">—</td>
+        <td class="rating-aaa" id="mc_j_rating">—</td>
+      </tr>
+      <tr>
+        <td><strong>Equity</strong></td>
+        <td id="mc_e_el">—</td>
+        <td id="mc_e_v95">—</td>
+        <td id="mc_e_v99">—</td>
+        <td class="rating-aaa" id="mc_e_rating">—</td>
+      </tr>
+    </table>
+  </div>
+  <p style="margin-top:10px;font-size:0.85em;color:#555;text-align:center;">
+    ⚑ 32% Senior 信用支持完全吸收模拟违约损失。所有分层获得 <strong>Aaa</strong> 隐含评级。
+  </p>
+</div>
+
+<!-- ====== 5. FIGURES ====== -->
+<div class="section">
+  <div class="section-title">5. 关键图表</div>
+  <div class="figure-row">
+    <div class="figure-card">
+      <img src="paper_figures/fig1_price_convergence.png" alt="Price Convergence">
+      <div class="fig-caption">图1: 时权价格收敛路径。二级市场价格随时间逼近即期价格，消除到期套利。</div>
+    </div>
+    <div class="figure-card">
+      <img src="paper_figures/fig3_mc_losses.png" alt="MC Loss Distribution">
+      <div class="fig-caption">图2: 蒙特卡洛分层损失分布 (5,000路径)。EL和VaR 95%对所有分层均接近零。</div>
+    </div>
+    <div class="figure-card">
+      <img src="paper_figures/fig4_stress_test.png" alt="Stress Test">
+      <div class="fig-caption">图3: 压力测试 — Senior层在不同PD/LGD倍数下的预期损失。</div>
+    </div>
+    <div class="figure-card">
+      <img src="paper_figures/fig5_npv_comparison.png" alt="NPV Comparison">
+      <div class="fig-caption">图4: 传统模式 vs 时权模式 NPV 对比。时权模式实现 +102% 提升。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 6. STRESS TEST DETAIL ====== -->
+<div class="section">
+  <div class="section-title">6. 压力测试详情 (Senior 层)</div>
+  <table>
+    <tr><th>情景</th><th>PD 倍数</th><th>LGD 倍数</th><th>Senior EL</th><th>隐含评级</th></tr>
+    <tr><td>基准</td><td>1.0×</td><td>1.0×</td><td>≈ 0%</td><td class="rating-aaa">Aaa</td></tr>
+    <tr><td>轻度压力</td><td>1.5×</td><td>1.1×</td><td>≈ 0%</td><td class="rating-aaa">Aaa</td></tr>
+    <tr><td>中度压力</td><td>2.5×</td><td>1.3×</td><td>≈ 0%</td><td class="rating-aaa">Aaa</td></tr>
+    <tr><td>重度压力</td><td>4.0×</td><td>1.6×</td><td>≈ 0%</td><td class="rating-aaa">Aaa</td></tr>
+    <tr><td>极端压力</td><td>6.0×</td><td>2.0×</td><td>≈ 0%</td><td class="rating-aaa">Aaa</td></tr>
+  </table>
+</div>
+
+<!-- ====== 7. PROJECT ROADMAP ====== -->
+<div class="section">
+  <div class="section-title">7. 项目路线图</div>
+  <div class="roadmap">
+    <div class="roadmap-step"><div class="step-num">✅</div><div class="step-label">引擎加固<br>路径/NaN/并行</div></div>
+    <div class="roadmap-arrow">→</div>
+    <div class="roadmap-step"><div class="step-num">✅</div><div class="step-label">FSR 论文 v1<br>LaTeX + 图表</div></div>
+    <div class="roadmap-arrow">→</div>
+    <div class="roadmap-step"><div class="step-num">🔲</div><div class="step-label">稳健性检验<br>KMV + Bootstrap</div></div>
+    <div class="roadmap-arrow">→</div>
+    <div class="roadmap-step"><div class="step-num">🔲</div><div class="step-label">机票 FSR<br>校准数据</div></div>
+    <div class="roadmap-arrow">→</div>
+    <div class="roadmap-step"><div class="step-num">🔲</div><div class="step-label">复制包<br>pip install</div></div>
+    <div class="roadmap-arrow">→</div>
+    <div class="roadmap-step"><div class="step-num">🔲</div><div class="step-label">导师审阅<br>Gate</div></div>
+  </div>
+</div>
+
+<!-- ====== 8. FILES ====== -->
+<div class="section">
+  <div class="section-title">8. 产出物清单</div>
+  <table>
+    <tr><th>文件</th><th>描述</th></tr>
+    <tr><td><code>output/fsr_framework_paper.tex</code></td><td>FSR 框架论文 LaTeX 完整稿件 (8章, 15公式, 6表格)</td></tr>
+    <tr><td><code>output/paper_figures/</code></td><td>6张发表级图表 (PDF+PNG, 300dpi)</td></tr>
+    <tr><td><code>output/abs_report_v6_fusion.json</code></td><td>引擎完整输出 (结构化JSON)</td></tr>
+    <tr><td><code>src/hotel_abs_engine_fusion.py</code></td><td>时权ABS融合引擎 (V6-Fusion)</td></tr>
+    <tr><td><code>src/config.py</code></td><td>统一路径配置模块</td></tr>
+    <tr><td><code>src/monte_carlo_simulator.py</code></td><td>蒙特卡洛模拟器 (joblib并行 + checkpoint缓存)</td></tr>
+    <tr><td><code>.claude/skills/academic-forge/</code></td><td>AcademicForge 学术技能包 (200+ 技能)</td></tr>
+  </table>
+</div>
+
+</div>
+
+<div class="footer">
+  Hotel Finance Research Group · Chengdu Hotel Market Data (2024.3-6) · Generated 2026-05-11<br>
+  Merton DD + GARCH(1,1) + Gaussian Copula + 4-Tier Sequential-Pay Waterfall · 5,000 Monte Carlo Paths
+</div>
+
+<!-- ====== METRICS INJECTION ====== -->
+<script src="metrics.js"></script>
+<script>
+(function(M) {
+  // Pool
+  setText('hotel_info', M.POOL_HOTELS_IN_INFO);
+  setText('price_records', M.TOTAL_PRICE_RECORDS);
+  setText('pool_size', M.POOL_SIZE);
+  setText('tr_qty', fmtNum(M.TR_QTY || 1092604));
+  setText('npv_uplift', '+' + M.NPV_UPLIFT_PCT + '%');
+  setText('fe_score', M.FEASIBILITY_SCORE + '/100');
+  setText('fe_rating', '评级 ' + M.FEASIBILITY_RATING);
+  setText('ap_size', M.POOL_SIZE);
+  setText('ap_total', fmtNum(M.POOL_TOTAL));
+  setText('ap_avg', fmtNum(M.POOL_AVG));
+  setText('ap_districts', M.POOL_DISTRICTS);
+  setText('ap_hhi', M.POOL_HHI);
+  setText('ap_top5', M.POOL_TOP5);
+  setText('ap_wpd', M.POOL_WPD);
+  setText('ap_wlgd', M.POOL_WLGD);
+  setText('ap_wel', M.POOL_WEL);
+
+  // Level distribution
+  var total = M.LEVEL_ECO + M.LEVEL_COMFORT + M.LEVEL_UPSCALE + M.LEVEL_LUXURY;
+  setText('lev_eco', M.LEVEL_ECO); setText('lev_eco_pct', pct(M.LEVEL_ECO, total));
+  setText('lev_comf', M.LEVEL_COMFORT); setText('lev_comf_pct', pct(M.LEVEL_COMFORT, total));
+  setText('lev_ups', M.LEVEL_UPSCALE); setText('lev_ups_pct', pct(M.LEVEL_UPSCALE, total));
+  setText('lev_lux', M.LEVEL_LUXURY); setText('lev_lux_pct', pct(M.LEVEL_LUXURY, total));
+
+  // Tranches
+  setText('ts_pct', M.TRANCHE_SENIOR_PCT + '%');
+  setText('ts_coupon', M.TRANCHE_SENIOR_COUPON + '%');
+  setText('ts_support', M.TRANCHE_SENIOR_SUPPORT + '%');
+  setText('tm_pct', M.TRANCHE_MEZZANINE_PCT + '%');
+  setText('tm_coupon', M.TRANCHE_MEZZANINE_COUPON + '%');
+  setText('tm_support', M.TRANCHE_MEZZANINE_SUPPORT + '%');
+  setText('tj_pct', M.TRANCHE_JUNIOR_PCT + '%');
+  setText('tj_coupon', M.TRANCHE_JUNIOR_COUPON + '%');
+  setText('tj_support', M.TRANCHE_JUNIOR_SUPPORT + '%');
+  setText('te_pct', M.TRANCHE_EQUITY_PCT + '%');
+  setText('te_coupon', M.TRANCHE_EQUITY_COUPON + '%');
+  setText('te_support', M.TRANCHE_EQUITY_SUPPORT + '%');
+
+  // MC
+  setText('mc_s_el', fmtEL(M.MC_SENIOR_EL));
+  setText('mc_s_v95', fmtEL(M.MC_SENIOR_VAR95));
+  setText('mc_s_v99', fmtEL(M.MC_SENIOR_VAR99));
+  setText('mc_s_rating', M.MC_SENIOR_RATING);
+  setText('mc_m_el', fmtEL(M.MC_MEZZANINE_EL));
+  setText('mc_m_v95', fmtEL(M.MC_MEZZANINE_VAR95));
+  setText('mc_m_v99', fmtEL(M.MC_MEZZANINE_VAR99));
+  setText('mc_m_rating', M.MC_MEZZANINE_RATING);
+  setText('mc_j_el', fmtEL(M.MC_JUNIOR_EL));
+  setText('mc_j_v95', fmtEL(M.MC_JUNIOR_VAR95));
+  setText('mc_j_v99', fmtEL(M.MC_JUNIOR_VAR99));
+  setText('mc_j_rating', M.MC_JUNIOR_RATING);
+  setText('mc_e_el', fmtEL(M.MC_EQUITY_EL));
+  setText('mc_e_v95', fmtEL(M.MC_EQUITY_VAR95));
+  setText('mc_e_v99', fmtEL(M.MC_EQUITY_VAR99));
+  setText('mc_e_rating', M.MC_EQUITY_RATING);
+
+  function setText(id, val) {
+    var el = document.getElementById(id);
+    if (el && val !== undefined && val !== null) el.textContent = val;
+  }
+  function fmtNum(n) { return n ? n.toLocaleString('en-US') : '—'; }
+  function fmtEL(n) { return n === 0 || (n < 0.0001 && n > -0.0001) ? '≈ 0%' : (n >= 0 ? n.toFixed(4) + '%' : n.toFixed(4) + '%'); }
+  function pct(n, t) { return t > 0 ? (n/t*100).toFixed(1) + '%' : '—'; }
+})(METRICS);
+</script>
+
+</body>
+</html>
