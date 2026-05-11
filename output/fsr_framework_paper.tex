@@ -3,18 +3,18 @@
 % === Packages ===
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage{hyperref}
 \usepackage{geometry}
-\usepackage{natbib}
-\usepackage{multirow}
 \usepackage{array}
 \usepackage{float}
 \usepackage{xcolor}
 \usepackage{enumitem}
 \geometry{margin=1in}
+\graphicspath{{./figures/}}
+\newtheorem{definition}{Definition}
+\newtheorem{property}{Property}
 
 % === Title ===
 \title{\textbf{Future Service Rights: Tokenization, Pricing, and Structuring}\\%
@@ -53,7 +53,7 @@ We discuss extensions of the FSR framework to flight capacity, event ticketing, 
 
 The global hotel industry generates approximately \$600 billion in annual revenue, yet the financial architecture for monetizing future service capacity remains primitive.
 Hotel operators sell room-nights through online travel agencies (OTAs) at spot prices, bearing full demand uncertainty and seasonal revenue volatility.
-Meanwhile, the tokenization of real-world assets (RWA) has emerged as a significant trend in decentralized finance, with platforms such as Ondo Finance and Centrifuge digitizing treasury bonds, invoices, and real estate \citep{chen2023rwa}.
+Meanwhile, the tokenization of real-world assets (RWA) has emerged as a significant trend in decentralized finance, with platforms such as Ondo Finance and Centrifuge digitizing treasury bonds, invoices, and real estate \cite{chen2023rwa}.
 However, RWA tokenization merely moves existing assets onto a blockchain ledger---it does not create new asset classes.
 
 This paper introduces \textbf{Future Service Rights (FSR)}: a novel asset class representing the contingent claim on a service provider's future capacity.
@@ -207,7 +207,7 @@ The probability of default is:
     PD_i = \min\left( \Phi(-DD_i) \times 2.5,\; 0.50 \right)
 \end{equation}
 
-where $\Phi(\cdot)$ is the standard normal CDF and the calibration factor 2.5 corrects the Merton model's well-known tendency to underestimate PDs \citep{bharath2008}.
+where $\Phi(\cdot)$ is the standard normal CDF and the calibration factor 2.5 corrects the Merton model's well-known tendency to underestimate PDs \cite{bharath2008}.
 
 Loss-given-default varies by hotel grade:
 \begin{equation}
