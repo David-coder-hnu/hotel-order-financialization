@@ -36,7 +36,7 @@ We formalize FSR as a 4-tuple $S = (c, T, \ell, \sigma)$ capturing capacity, tim
 As an instantiation of the FSR framework, we develop Time-Rights for the hotel sector: tokenized forward room-night claims that trade on secondary markets and settle via a ternary mechanism offering cash redemption, physical stay at a discount, or secondary-market rollover.
 We construct an 80-hotel stratified asset pool from 1.7 million daily price observations across 16,257 hotels in Chengdu, China, and apply a structural credit model (Merton distance-to-default with GARCH volatility estimation), a one-factor Gaussian copula for default dependence, and a four-tier sequential-pay waterfall with performance triggers.
 Monte Carlo simulation over 10,000 paths and 36 months yields near-zero expected losses and Aaa-implied ratings for all tranches under both benchmark and stressed scenarios, with Senior credit support of 32\% absorbing the full range of simulated default outcomes.
-A comparison with traditional hotel operations reveals a 102\% net present value uplift, driven by the front-loading of future revenue into present capital.
+A comparison with traditional hotel operations reveals meaningful cash-flow front-loading benefits: issuance revenue is concentrated at contract inception rather than spread over the operating period, converting uncertain future income into certain present capital and eliminating occupancy risk exposure for hotel operators.
 We discuss extensions of the FSR framework to flight capacity, event ticketing, and coworking space, establishing a research program for generalized service-capacity securitization.
 
 \bigskip
@@ -530,34 +530,37 @@ We bootstrap (2,000 resamples) the Senior EL from the Gaussian copula simulation
 The 95\% confidence interval is tight and bounded away from zero, confirming that the Senior expected loss is statistically significant under the simplified default model.
 The full-engine (ternary settlement) simulation yields EL $\approx 0$, and the gap between the two models provides a measure of the economic value created by the ternary settlement mechanism itself.
 
-\subsection{Economic Impact: Traditional vs. Time-Right Model}
+\subsection{Economic Impact: Cash-Flow Front-Loading}
 
-We compare the hotel operator's net present value under two regimes:
+We compare the timing and certainty of hotel cash flows under traditional operations versus Time-Right issuance.
+Rather than applying arbitrary cost multipliers, we use a direct discounted cash flow (DCF) comparison with a discount rate of 8\% (estimated WACC for the Chinese hotel industry) over an equivalent 36-month horizon.
+Under the Time-Right model, hotels issue new Time-Rights every 12 months, receiving upfront cash in exchange for future room-night obligations.
 
 \begin{table}[H]
 \centering
-\caption{Traditional vs. Time-Right model comparison}
+\caption{Cash-flow comparison: Traditional vs.\ Time-Right model (per-hotel, per-year, normalized)}
 \label{tab:comparison}
-\begin{tabular}{@{}lrrr@{}}
+\begin{tabular}{@{}lrr@{}}
 \toprule
-\textbf{Metric} & \textbf{Traditional} & \textbf{Time-Right} & \textbf{Uplift} \\
+\textbf{Metric} & \textbf{Traditional} & \textbf{Time-Right} \\
 \midrule
-Annual revenue       & \yen 952B & -- & -- \\
-Issuance revenue     & --        & \yen 328B & -- \\
-Hotel net benefit    & --        & \yen 223B & -- \\
-NPV uplift           & --        & --        & +102.0\% \\
-Front-loading ratio  & 32.7\%    & 131.6\%   & +98.9pp \\
+Revenue timing       & Distributed over 36 months & Concentrated at issuance dates \\
+Revenue certainty    & Subject to occupancy risk   & Locked in at issuance \\
+Front-loading ratio  & 32.7\%                     & 33.3\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The Time-Right model delivers a 102\% NPV uplift by converting uncertain future revenue streams into certain present cash flows.
-The front-loading ratio---the proportion of total lifetime revenue captured in the first 12 months---improves from 32.7\% to 131.6\%, reflecting the immediate capital inflow from Time-Right issuance.
+The economic benefit of the Time-Right model is not primarily a net-present-value gain---it is a \textbf{risk transfer and cash-flow timing improvement}.
+By converting uncertain, back-loaded future revenue into certain, front-loaded present capital, hotels reduce their exposure to demand volatility and gain immediate capital for reinvestment.
+The front-loading ratio improves modestly because the traditional model already generates relatively stable monthly cash flows; the Time-Right advantage lies in the \emph{certainty} of those cash flows, the elimination of occupancy risk, and the ability to raise capital without debt financing.
+
+\textbf{Note on earlier results:} A previous version of this paper reported a 102\% NPV uplift, which was driven by hard-coded cost multipliers (operating cost rate 52\%, financing cost rate 20\%, risk cost rate 10\%) and benefit multipliers (working capital boost 30\%, risk transfer value 12\%). These multipliers lacked empirical calibration. The corrected DCF analysis removes all such multipliers, relying solely on engine-output cash flows and an explicit discount rate assumption with sensitivity analysis. The qualitative conclusion---that Time-Rights improve hotel cash-flow profiles through front-loading and risk transfer---is unchanged; only the magnitude of the benefit has been corrected.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{figures/fig5_npv_comparison.png}
-\caption{Net present value comparison: Traditional hotel operations vs.\ Time-Right model. The Time-Right model front-loads future revenue through upfront issuance, generating a 102\% NPV uplift. The improvement is driven by the conversion of uncertain, discounted future cash flows into certain present capital.}
+\caption{Cash-flow timing comparison: Traditional vs.\ Time-Right model. The Time-Right model concentrates cash inflows at issuance dates rather than spreading them over the operating period, converting uncertain future revenue into certain present capital.}
 \label{fig:npv-comparison}
 \end{figure}
 
@@ -627,7 +630,7 @@ A structural model of this equilibrium is a natural next step.
 This paper introduces Future Service Rights (FSR) as a new asset class and demonstrates its viability through the hotel Time-Right ABS framework.
 We make three contributions: (i) a formal definition of FSR with existence conditions and pricing bounds; (ii) a complete Time-Right ABS architecture encompassing credit modeling, tranche structuring, Monte Carlo simulation, and mechanism design for ternary settlement; (iii) empirical calibration using 1.7 million hotel price observations from Chengdu, demonstrating near-zero expected losses and Aaa-implied ratings across all tranches.
 
-The Time-Right model delivers a 102\% NPV uplift over traditional hotel operations, converting uncertain future revenue into certain present capital.
+The Time-Right model improves hotel cash-flow profiles through front-loading and risk transfer, converting uncertain future revenue into certain present capital without the need for debt financing.
 The ternary settlement mechanism is strategy-proof, individually rational, and budget-balanced, providing a theoretically sound foundation for practical implementation.
 
 Several limitations bound our conclusions.
