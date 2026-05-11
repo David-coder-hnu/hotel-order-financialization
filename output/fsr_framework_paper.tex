@@ -876,9 +876,51 @@ Mezzanine and Junior tranches remain unaffected because even a 60\% economy-hote
 
 \textbf{The system survives depression in expectation but not in the tail.}
 This is the honest risk assessment: the Time-Right ABS structure is robust to severe but not catastrophic credit deterioration.
-The fractional-reserve-like over-issuance risk and the correlation risk compound in the tail---precisely the mechanism that produced CDO failures in 2008.
-The critical difference is that Time-Rights are backed by physical service capacity with genuine consumer demand, not by highly correlated mortgage obligations.
-In a depression, people still need to sleep somewhere; the physical redemption option provides a floor that pure financial assets lack.
+
+\subsubsection{Physical Constraint: The True Bank Run Scenario}
+
+The over-issuance multiplier $\omega = 1.29\times$ has a hard physical limit that no diversification mechanism can circumvent.
+For a 60-room hotel, annual physical capacity is 21,900 room-nights.
+At $\omega = 1.29$, the hotel issues 28,251 Time-Rights---6,351 more than can possibly be fulfilled.
+In normal conditions, this gap is bridged by the 62\% occupancy rate (only 13,578 room-nights are actually consumed) and settlement-mode diversification (not all holders choose physical redemption).
+
+In a systemic crisis, this bridge collapses:
+\begin{itemize}[nosep]
+    \item All 28,251 holders demand physical redemption simultaneously (secondary market frozen, cash reserves distrusted).
+    \item Physical capacity is 21,900 room-nights---\textbf{6,351 holders (22\%) cannot be fulfilled under any circumstances.}
+    \item The platform's 3\% reserve pool covers only 13.3\% of these unfilled claims---the system is insolvent.
+\end{itemize}
+
+This is fractional-reserve banking with a 3\% reserve ratio.
+In 2008, banks with 10\% capital requirements failed.
+The structural gap of 6,351 room-nights per hotel is not a parameter to be tuned---it is a physical invariant that no financial engineering can eliminate.
+The only genuine mitigant is that, unlike mortgage-backed securities whose underlying assets (houses) cannot be consumed, hotel room-nights have genuine demand elasticity: even in a crisis, some people need to sleep somewhere.
+This physical demand floor is the system's only structural advantage over pure financial assets---and it is a thin one.
+
+\subsubsection{Calibration Sensitivity: The 50\% Haircut Assumption}
+
+Our calibrated PD model applies a 50\% haircut to observed platform exit rates, assuming half of delistings represent true defaults.
+This assumption is unverified and drives the entire credit risk calibration.
+If the true default ratio is 25\% (more optimistic), the pool PD falls to 4.9\% and Senior EL drops to $\approx$0.04\% (Aaa).
+If it is 75\% (more pessimistic), the pool PD rises to 14.6\% and Senior EL reaches $\approx$0.48\% (Baa).
+The 50\% assumption thus spans a 12$\times$ range in Senior EL (0.04\% to 0.48\%)---still investment-grade across the entire plausible range, but the precise rating is indeterminate without verified default incidence data.
+We emphasize that the four-month observation window (March--June 2024) cannot capture seasonal cycles, macroeconomic fluctuations, or competitive dynamics that operate on longer time scales.
+\begin{table}[H]
+\centering
+\caption{Calibration sensitivity: Senior EL under alternative default-rate haircuts}
+\label{tab:haircut}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{True Default / Exit Ratio} & \textbf{Pool PD} & \textbf{Senior EL} & \textbf{Implied} \\
+\midrule
+25\% (optimistic) & 4.9\% & 0.04\% & Aaa \\
+50\% (baseline)   & 9.7\% & 0.16\% & Aa--A \\
+75\% (pessimistic) & 14.6\% & 0.48\% & Baa \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The calibrated PD model is an improvement over uncalibrated structural models, but it is not a substitute for a multi-year default incidence panel.
 
 % ============================================================
 \section{Discussion: FSR Beyond Hotels}
@@ -929,8 +971,11 @@ Second, a liquidity mining program can reward early market participants with add
 Third, institutional anchor investors can provide baseline demand by committing to purchase a minimum volume of Time-Rights at each issuance, creating a permanent bid that retail users can sell into.
 
 Each of these imposes costs on the platform or requires institutional partnerships that do not yet exist.
-The cold-start problem is not a model parameter---it is a real-world coordination challenge that no amount of Monte Carlo simulation can resolve.
-Its solution lies in market design, not in financial engineering.
+To illustrate the scale of the problem: achieving a secondary-market trading volume sufficient to provide a 4.4\% effective user discount (as calibrated in Section 5.2) requires approximately 1.56 million Time-Rights to change hands annually---roughly 55\% of total issuance.
+In month one of platform operation, trading volume is zero.
+The platform must either subsidize discounts directly (converting the market-driven mechanism into a platform-funded one, at least temporarily) or accept that early adopters will receive inferior economics until organic liquidity develops.
+Neither path is modeled in our baseline calibration.
+The cold-start problem is not a model parameter---it is a real-world coordination challenge. Its solution lies in market design, not in financial engineering.
 
 \subsection{Regulatory and Market Structure Considerations}
 
