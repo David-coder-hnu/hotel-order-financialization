@@ -20,24 +20,48 @@ warnings.filterwarnings('ignore')
 class HotelCreditModel:
     """酒店信用评级模型"""
     
-    def __init__(self, prices_df, hotel_info_df, future_prices_df=None):
+    def __init__(self, prices_df, hotel_info_df, future_prices_df=None,
+                 pd_cap=0.50, pd_floor=0.001, vol_floor=0.05,
+                 dd_floor=0.1, default_barrier_ratio=0.55,
+                 pd_calibration=2.5, drift_rate=0.03,
+                 risk_free_rate=0.025):
         """
         Parameters:
         -----------
-        prices_df : DataFrame
-            清洗后的价格数据，列: date, hotelCode, price
-        hotel_info_df : DataFrame
-            酒店信息，列: hotelCode, hotelName, hotelLevel, lon经度, lat纬度
-        future_prices_df : DataFrame, optional
-            远期价格，列: hotelCode, futurePrice
+        prices_df, hotel_info_df, future_prices_df : DataFrame
+            数据输入
+        pd_cap : float
+            PD 上限 (默认 50%). 设 None 去掉上限
+        pd_floor : float
+            PD 下限 (默认 0.1%)
+        vol_floor : float
+            年化波动率下限 (默认 5%)
+        dd_floor : float
+            Distance-to-Default 下限 (默认 0.1)
+        default_barrier_ratio : float
+            违约边界 = 均价 × ratio (默认 55%)
+        pd_calibration : float
+            Merton PD 校准因子 (文献 1.5-3.0, 默认 2.5)
+        drift_rate : float
+            资产漂移率 (默认 3%)
+        risk_free_rate : float
+            无风险利率 (默认 2.5%)
         """
         self.prices = prices_df.copy()
         self.prices['date'] = pd.to_datetime(self.prices['date'])
         self.hotel_info = hotel_info_df.copy()
         self.future_prices = future_prices_df.copy() if future_prices_df is not None else None
-        
-        # 模型参数
-        self.annual_risk_free_rate = 0.025  # 年化无风险利率 2.5%
+
+        # 可配置参数 (之前硬编码，现在可通过构造函数覆盖)
+        self.pd_cap = pd_cap
+        self.pd_floor = pd_floor
+        self.vol_floor = vol_floor
+        self.dd_floor = dd_floor
+        self.default_barrier_ratio = default_barrier_ratio
+        self.pd_calibration = pd_calibration
+        self.drift_rate = drift_rate
+        self.annual_risk_free_rate = risk_free_rate
+
         self.hotel_asset_volatility = 0.25  # 酒店资产价值波动率基准
         self.liability_ratio = 0.65  # 资产负债率基准
         self.lgd_base = 0.55  # 基准违约损失率 55%
@@ -96,32 +120,30 @@ class HotelCreditModel:
         }
         mult = level_multiplier.get(hotel_level, 1.0)
         sigma_annual *= mult
-        sigma_annual = max(sigma_annual, 0.05)  # 波动率下限5%
-        
+        sigma_annual = max(sigma_annual, self.vol_floor)
+
         # 资产价值
         V = avg_price
-        
-        # 违约边界：平均价格的55%（保守估计）
-        # 当收入下降到平均水平的55%时触发经营困难
-        default_barrier = avg_price * 0.55
-        
-        # 漂移率
-        mu = 0.03
+
+        # 违约边界 = 均价 × default_barrier_ratio
+        default_barrier = avg_price * self.default_barrier_ratio
+
         T = 1.0
-        
+
         # Distance to Default
-        dd = (np.log(V / default_barrier) + (mu - 0.5 * sigma_annual ** 2) * T) / (sigma_annual * np.sqrt(T))
-        
-        return max(dd, 0.1)  # 下限0.1，避免DD过小导致PD过高
+        dd = (np.log(V / default_barrier) + (self.drift_rate - 0.5 * sigma_annual ** 2) * T) / (sigma_annual * np.sqrt(T))
+
+        return max(dd, self.dd_floor)
     
     def _dd_to_pd(self, distance_to_default):
         """将 Distance-to-Default 映射为违约概率 (PD)"""
-        # 基于历史实证：DD ~ N(-DD) 是标准正态CDF
-        # 但需要做校准（Merton模型倾向于低估PD）
         base_pd = stats.norm.cdf(-distance_to_default)
-        # 校准：乘以经验调整因子（文献中通常为1.5-3.0）
-        calibrated_pd = min(base_pd * 2.5, 0.50)  # 上限50%
-        return max(calibrated_pd, 0.001)  # 下限0.1%
+        calibrated_pd = base_pd * self.pd_calibration
+        if self.pd_cap is not None:
+            calibrated_pd = min(calibrated_pd, self.pd_cap)
+        else:
+            calibrated_pd = min(calibrated_pd, 0.999)  # cap at 99.9% if no explicit cap
+        return max(calibrated_pd, self.pd_floor)
     
     def _compute_lgd(self, hotel_code, avg_price, min_price, price_vol, hotel_level):
         """
@@ -252,7 +274,7 @@ class HotelCreditModel:
 
         skipped = total - len(df)
         if skipped > 0:
-            print(f"    ⚠ {skipped}/{total} 家酒店因数据异常(NaN/序列过短)被跳过")
+            print(f"    [WARN] {skipped}/{total} hotels skipped (NaN/short series)")
 
         return df
     
