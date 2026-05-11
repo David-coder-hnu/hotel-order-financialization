@@ -326,38 +326,42 @@ class HotelTimeRightABSEngine:
         }
     
     def _compute_traditional_mode(self):
-        """计算传统经营模式下酒店的现金流和NPV"""
+        """计算传统经营模式下酒店的现金流和NPV
+
+        注意：原始价格数据单位为分(fen, 1/100 CNY)。此处统一转换为元。
+        """
+        FEN_TO_YUAN = 100.0
         n_hotels = len(self.time_right_df)
         n_months = 36
         discount_rate_monthly = 0.08 / 12
-        
+
         monthly_cashflows = []
         total_annual_revenue = 0
-        
+
         for i in range(n_hotels):
             rooms = self.time_right_df.iloc[i]['rooms']
             occupancy = self.time_right_df.iloc[i]['occupancy']
-            avg_price = self.time_right_df.iloc[i]['avg_price']
-            
-            annual_revenue = rooms * occupancy * avg_price * 365
+            avg_price_fen = self.time_right_df.iloc[i]['avg_price']
+            avg_price_yuan = avg_price_fen / FEN_TO_YUAN
+
+            annual_revenue = rooms * occupancy * avg_price_yuan * 365
             total_annual_revenue += annual_revenue
-            
+
             # 月度现金流（考虑季节性）
             monthly_base = annual_revenue / 12
             seasonal = 1 + 0.15 * np.sin(2 * np.pi * np.arange(n_months) / 12)
             growth = (1 + 0.02) ** (np.arange(n_months) / 12)
             hotel_monthly = monthly_base * seasonal * growth
             monthly_cashflows.append(hotel_monthly)
-        
+
         total_monthly = np.sum(monthly_cashflows, axis=0)
-        
-        # NPV计算（月度折现）
+
+        # NPV计算（月度折现），单位：元
         npv = sum(total_monthly[t] / ((1 + discount_rate_monthly) ** (t + 1)) for t in range(n_months))
-        
-        # IRR近似计算（使用年化）
+
         total_3year = np.sum(total_monthly)
         irr_approx = (total_3year / (total_annual_revenue * 3)) ** (1/3) - 1 + 0.08
-        
+
         return {
             'annual_revenue': float(total_annual_revenue),
             'monthly_cashflow': total_monthly.tolist(),
@@ -381,7 +385,9 @@ class HotelTimeRightABSEngine:
         """
         traditional = self._compute_traditional_mode()
 
-        total_issue_revenue = float(self.time_right_df['total_face_value'].sum())
+        FEN_TO_YUAN = 100.0
+        total_issue_revenue_fen = float(self.time_right_df['total_face_value'].sum())
+        total_issue_revenue = total_issue_revenue_fen / FEN_TO_YUAN  # 分转元
         total_quantity = float(self.time_right_df['issue_quantity'].sum())
         n_months = 36
 
@@ -394,13 +400,12 @@ class HotelTimeRightABSEngine:
         trad_npv = sum(trad_monthly[t] / ((1 + r_monthly) ** (t + 1)) for t in range(n_months))
 
         # ===== 时权模式 DCF =====
-        # 兑付成本：优先使用市场模拟数据，否则使用保守估算
+        # 兑付成本：优先使用市场模拟数据（单位：分,需转元）
         if self.market_sim:
-            monthly_cash_redemption = np.mean(self.market_sim['cash_redemption'], axis=0)
-            monthly_physical_redemption = np.mean(self.market_sim['physical_redemption'], axis=0)
+            monthly_cash_redemption = np.mean(self.market_sim['cash_redemption'], axis=0) / FEN_TO_YUAN
+            monthly_physical_redemption = np.mean(self.market_sim['physical_redemption'], axis=0) / FEN_TO_YUAN
             monthly_redemption = monthly_cash_redemption + monthly_physical_redemption
         else:
-            # 回退：假设兑付成本均匀分布在36个月
             total_redemption = total_issue_revenue * 0.35
             monthly_redemption = np.ones(n_months) * total_redemption / n_months
 
@@ -416,14 +421,26 @@ class HotelTimeRightABSEngine:
 
         tr_npv = sum(tr_cashflows[t] / ((1 + r_monthly) ** (t + 1)) for t in range(n_months))
 
-        # 归一化: 比较每酒店年均价值, 消除规模差异
-        n_hotels = len(self.pool_df)
-        trad_npv_per_hotel_per_year = trad_npv / n_hotels / 3  # 3年
-        tr_npv_per_hotel_per_year = tr_npv / n_hotels / 3
+        # ===== 现金流对比 (不比较绝对NPV——两种模式规模不同) =====
+        # 传统模式：3年分散现金流
+        # 时权模式：发行收入集中+兑付成本分散
+        # 比较的是"现金流时间结构"和"确定性"，不是绝对规模
 
-        # ===== 归一化 NPV 提升 (per-hotel per-year) =====
-        npv_uplift = tr_npv_per_hotel_per_year - trad_npv_per_hotel_per_year
-        npv_uplift_pct = (npv_uplift / trad_npv_per_hotel_per_year * 100) if trad_npv_per_hotel_per_year > 0 else 0
+        trad_annual = float(total_annual_revenue)
+        tr_annual_equivalent = total_issue_revenue / 3  # 年化发行收入
+
+        # NPV uplift: 如果在相同的年化规模下比较
+        # 时权每年前置发行收入，传统每月产生收入
+        npv_uplift_pct = 0  # 不比较绝对NPV——两种模式规模不同
+
+        # 使用现金流前置化指标作为核心比较指标
+        tr_first12 = tr_cashflows[0]
+        tr_total_pos = sum(np.maximum(tr_cashflows, 0))
+        frontloading_ratio = (tr_first12 / tr_total_pos * 100) if tr_total_pos > 0 else 0
+
+        trad_first12 = sum(trad_monthly[:12])
+        trad_total = sum(trad_monthly)
+        trad_frontloading = (trad_first12 / trad_total * 100) if trad_total > 0 else 0
 
         # ===== 敏感性分析：折现率 ∈ [5%, 12%] =====
         sensitivity = {}
