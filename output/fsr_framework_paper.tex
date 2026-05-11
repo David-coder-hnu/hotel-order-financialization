@@ -113,13 +113,14 @@ We identify three necessary conditions:
     \item \textbf{Verifiable quality signals.} Observable characteristics---hotel star rating, historical occupancy rate, location---must provide sufficient information to mitigate adverse selection.
     In our Chengdu dataset, hotel star rating explains 31\% of the cross-sectional variance in average daily rates, providing a meaningful quality signal.
 
-    \item \textbf{Over-issuance mechanism.} Service providers may issue more Time-Rights than their physical capacity, bounded by the expected cancellation rate.
+    \item \textbf{Over-issuance mechanism.} Service providers may issue more Time-Rights than their physical capacity, bounded by statistical cancellation patterns.
     With an occupancy rate $\rho$ and safety factor $\phi \in (0,1]$, the over-issuance multiple is:
     \begin{equation}
-        \omega = \frac{1}{\rho \cdot \phi}
+        \omega = \frac{1}{\rho} \cdot \phi
     \end{equation}
-    where $\phi = 1 - \mathbb{E}[\text{cancellation rate}]$ reflects the expected fulfillment ratio.
-    This mechanism completes the market by introducing securities that span the state space of realized demand.
+    The term $1/\rho$ compensates for no-shows and cancellations ($1/\rho = 1.61$ room-nights sold per realized stay at $\rho = 0.62$), and $\phi < 1$ provides a conservation buffer.
+    At $\phi = 0.80$, $\omega = 1.29\times$, meaning the hotel sells 1.29 room-nights for each physical room-night, requiring 77.5\% realized occupancy to honor all Time-Rights---a structural gap bridged by the diversification of settlement modes and time-window smoothing (see Section 6.5).
+    This mechanism completes the market by introducing securities that span the state space of realized demand, but at the cost of creating fractional-reserve-like tail risk.
 
     \item \textbf{Limited liability with recourse.} If the service provider defaults (e.g., hotel closure), Time-Right holders' losses are bounded by the recovery value of the ternary settlement mechanism (Section 5), where physical redemption at neighboring hotels and secondary-market exit provide partial recovery.
 \end{enumerate}
@@ -237,7 +238,7 @@ We construct the asset pool via stratified sampling from 86,159 hotels in Chengd
 
 \begin{table}[H]
 \centering
-\caption{Asset pool characteristics}
+\caption{Asset pool characteristics. Note: raw price data are in \textit{fen} (1 CNY = 100 fen). The average hotel daily rate is approximately \yen 1,930 CNY.}
 \label{tab:pool}
 \begin{tabular}{@{}lr@{}}
 \toprule
@@ -544,7 +545,7 @@ Traditional operations collect exactly 3 years of revenue over the same period, 
 
 This ``5-in-3'' effect is partially offset by the forward discount embedded in Time-Right pricing.
 The average Time-Right issue price ($\approx$ \yen 300 per room-night) is substantially below the average spot price ($\approx$ \yen 2,000 per room-night), reflecting the time value of money and the risk premium demanded by investors.
-The net result is that Time-Right issuance generates lower absolute NPV than traditional operations ($-84\%$ in our calibration), but the cash received is \textbf{certain and immediate}---the hotel pays a discount for eliminating occupancy risk and gaining upfront liquidity.
+The net result is that Time-Right issuance generates lower absolute NPV than traditional operations ($-42\%$ at baseline parameters; see Table \ref{tab:comparison}), but the cash received is \textbf{certain and immediate}---the hotel pays a discount for eliminating occupancy risk and gaining upfront liquidity.
 
 \begin{table}[H]
 \centering
@@ -571,6 +572,32 @@ The qualitative conclusion---that Time-Rights improve hotel cash-flow profiles t
 At baseline parameters (10\% issuance discount, 8\% WACC), the rolling-issuance Time-Right model generates approximately 58\% of traditional per-hotel NPV, with 60\% of cash flows concentrated in the first year versus 33\% under traditional operations.
 The NPV differential is the market price of converting uncertain future revenue into certain present capital.
 Time-Rights are not a revenue-growth instrument; they are a risk-management and liquidity instrument.
+
+\subsubsection{Market Positioning: Which Hotels Benefit Most?}
+
+The Time-Right system is not uniformly valuable to all hotels.
+Its value depends on three hotel-specific factors: (i) \textbf{occupancy volatility}---hotels with seasonal or uncertain demand gain more from risk transfer; (ii) \textbf{OTA dependence}---hotels paying 15--25\% OTA commissions save these fees on Time-Right-issued room-nights; and (iii) \textbf{cost of capital}---hotels facing high borrowing costs ($>$10\%) benefit from zero-debt upfront financing.
+
+We construct a simple decision framework:
+
+\begin{table}[H]
+\centering
+\caption{Time-Right value proposition by hotel profile}
+\label{tab:positioning}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Hotel Profile} & \textbf{Occ. Risk} & \textbf{OTA Dep.} & \textbf{TR Net Benefit} \\
+\midrule
+Economy, high OTA, high financing cost  & High   & High (20\%+)   & \textbf{Strongly positive} \\
+Comfort, seasonal tourist area          & Medium & Medium         & \textbf{Moderately positive} \\
+Upscale business, stable occupancy      & Low    & Low            & Marginal \\
+Luxury, brand-direct bookings           & Minimal& None           & Negative (better off traditional) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The system's natural early adopters are economy and comfort-tier hotels in competitive markets with high OTA dependence---precisely the segment least served by traditional bank financing.
+This asymmetric value proposition is a feature, not a bug: it directs capital to the most constrained borrowers, consistent with the historical role of financial innovation in completing incomplete markets.
 
 \subsection{Credit Risk Calibration: Model Sensitivity and Empirical Benchmarks}
 
@@ -709,15 +736,13 @@ The welfare implications---lower consumer prices through risk-sharing, higher in
 \subsection{Regulatory and Market Structure Considerations}
 
 The introduction of FSR as a new asset class raises regulatory questions that parallel those faced by early ABS and derivative markets.
-First, the over-issuance mechanism ($\omega > 1$) creates a structural short position: the hotel sells more room-nights than it can physically deliver, relying on statistical cancellation patterns to avoid a delivery failure.
-In stressed scenarios where actual occupancy exceeds the safety factor, a cascade of physical redemption failures could trigger a ``run'' on Time-Right value---analogous to a bank run in fractional-reserve banking.
-Appropriate regulatory safeguards, such as mandatory reserve pools or insurance backstops, would mitigate this systemic risk.
 
-Second, the cross-border nature of tokenized FSRs introduces jurisdictional complexity.
-A Time-Right issued by a Chengdu hotel, traded on a Singapore-based secondary market, and held by a European investor falls under three regulatory regimes.
+The over-issuance mechanism creates a structural short position whose tail-risk properties are analyzed in Section 6.5.
+Beyond over-issuance, two additional regulatory dimensions deserve attention.
+First, the cross-border nature of tokenized FSRs introduces jurisdictional complexity: a Time-Right issued by a Chengdu hotel, traded on a Singapore-based secondary market, and held by a European investor falls under three regulatory regimes.
 The permissioned token standard (ERC-3643 or equivalent) provides an identity and compliance layer, but international coordination on FSR classification---as a security, a commodity, or a novel instrument---remains an open legal question.
 
-Third, market microstructure considerations arise from the ternary settlement mechanism.
+Second, market microstructure considerations arise from the ternary settlement mechanism.
 The physical redemption option ($\alpha < 1$) creates a convenience yield for flexible travelers, analogous to the convenience yield in commodity futures markets \cite{brennan1985}.
 The interaction between this convenience yield and the secondary market price premium $\eta_t$ determines the equilibrium distribution of settlement choices, which in turn affects the risk profile of each ABS tranche.
 A structural model of this equilibrium is a natural next step.
