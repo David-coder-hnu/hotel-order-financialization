@@ -66,13 +66,13 @@ Unlike RWA, which digitizes pre-existing claims, FSR \emph{creates} assets by tr
 We define a Time-Right as the tokenized form of an FSR, and we instantiate this framework in the hotel sector, where a hotel room-night three months from now becomes a tradeable, layerable, and hedgeable financial product.
 
 The economic rationale is straightforward: a hotel room-night on June 15 has value today, but that value is trapped in illiquidity.
-By tokenizing future room-nights as Time-Rights and structuring them into tranched ABS, we unlock three efficiency gains: (i) hotels receive upfront capital, converting uncertain future revenue into certain present cash---particularly valuable for economy-tier hotels with limited financing options; (ii) investors gain exposure to a new, diversifying asset class with attractive risk-adjusted returns; (iii) consumers benefit from price stability and a ternary settlement mechanism offering cash redemption, discounted physical stays, or secondary-market liquidity.
+By tokenizing future room-nights as Time-Rights and structuring them into tranched ABS, we unlock three efficiency gains: (i) hotels receive upfront capital, converting uncertain future revenue into certain present cash---particularly valuable for economy-tier hotels with limited financing options; (ii) investors gain exposure to a new, diversifying asset class with attractive risk-adjusted returns; (iii) consumers benefit from a guaranteed price floor (via ternary settlement at $\alpha=0.70$) and the continuous secondary-market offset mechanism offering cash redemption, discounted physical stays, or market-driven booking credit.
 
 We make four contributions.
 First, we formally define the FSR asset class as a 4-tuple $S = (c, T, \ell, \sigma)$ capturing capacity, time window, location, and service type, and establish existence conditions and pricing bounds under information asymmetry.
 Second, we design a complete Time-Right ABS architecture: a structural credit model (Merton distance-to-default with GARCH volatility), a one-factor Gaussian copula for default dependence, a four-tier sequential-pay waterfall with performance triggers, and a ternary settlement mechanism with formal proofs of strategy-proofness, individual rationality, and budget balance.
 Third, we calibrate the framework using 1.7 million daily price observations from 16,257 hotels in Chengdu, China, constructing a stratified 80-hotel asset pool.
-Monte Carlo simulation over 10,000 paths and 36 months yields near-zero expected losses and Aaa-implied ratings for all tranches under benchmark and stressed scenarios, though we document that these results are sensitive to model specification.
+Monte Carlo simulation (10,000 paths for the full ternary-settlement engine; 1,000--2,000 paths for simplified models) yields near-zero EL for all tranches in the full engine, though these results are sensitive to model specification, and the simplified default model (without settlement) yields Senior EL of 1.20\% (Baa--A).
 Fourth, we introduce the continuous secondary-market offset mechanism---allowing Time-Right holders to exit at market prices at any time and apply proceeds as booking credit---and provide a comprehensive analysis of stakeholder economics, over-issuance safety, and market positioning.
 
 We conduct an extensive suite of robustness checks that qualify our headline findings.
@@ -1019,8 +1019,13 @@ First, our empirical evidence is limited to a single city (Chengdu) and a single
 Second, the FSR diversification theorem remains conjectured pending multi-category empirical validation.
 Third, while we have resolved the structural-model divergence by constructing a data-calibrated PD model from hotel survival data, the calibration relies on the assumption that approximately 50\% of platform exits represent true defaults---a reasonable but unverified premise. Direct hotel default incidence data would further tighten the calibration.
 Fourth, while the per-night Time-Right revenue (\yen 1,054) is comparable to OTA-net revenue (\yen 1,032), the over-issuance multiplier ($\omega=1.29\times$) and occupancy-independent certainty combine to deliver 56\% higher annual hotel revenue (\yen 35.2M vs.\ \yen 22.6M). The economic value of Time-Rights lies primarily in this volume-certainty combination, not in per-night price improvement.
+Fifth, the continuous secondary-market offset mechanism---the system's primary user-facing innovation---depends on liquid secondary markets that do not exist at launch. The cold-start problem (Section 7.3) is a market-design challenge that no amount of Monte Carlo simulation can resolve; it must be addressed through platform subsidies, liquidity mining, or institutional anchor investors, each of which imposes costs not modeled in our baseline calibration.
 
-Future work should extend the FSR framework along four dimensions: (i) external calibration of hotel credit models against default incidence data; (ii) multi-category empirical validation with flight, event, and coworking FSR data; (iii) general equilibrium analysis of FSR market impact on service-industry investment and consumer welfare; and (iv) live market deployment with on-chain settlement and real user behavior data.
+Future work should prioritize four directions, in order of urgency.
+First and most critically, the 50\% haircut assumption---that half of observed platform exits represent true hotel defaults---must be validated or replaced with direct hotel default incidence data. This single unverified premise drives the entire credit risk calibration, and until it is empirically anchored, all tranche safety conclusions carry an irreducible model risk.
+Second, multi-category empirical validation with flight, event, and coworking FSR data is needed to test the diversification conjecture.
+Third, the copula sensitivity framework must be integrated into the full ternary-settlement engine to produce unified risk estimates that capture both settlement-mechanism loss absorption and tail dependence simultaneously.
+Fourth, live market deployment with on-chain settlement and real user behavior data would resolve the liquidity cold-start problem identified in Section 7.3.
 
 \medskip
 \noindent\textit{The FSR framework is not merely a paper about hotel securitization. It is the foundation of a research program on generalized service-capacity financialization.}
@@ -1030,7 +1035,58 @@ Future work should extend the FSR framework along four dimensions: (i) external 
 % ============================================================
 
 We thank seminar participants at the Hotel Finance Research Group for helpful comments.
-All errors are our own.
+All errors are our own. The replication code is available at \url{https://github.com/David-coder-hnu/hotel-order-financialization}.
+
+% ============================================================
+\section*{Appendix: Parameter Traceability}
+% ============================================================
+
+All model parameters are classified by evidentiary status.
+\textbf{CALIBRATED}: derived from external data or published literature.
+\textbf{ASSUMPTION}: reasonable estimate with literature support, but not directly calibrated to this dataset.
+\textbf{JUDGMENT}: author judgment; should be subjected to sensitivity analysis.
+\textbf{DERIVED}: computed from other parameters.
+
+\begin{table}[H]
+\centering
+\caption{Parameter traceability: key model inputs and their sources}
+\label{tab:params}
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} & \textbf{Status} & \textbf{Source / Sensitivity} \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Credit Risk}} \\
+PD cap               & 0.50             & JUDGMENT  & See Table \ref{tab:pd-comparison} for uncapped \\
+PD floor             & 0.001            & JUDGMENT  & Minimal impact (few hotels near floor) \\
+Volatility floor     & 0.05             & JUDGMENT  & See Section 4 for level multipliers \\
+DD floor             & 0.10             & JUDGMENT  & Prevents DD $\to$ 0 instability \\
+Default barrier      & $0.55 V_i$       & JUDGMENT  & Sensitivity: 0.45--0.65 tested \\
+PD calibration       & 2.50             & ASSUMPTION& Bharath \& Shumway (2008): 1.5--3.0 range \\
+GARCH $(\omega,\alpha,\beta)$ & (1e-5, 0.10, 0.85) & ASSUMPTION & Standard financial time-series defaults \\
+$\rho_{\text{sys}}$  & 0.70             & JUDGMENT  & Sensitivity: 0.50--0.95 (Section 6.5) \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Pricing \& Issuance}} \\
+Discount rate $r$    & 0.08             & JUDGMENT  & Sensitivity: 5--12\% (Section 6.6) \\
+$d_{\text{issue}}$   & 0.10             & JUDGMENT  & Sensitivity: 0--30\% \\
+Platform markup $m$  & 0.08             & JUDGMENT  & Sensitivity not yet tested \\
+$\alpha$ (physical)  & 0.70             & JUDGMENT  & $\alpha \geq \delta(T)(1-d)$ for IR \\
+$\phi$ (safety factor) & 0.80           & JUDGMENT  & Sensitivity: 0.60--1.00 (Section 6.9) \\
+$\omega$             & 1.29             & DERIVED   & $\omega = (1/\rho) \cdot \phi$ \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Calibrated PD Model}} \\
+Default / exit ratio & 0.50             & JUDGMENT  & Sensitivity: 0.25--0.75 (Table \ref{tab:haircut}) \\
+Attrition rates      & Tier-specific    & CALIBRATED& 14,851 hotels, Mar--Jun 2024 \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Structuring}} \\
+Tranche ratios       & 68/20/8/4\%      & JUDGMENT  & Industry-standard for CMBS \\
+Coupons              & 4.5/6.5/9.5\%    & JUDGMENT  & Aligned with target ratings \\
+Reserve pct          & 3.0\%            & JUDGMENT  & Sensitivity not yet tested \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The complete parameter audit, including 200+ parameters across 8 engine modules, is maintained in \texttt{src/model\_params.py} in the replication repository.
 
 % ============================================================
 \bibliographystyle{plainnat}
