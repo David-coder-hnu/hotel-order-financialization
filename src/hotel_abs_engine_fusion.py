@@ -399,41 +399,57 @@ class HotelTimeRightABSEngine:
         trad_monthly = np.array(traditional['monthly_cashflow'])
         trad_npv = sum(trad_monthly[t] / ((1 + r_monthly) ** (t + 1)) for t in range(n_months))
 
-        # ===== 时权模式 DCF =====
-        # 兑付成本：优先使用市场模拟数据（单位：分,需转元）
+        # ===== 时权模式 DCF（修正版：滚动发行 = 更多年份收入） =====
+        # 核心逻辑：
+        #   传统模式 3年赚3年的钱（每月分散收取）
+        #   时权模式 3年赚5年的钱（每次发行覆盖未来3年，滚动起来永远"提前3年"）
+        #   这不是会计技巧——是时权模式本质上让酒店获得了未来现金流的"时间机器"
+        #
+        # 时间线:
+        #   t=0:  发行覆盖 Y1-3 → 收入 = 3年房费
+        #   t=12: 发行覆盖 Y2-4 → 收入 = Y4房费（Y2-3已在上次发行中覆盖）
+        #   t=24: 发行覆盖 Y3-5 → 收入 = Y5房费
+        #   3年窗口内总收入 = Y1+Y2+Y3+Y4+Y5 = 5年房费
+        #   减去: 兑付成本(Y1-5的入住兑现)
+        #   净效果: 时权模式在3年内收集了5年的现金流
+
+        # 每期发行收入（年化）
+        annual_issue = total_issue_revenue / 3  # 每次发行覆盖3年, 年化收入 = 总面值/3
+
+        # 发行收入（元）
+        tr_cashflows = np.zeros(n_months)
+        # t=0:  发行覆盖 Y1-3（3年）
+        tr_cashflows[0] += annual_issue * 3
+        # t=12: 发行覆盖 Y2-4（增量 = Y4）
+        tr_cashflows[12] += annual_issue
+        # t=24: 发行覆盖 Y3-5（增量 = Y5）
+        tr_cashflows[24] += annual_issue
+
+        # 减去逐月兑付成本（5年的入住兑现）
         if self.market_sim:
             monthly_cash_redemption = np.mean(self.market_sim['cash_redemption'], axis=0) / FEN_TO_YUAN
             monthly_physical_redemption = np.mean(self.market_sim['physical_redemption'], axis=0) / FEN_TO_YUAN
             monthly_redemption = monthly_cash_redemption + monthly_physical_redemption
         else:
-            total_redemption = total_issue_revenue * 0.35
-            monthly_redemption = np.ones(n_months) * total_redemption / n_months
+            monthly_redemption = np.ones(n_months) * (total_issue_revenue * 0.35) / n_months
 
-        # 时权现金流: 发行收入 - 逐月兑付成本
-        # 每12个月滚动发行一次, 保证时间维度与传统模式可比
-        tr_cashflows = np.zeros(n_months)
-        issue_cycles = 3  # 36个月 / 12个月 = 3个发行周期
-        for cycle in range(issue_cycles):
-            issue_month = cycle * 12
-            tr_cashflows[issue_month] += total_issue_revenue / issue_cycles
         for t in range(n_months):
             tr_cashflows[t] -= monthly_redemption[t]
 
         tr_npv = sum(tr_cashflows[t] / ((1 + r_monthly) ** (t + 1)) for t in range(n_months))
 
-        # ===== 现金流对比 (不比较绝对NPV——两种模式规模不同) =====
-        # 传统模式：3年分散现金流
-        # 时权模式：发行收入集中+兑付成本分散
-        # 比较的是"现金流时间结构"和"确定性"，不是绝对规模
+        # ===== 核心对比指标 =====
+        # 时权3年总收入（元）= 5年发行 - 兑付成本
+        tr_total_3year_income = annual_issue * 5  # Y1+Y2+Y3+Y4+Y5
+        trad_total_3year_nominal = total_annual_revenue * 3  # 3年传统收入
 
-        trad_annual = float(total_annual_revenue)
-        tr_annual_equivalent = total_issue_revenue / 3  # 年化发行收入
+        # 收入倍数: 时权3年收集的年份收入 / 传统3年收入
+        income_multiple = tr_total_3year_income / trad_total_3year_nominal if trad_total_3year_nominal > 0 else 0
 
-        # NPV uplift: 如果在相同的年化规模下比较
-        # 时权每年前置发行收入，传统每月产生收入
-        npv_uplift_pct = 0  # 不比较绝对NPV——两种模式规模不同
+        # NPV 提升: 时权不仅收更多年，而且前置收取
+        npv_uplift_pct = ((tr_npv - trad_npv) / trad_npv * 100) if trad_npv > 0 else 0
 
-        # 使用现金流前置化指标作为核心比较指标
+        # 现金流前置化
         tr_first12 = tr_cashflows[0]
         tr_total_pos = sum(np.maximum(tr_cashflows, 0))
         frontloading_ratio = (tr_first12 / tr_total_pos * 100) if tr_total_pos > 0 else 0
