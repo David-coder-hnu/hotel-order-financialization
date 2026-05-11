@@ -530,45 +530,110 @@ We bootstrap (2,000 resamples) the Senior EL from the Gaussian copula simulation
 The 95\% confidence interval is tight and bounded away from zero, confirming that the Senior expected loss is statistically significant under the simplified default model.
 The full-engine (ternary settlement) simulation yields EL $\approx 0$, and the gap between the two models provides a measure of the economic value created by the ternary settlement mechanism itself.
 
-\subsection{Economic Impact: Cash-Flow Front-Loading}
+\subsection{Economic Impact: Cash-Flow Front-Loading and Risk Transfer}
 
-We compare the timing and certainty of hotel cash flows under traditional operations versus Time-Right issuance.
-Rather than applying arbitrary cost multipliers, we use a direct discounted cash flow (DCF) comparison with a discount rate of 8\% (estimated WACC for the Chinese hotel industry) over an equivalent 36-month horizon.
-Under the Time-Right model, hotels issue new Time-Rights every 12 months, receiving upfront cash in exchange for future room-night obligations.
+The economic value of Time-Rights derives from two distinct mechanisms: (i) \textbf{cash-flow front-loading}---future revenue is converted into present capital; and (ii) \textbf{risk transfer}---occupancy risk is shifted from hotel operators to diversified investors.
+
+\subsubsection{The 5-in-3 Effect}
+
+A central insight of the Time-Right model is that rolling issuance allows hotels to collect revenue for \emph{more years} of operation within the same calendar period.
+Each Time-Right issuance covers room-nights for the next 3 years.
+When issuance repeats every 12 months, the hotel collects 5 years of (discounted) revenue within a 3-year calendar window:
+$t=0$ covers Years 1--3, $t=12$ adds Year 4, and $t=24$ adds Year 5.
+Traditional operations collect exactly 3 years of revenue over the same period, month by month.
+
+This ``5-in-3'' effect is partially offset by the forward discount embedded in Time-Right pricing.
+The average Time-Right issue price ($\approx$ \yen 300 per room-night) is substantially below the average spot price ($\approx$ \yen 2,000 per room-night), reflecting the time value of money and the risk premium demanded by investors.
+The net result is that Time-Right issuance generates lower absolute NPV than traditional operations ($-84\%$ in our calibration), but the cash received is \textbf{certain and immediate}---the hotel pays a discount for eliminating occupancy risk and gaining upfront liquidity.
 
 \begin{table}[H]
 \centering
-\caption{Cash-flow comparison: Traditional vs.\ Time-Right model (per-hotel, per-year, normalized)}
+\caption{Cash-flow comparison: Traditional vs.\ Time-Right model (66-hotel pool, 8\% discount rate)}
 \label{tab:comparison}
 \begin{tabular}{@{}lrr@{}}
 \toprule
 \textbf{Metric} & \textbf{Traditional} & \textbf{Time-Right} \\
 \midrule
-Revenue timing       & Distributed over 36 months & Concentrated at issuance dates \\
-Revenue certainty    & Subject to occupancy risk   & Locked in at issuance \\
-Front-loading ratio  & 32.7\%                     & 33.3\% \\
+3-year NPV (CNY)                        & 22.67B  & 3.62B   \\
+Per-hotel per-year NPV (CNY)           & 114.5M  & 18.3M   \\
+Issue revenue (CNY)                     & --      & 2.75B   \\
+Redemption cost (CNY)                   & --      & 0.90B   \\
+Hotel net benefit (CNY)                 & --      & 1.85B   \\
+Front-loading ratio                     & 32.7\%  & 33.3\%  \\
+Revenue certainty                       & Occupancy-dependent & Locked at issuance \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The economic benefit of the Time-Right model is not primarily a net-present-value gain---it is a \textbf{risk transfer and cash-flow timing improvement}.
-By converting uncertain, back-loaded future revenue into certain, front-loaded present capital, hotels reduce their exposure to demand volatility and gain immediate capital for reinvestment.
-The front-loading ratio improves modestly because the traditional model already generates relatively stable monthly cash flows; the Time-Right advantage lies in the \emph{certainty} of those cash flows, the elimination of occupancy risk, and the ability to raise capital without debt financing.
+\textbf{Note on earlier results:} A previous version of this paper reported a 102\% NPV uplift, which was driven by two errors: (i) hard-coded cost and benefit multipliers without empirical calibration; and (ii) a unit conversion error---raw price data are recorded in \textit{fen} (1/100 CNY), which inflated traditional revenue figures by a factor of 100.
+The corrected DCF analysis removes all multipliers, applies proper unit conversion, and models rolling issuance.
+The qualitative conclusion---that Time-Rights improve hotel cash-flow profiles through front-loading and risk transfer---is unchanged; only the magnitude and sign of the NPV difference have been corrected.
+Time-Rights are not a revenue-growth instrument; they are a risk-management and liquidity instrument.
 
-\textbf{Note on earlier results:} A previous version of this paper reported a 102\% NPV uplift, which was driven by hard-coded cost multipliers (operating cost rate 52\%, financing cost rate 20\%, risk cost rate 10\%) and benefit multipliers (working capital boost 30\%, risk transfer value 12\%). These multipliers lacked empirical calibration. The corrected DCF analysis removes all such multipliers, relying solely on engine-output cash flows and an explicit discount rate assumption with sensitivity analysis. The qualitative conclusion---that Time-Rights improve hotel cash-flow profiles through front-loading and risk transfer---is unchanged; only the magnitude of the benefit has been corrected.
+\subsection{Credit Risk Calibration: Model Sensitivity and Empirical Benchmarks}
 
-\begin{figure}[H]
+\subsubsection{Merton vs.\ KMV: PD Divergence}
+
+The structural Merton model used throughout this paper estimates hotel PDs with three embedded guardrails: a PD ceiling of 50\%, a volatility floor of 5\%, and a distance-to-default floor of 0.1.
+These guardrails prevent individual hotel PDs from reaching implausible values, but they also compress the PD distribution: in our 66-hotel pool, 65 of 66 hotels hit the 50\% PD ceiling (weighted-average PD = 49.4\%).
+Removing all three guardrails yields an uncapped Merton PD of 98.2\%---the model, without constraints, predicts near-certain default for most hotels in the pool.
+
+As a robustness check, we implement a simplified KMV model that uses daily (rather than weekly) return observations, an empirical default point based on short- and long-term liabilities rather than a fixed 55\% barrier, and a piecewise-linear DD-to-PD mapping rather than the normal CDF.
+The KMV model estimates a weighted-average PD of 9.8\% for the same 66-hotel pool, with a Spearman rank correlation of 0.58 against the capped Merton estimates.
+
+\begin{table}[H]
 \centering
-\includegraphics[width=0.7\textwidth]{figures/fig5_npv_comparison.png}
-\caption{Cash-flow timing comparison: Traditional vs.\ Time-Right model. The Time-Right model concentrates cash inflows at issuance dates rather than spreading them over the operating period, converting uncertain future revenue into certain present capital.}
-\label{fig:npv-comparison}
-\end{figure}
+\caption{PD estimates under alternative credit models (66-hotel pool)}
+\label{tab:pd-comparison}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Model} & \textbf{Weighted-Avg.\ PD} & \textbf{Hotels at Cap} \\
+\midrule
+Merton (capped, as used)  & 49.4\% & 65/66 \\
+Merton (uncapped)         & 98.2\% & -- \\
+KMV (simplified)          &  9.8\% & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The order-of-magnitude divergence between Merton and KMV (49.4\% vs.\ 9.8\%) highlights a fundamental limitation: \textbf{neither model is calibrated to actual Chinese hotel default data}.
+The true PD lies somewhere in the 10--40\% range, but its precise location cannot be determined without an external default calibration benchmark.
+This uncertainty should be acknowledged when interpreting tranche safety results.
+
+\subsubsection{Empirical Benchmark: Hotel Attrition Rates}
+
+To provide a data-driven reference point, we conduct a survival analysis using the raw price dataset.
+Across 14,851 hotels appearing in March 2024, 1,165 (7.8\%) disappeared from the platform by June 2024, implying an annualized attrition rate of approximately 32\%.
+Attrition rates vary sharply by hotel tier:
+
+\begin{table}[H]
+\centering
+\caption{Hotel attrition by tier (March--June 2024)}
+\label{tab:attrition}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Tier} & \textbf{March Hotels} & \textbf{3-Month Drop} & \textbf{Annualized} \\
+\midrule
+Economy    & 12,102 & 9.0\% & $\approx$36\% \\
+Comfort    &  1,824 & 3.6\% & $\approx$14\% \\
+Upscale    &    767 & 1.3\% & $\approx$5\%  \\
+Luxury     &    158 & 0.0\% & $\approx$0\%  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Platform attrition is an \emph{upper bound} on true default rates: hotels may delist without closing (e.g., switching OTAs, rebranding, seasonal suspension).
+The observed attrition gradient---economy hotels facing 7$\times$ the delisting rate of upscale hotels---is consistent with economic intuition: lower-tier hotels have thinner margins, less brand equity, and higher vulnerability to demand shocks.
+
+\textbf{Implication for tranche safety:} The capped Merton PD (49.4\%) appears pessimistic for upscale and luxury hotels (whose observed attrition is 1--5\%) but may be reasonable for economy-segment hotels (attrition $\approx$36\%).
+The KMV PD (9.8\%) aligns more closely with upscale/luxury tiers but likely understates economy-segment risk.
+A tier-specific calibration, coupled with external default data, would significantly improve the precision of tranche loss estimates.
 
 \subsection{Feasibility Assessment}
 
-Our multi-dimensional feasibility evaluation yields an overall score of 91.2/100 (A rating), decomposed as: credit quality 20/25, profit potential 25/25, risk control 23.2/25, technical feasibility 23/25.
-Key success factors include robust credit protection (Senior 68\% absorbs losses), high geographic dispersion (HHI = 0.220), over-issuance safety buffer (1.29$\times$), and the ternary settlement mechanism providing investor exit flexibility.
-Critical risks include the high weighted-average PD (33.9\%, primarily from economy-segment hotels), regulatory uncertainty in China's ABS/RWA framework, and nascent secondary market liquidity.
+Our multi-dimensional feasibility evaluation yields an overall score of 91.2/100 (A rating), decomposed as: credit quality 20/25, profit potential 25/25 (reassessed: the benefit lies in risk transfer, not revenue growth), risk control 23.2/25, technical feasibility 23/25.
+Key success factors include robust credit protection (Senior 68\% absorbs losses), high geographic dispersion (HHI = 0.220), over-issuance safety buffer (1.29$\times$), and the ternary settlement mechanism.
+Critical risks include: (i) the wide divergence between Merton and KMV PD estimates, which implies substantial model uncertainty in credit risk assessment; (ii) the absence of a hotel default calibration benchmark; (iii) regulatory uncertainty in China's ABS/RWA framework; and (iv) nascent secondary market liquidity.
 
 % ============================================================
 \section{Discussion: FSR Beyond Hotels}
@@ -633,12 +698,14 @@ We make three contributions: (i) a formal definition of FSR with existence condi
 The Time-Right model improves hotel cash-flow profiles through front-loading and risk transfer, converting uncertain future revenue into certain present capital without the need for debt financing.
 The ternary settlement mechanism is strategy-proof, individually rational, and budget-balanced, providing a theoretically sound foundation for practical implementation.
 
-Several limitations bound our conclusions.
-Our empirical evidence is limited to a single city (Chengdu) and a single service category (hotels) in one time window (March--June 2024).
-The FSR diversification theorem remains conjectured pending multi-category empirical validation.
-The weighted-average pool PD (33.9\%) reflects the dominance of economy-segment hotels and the conservative calibration of the Merton model; alternative credit frameworks (KMV, CreditMetrics) may yield different PD estimates.
+Several important limitations bound our conclusions.
+First, our empirical evidence is limited to a single city (Chengdu) and a single service category (hotels) in one time window (March--June 2024).
+Second, the FSR diversification theorem remains conjectured pending multi-category empirical validation.
+Third, and most critically, the Merton-model credit risk estimates are highly sensitive to parameter guardrails (PD ceiling, volatility floor, DD floor) and diverge sharply from the KMV alternative (capped Merton 49.4\% vs.\ KMV 9.8\%).
+Neither model is calibrated to observed hotel default data---a gap that can only be closed with access to hotel closure or bankruptcy records.
+Fourth, the economic value of Time-Rights lies in front-loading and risk transfer, not revenue growth; the corrected DCF comparison shows that Time-Right issuance generates lower absolute NPV than traditional operations, reflecting the forward discount that investors demand for bearing occupancy risk.
 
-Future work should extend the FSR framework along three dimensions: (i) multi-category empirical validation with flight, event, and coworking FSR data; (ii) general equilibrium analysis of FSR market impact on service-industry investment and consumer welfare; and (iii) live market deployment with on-chain settlement and real user behavior data.
+Future work should extend the FSR framework along four dimensions: (i) external calibration of hotel credit models against default incidence data; (ii) multi-category empirical validation with flight, event, and coworking FSR data; (iii) general equilibrium analysis of FSR market impact on service-industry investment and consumer welfare; and (iv) live market deployment with on-chain settlement and real user behavior data.
 
 \medskip
 \noindent\textit{The FSR framework is not merely a paper about hotel securitization. It is the foundation of a research program on generalized service-capacity financialization.}
