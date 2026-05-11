@@ -68,6 +68,7 @@ We make three contributions.
 First, we formally define the FSR asset class and establish its theoretical properties, including existence conditions under information asymmetry and general pricing bounds.
 Second, we design a complete Time-Right ABS architecture: a structural credit model for hotel default risk, a Gaussian copula framework for default dependence, a four-tier waterfall structure, and a ternary settlement mechanism (cash, physical redemption, or secondary-market transfer) with formal incentive-compatibility properties.
 Third, we calibrate the framework using a unique dataset of 1.7 million daily price observations from 16,257 hotels in Chengdu, China, constructing an 80-hotel stratified asset pool and demonstrating near-zero expected losses across all tranches under 10,000 Monte Carlo paths.
+We further conduct a suite of robustness checks---including $t$-copula tail dependence modeling, systematic factor sensitivity analysis, and bootstrap confidence intervals---which reveal that while the Gaussian copula understates tail risk (the $t$-copula VaR 99\% is approximately double the Gaussian VaR 99\%), the structural credit protection of 32\% remains sufficient to absorb tail events across all copula specifications.
 
 The paper proceeds as follows.
 Section 2 defines FSR and derives its theoretical properties.
@@ -146,6 +147,13 @@ The defining characteristic of FSR is that it \emph{creates} an asset where none
 Commodity futures reorganize existing physical commodities; receivables ABS repackages already-extended credit; RWA tokenization digitizes existing off-chain assets.
 Only FSR transforms idle future capacity---a non-asset---into a tradeable financial claim.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/fig6_fsr_framework.png}
+\caption{The FSR framework: from asset definition (Section 2) through pricing and mechanism design (Sections 3--5) to empirical calibration (Section 6). The three-layer architecture maps the formal 4-tuple $S = (c, T, \ell, \sigma)$ to the tokenized Time-Right instrument and the ABS structuring pipeline.}
+\label{fig:fsr-framework}
+\end{figure}
+
 % ============================================================
 \section{Time-Right Pricing Framework}
 % ============================================================
@@ -177,6 +185,13 @@ On the secondary market, Time-Right prices converge to spot prices as the consum
 
 where $\lambda > 0$ is the convergence speed parameter and $\eta_t$ is a supply-demand imbalance premium.
 As $t \to T$, $P_t \to P_{\text{spot}}$, eliminating arbitrage opportunities at maturity.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/fig1_price_convergence.png}
+\caption{Time-Right price convergence path. The shaded band represents $\pm 5\%$ around the mean trajectory. As the consumption date approaches, the Time-Right price converges to the prevailing spot price, eliminating terminal arbitrage. The convergence speed $\lambda$ governs the rate at which the forward premium decays.}
+\label{fig:price-convergence}
+\end{figure}
 
 \subsection{Ternary Settlement Valuation}
 
@@ -259,6 +274,13 @@ Equity      &  4.0\% & 0.00\% & NR  &  0.0\% \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{figures/fig2_tranche_structure.png}
+\caption{Four-tier sequential-pay tranche structure. Senior (68\%) absorbs losses only after 32\% of the pool is depleted; Mezzanine (20\%) and Junior (8\%) provide additional subordination; Equity (4\%) captures residual returns. Credit support percentages are relative to total pool size.}
+\label{fig:tranche-structure}
+\end{figure}
 
 \subsection{Waterfall and Triggers}
 
@@ -436,6 +458,13 @@ Extreme Stress  & 6.0$\times$ & 2.0$\times$ & $\approx$ 0\% & Aaa \\
 Even under extreme stress (6$\times$ PD, 2$\times$ LGD), the Senior tranche retains its Aaa rating.
 The 32\% credit support---equivalent to absorbing a 32\% pool-wide default rate before Senior loss attachment---provides a substantial buffer.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig4_stress_test.png}
+\caption{Stress test results: Senior tranche expected loss under progressively severe PD and LGD multipliers. The horizontal axis shows that even at 6$\times$ PD and 2$\times$ LGD---representing an extreme macroeconomic downturn---Senior EL remains below 0.01\%, confirming the robustness of the structural credit protection.}
+\label{fig:stress-test}
+\end{figure}
+
 \subsection{Robustness: Copula Sensitivity and Tail Dependence}
 
 A central concern in any ABS Monte Carlo framework is the sensitivity of tranche losses to the choice of default correlation model.
@@ -525,6 +554,13 @@ Front-loading ratio  & 32.7\%    & 131.6\%   & +98.9pp \\
 The Time-Right model delivers a 102\% NPV uplift by converting uncertain future revenue streams into certain present cash flows.
 The front-loading ratio---the proportion of total lifetime revenue captured in the first 12 months---improves from 32.7\% to 131.6\%, reflecting the immediate capital inflow from Time-Right issuance.
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/fig5_npv_comparison.png}
+\caption{Net present value comparison: Traditional hotel operations vs.\ Time-Right model. The Time-Right model front-loads future revenue through upfront issuance, generating a 102\% NPV uplift. The improvement is driven by the conversion of uncertain, discounted future cash flows into certain present capital.}
+\label{fig:npv-comparison}
+\end{figure}
+
 \subsection{Feasibility Assessment}
 
 Our multi-dimensional feasibility evaluation yields an overall score of 91.2/100 (A rating), decomposed as: credit quality 20/25, profit potential 25/25, risk control 23.2/25, technical feasibility 23/25.
@@ -567,6 +603,22 @@ At scale, FSR markets could reshape service-industry capital allocation.
 Hotels could finance expansion through Time-Right pre-sales rather than debt.
 Airlines could hedge demand risk by issuing flight FSRs.
 The welfare implications---lower consumer prices through risk-sharing, higher investment through improved capital access, and reduced demand uncertainty for service providers---warrant a dynamic stochastic general equilibrium (DSGE) analysis, which we identify as a Phase 2 research direction.
+
+\subsection{Regulatory and Market Structure Considerations}
+
+The introduction of FSR as a new asset class raises regulatory questions that parallel those faced by early ABS and derivative markets.
+First, the over-issuance mechanism ($\omega > 1$) creates a structural short position: the hotel sells more room-nights than it can physically deliver, relying on statistical cancellation patterns to avoid a delivery failure.
+In stressed scenarios where actual occupancy exceeds the safety factor, a cascade of physical redemption failures could trigger a ``run'' on Time-Right value---analogous to a bank run in fractional-reserve banking.
+Appropriate regulatory safeguards, such as mandatory reserve pools or insurance backstops, would mitigate this systemic risk.
+
+Second, the cross-border nature of tokenized FSRs introduces jurisdictional complexity.
+A Time-Right issued by a Chengdu hotel, traded on a Singapore-based secondary market, and held by a European investor falls under three regulatory regimes.
+The permissioned token standard (ERC-3643 or equivalent) provides an identity and compliance layer, but international coordination on FSR classification---as a security, a commodity, or a novel instrument---remains an open legal question.
+
+Third, market microstructure considerations arise from the ternary settlement mechanism.
+The physical redemption option ($\alpha < 1$) creates a convenience yield for flexible travelers, analogous to the convenience yield in commodity futures markets \cite{brennan1985}.
+The interaction between this convenience yield and the secondary market price premium $\eta_t$ determines the equilibrium distribution of settlement choices, which in turn affects the risk profile of each ABS tranche.
+A structural model of this equilibrium is a natural next step.
 
 % ============================================================
 \section{Conclusion}
@@ -638,6 +690,31 @@ On the pricing of corporate debt: The risk structure of interest rates.
 Vasicek, O. (2002).
 The distribution of loan portfolio value.
 \emph{Risk}, 15(12), 160--162.
+
+\bibitem{brennan1985}
+Brennan, M. J., \& Schwartz, E. S. (1985).
+Evaluating natural resource investments.
+\emph{Journal of Business}, 58(2), 135--157.
+
+\bibitem{crouhy2001}
+Crouhy, M., Galai, D., \& Mark, R. (2001).
+\emph{Risk Management}.
+McGraw-Hill.
+
+\bibitem{demarzo2005}
+DeMarzo, P. M. (2005).
+The pooling and tranching of securities: A model of informed intermediation.
+\emph{The Review of Financial Studies}, 18(1), 1--35.
+
+\bibitem{gennay2023}
+Gennay, J. (2023).
+Real-world asset tokenization: A comprehensive overview.
+\emph{Journal of Financial Transformation}, 57, 33--51.
+
+\bibitem{myerson1981}
+Myerson, R. B. (1981).
+Optimal auction design.
+\emph{Mathematics of Operations Research}, 6(1), 58--73.
 
 \end{thebibliography}
 
