@@ -13,6 +13,7 @@
 import json
 import os
 import numpy as np
+from config import PROJECT_ROOT
 import matplotlib
 matplotlib.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
 matplotlib.rcParams['axes.unicode_minus'] = False
@@ -25,7 +26,7 @@ class ABSReportGenerator:
     """ABS专业报告生成器"""
     
     def __init__(self, report_json_path=None, work_dir=None):
-        self.work_dir = work_dir or r'C:\Users\weida\Desktop\酒店研究'
+        self.work_dir = work_dir or PROJECT_ROOT
         
         if report_json_path is None:
             report_json_path = f'{self.work_dir}/output/abs_report_v6.json'

@@ -25,6 +25,7 @@ from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
 
+from config import PROJECT_ROOT
 from credit_model import HotelCreditModel
 from asset_pool import AssetPoolBuilder, print_pool_characteristics
 from tranche_structure import TrancheStructure, print_tranche_structure
@@ -35,7 +36,7 @@ class HotelTimeRightABSEngine:
     """时权ABS融合引擎 - V6-Fusion增强版"""
     
     def __init__(self, work_dir=None):
-        self.work_dir = work_dir or r'C:\Users\weida\Desktop\酒店研究'
+        self.work_dir = work_dir or PROJECT_ROOT
         self.prices = None
         self.hotel_info = None
         self.future_prices = None

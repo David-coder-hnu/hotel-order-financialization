@@ -13,6 +13,7 @@ import numpy as np
 from scipy import stats
 from scipy.optimize import minimize_scalar
 import warnings
+from tqdm import tqdm
 warnings.filterwarnings('ignore')
 
 
@@ -194,15 +195,11 @@ class HotelCreditModel:
         results = []
         total = len(hotel_codes)
         
-        if total > 50:
-            print(f"  开始计算 {total} 家酒店的信用指标...")
-        
         # 预加载酒店信息映射（加速查询）
         info_map = self.hotel_info.set_index('hotelCode')[['hotelName', 'hotelLevel']].to_dict('index')
-        
-        for idx, code in enumerate(hotel_codes):
-            if total > 50 and (idx + 1) % 50 == 0:
-                print(f"    进度: {idx+1}/{total} ({(idx+1)/total*100:.0f}%)")
+
+        pbar = tqdm(enumerate(hotel_codes), total=total, desc="  Computing credit metrics", unit="hotel") if total > 50 else enumerate(hotel_codes)
+        for idx, code in pbar:
             
             returns = self._compute_price_returns(code)
             if returns is None or len(returns) < min_records:
@@ -220,13 +217,18 @@ class HotelCreditModel:
             price_vol = self._estimate_garch_volatility(returns)
             if price_vol is None:
                 price_vol = np.std(returns)
-            
+
             dd = self._merton_distance_to_default(price_vol, avg_price, min_price, hotel_level)
             prob_default = self._dd_to_pd(dd)
             lgd = self._compute_lgd(code, avg_price, min_price, price_vol, hotel_level)
             el = prob_default * lgd
+
+            # NaN guard: 跳过价格数据异常的酒店
+            if np.isnan(prob_default) or np.isnan(lgd) or np.isnan(el):
+                continue
+
             rating = self._assign_rating(prob_default)
-            
+
             results.append({
                 'hotelCode': code,
                 'hotelName': hotel_name,
@@ -247,6 +249,11 @@ class HotelCreditModel:
         df = pd.DataFrame(results)
         if len(df) > 0:
             df = df.sort_values('pd').reset_index(drop=True)
+
+        skipped = total - len(df)
+        if skipped > 0:
+            print(f"    ⚠ {skipped}/{total} 家酒店因数据异常(NaN/序列过短)被跳过")
+
         return df
     
     def compute_correlation_matrix(self, credit_df, min_records=30):
@@ -385,7 +392,7 @@ def simulate_default_events(credit_df, corr_matrix, n_periods=36, n_paths=10000,
 if __name__ == '__main__':
     # 快速测试
     import os
-    work_dir = r'C:\Users\weida\Desktop\酒店研究'
+    from config import PROJECT_ROOT as work_dir
     
     prices = pd.read_csv(f'{work_dir}/data/cleaned_hotel_prices.csv')
     info = pd.read_csv(f'{work_dir}/data/hotel_info.csv')

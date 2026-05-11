@@ -12,7 +12,7 @@ import os
 def generate_html_report():
     """生成HTML报告"""
     
-    work_dir = r'c:\Users\weida\Desktop\酒店研究'
+    from config import PROJECT_ROOT as work_dir
     
     # 读取JSON报告
     with open(f'{work_dir}/output/simulation_report_v5.json', 'r', encoding='utf-8') as f:

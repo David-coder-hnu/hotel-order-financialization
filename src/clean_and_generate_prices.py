@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 # 设置工作目录
-work_dir = r'c:\Users\weida\Desktop\酒店研究'
+from config import PROJECT_ROOT as work_dir
 os.chdir(work_dir)
 
 # Task 1: 读取并合并所有价格数据文件

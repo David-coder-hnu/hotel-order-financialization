@@ -19,6 +19,7 @@
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 
 class WaterfallEngine:
@@ -337,13 +338,11 @@ class WaterfallEngine:
             每路径的各分层结果
         """
         all_results = []
-        
-        for path in range(self.n_paths):
-            if (path + 1) % 500 == 0 or path == self.n_paths - 1:
-                print(f"    瀑布分配: {path+1}/{self.n_paths} ({(path+1)/self.n_paths*100:.0f}%)")
+
+        for path in tqdm(range(self.n_paths), desc="  Running waterfall  ", unit="path"):
             _, tranche_results = self.run_waterfall(path=path)
             all_results.append(tranche_results)
-        
+
         return all_results
 
 

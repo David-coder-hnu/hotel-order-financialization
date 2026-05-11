@@ -381,7 +381,7 @@ if __name__ == '__main__':
     import os
     from credit_model import HotelCreditModel
     
-    work_dir = r'C:\Users\weida\Desktop\酒店研究'
+    from config import PROJECT_ROOT as work_dir
     
     prices = pd.read_csv(f'{work_dir}/data/cleaned_hotel_prices.csv')
     info = pd.read_csv(f'{work_dir}/data/hotel_info.csv')

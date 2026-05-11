@@ -13,6 +13,7 @@
 
 import os
 import sys
+from config import PROJECT_ROOT
 import json
 import numpy as np
 import pandas as pd
@@ -31,7 +32,7 @@ class HotelABSEngine:
     """酒店订单ABS引擎"""
     
     def __init__(self, work_dir=None):
-        self.work_dir = work_dir or r'C:\Users\weida\Desktop\酒店研究'
+        self.work_dir = work_dir or PROJECT_ROOT
         self.prices = None
         self.hotel_info = None
         self.future_prices = None

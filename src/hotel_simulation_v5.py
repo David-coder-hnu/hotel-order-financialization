@@ -22,7 +22,7 @@ print("\n【步骤1：数据准备与酒店筛选】")
 print("-" * 80)
 
 # 读取数据
-work_dir = r'c:\Users\weida\Desktop\酒店研究'
+from config import PROJECT_ROOT as work_dir
 cleaned_prices = pd.read_csv(f'{work_dir}/data/cleaned_hotel_prices.csv')
 future_prices = pd.read_csv(f'{work_dir}/data/hotel_future_prices.csv')
 hotel_info = pd.read_csv(f'{work_dir}/data/hotel_info.csv')

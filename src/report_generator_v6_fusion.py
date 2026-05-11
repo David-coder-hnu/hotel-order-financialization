@@ -13,6 +13,7 @@ import json
 import os
 import numpy as np
 import matplotlib
+from config import PROJECT_ROOT
 matplotlib.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
 matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
@@ -24,7 +25,7 @@ class ABSFusionReportGenerator:
     """时权ABS融合报告生成器"""
     
     def __init__(self, report_json_path=None, work_dir=None):
-        self.work_dir = work_dir or r'C:\Users\weida\Desktop\酒店研究'
+        self.work_dir = work_dir or PROJECT_ROOT
         
         if report_json_path is None:
             report_json_path = f'{self.work_dir}/output/abs_report_v6_fusion.json'
@@ -397,7 +398,9 @@ body {{ font-family: 'Microsoft YaHei','PingFang SC',Arial,sans-serif; line-heig
 .cover h1 {{ font-size: 36px; font-weight: 700; margin-bottom: 20px; letter-spacing: 2px; border: none; }}
 .cover .subtitle {{ font-size: 20px; font-weight: 300; opacity: 0.9; margin-bottom: 40px; }}
 .cover .meta {{ font-size: 14px; opacity: 0.7; line-height: 2; }}
-.cover .badge {{ display: inline-block; background: rgba(255,255,255,0.15); padding: 8px 24px; border-radius: 20px; margin-top: 30px; font-size: 13px; letter-spacing: 1px; }}
+.cover .badge {{ display: inline-block; background: rgba(255,255,255,0.15); padding: 8px 24px; border-radius: 20px; margin-top: 20px; font-size: 13px; letter-spacing: 1px; }}
+.cover .highlight-tags {{ margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }}
+.cover .tag {{ display: inline-block; background: rgba(52,152,219,0.25); border: 1px solid rgba(52,152,219,0.5); padding: 6px 16px; border-radius: 16px; font-size: 13px; color: #aed6f1; }}
 
 /* 目录 */
 .toc {{ background: #1a252f; padding: 15px 40px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }}
@@ -413,7 +416,11 @@ h4 {{ color: #34495e; font-size: 15px; margin-top: 20px; margin-bottom: 10px; }}
 
 /* 执行摘要 */
 .summary-banner {{ background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color: white; padding: 35px; border-radius: 12px; margin: 25px 0; box-shadow: 0 4px 15px rgba(102,126,234,0.3); }}
-.summary-banner .conclusion {{ font-size: 16px; line-height: 1.8; margin-bottom: 25px; text-align: center; opacity: 0.95; }}
+.summary-banner .conclusion {{ font-size: 16px; line-height: 1.8; margin-bottom: 15px; text-align: center; opacity: 0.95; }}
+.competitive-edge {{ background: rgba(255,255,255,0.1); border-radius: 10px; padding: 18px; margin-bottom: 20px; }}
+.edge-grid {{ display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }}
+.edge-item {{ background: rgba(255,255,255,0.12); padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.6; opacity: 0.9; }}
+.edge-item strong {{ color: #f5b041; font-size: 13px; display: block; margin-bottom: 4px; }}
 .metrics-grid {{ display: grid; grid-template-columns: repeat(4,1fr); gap: 15px; }}
 .metric-card {{ background: rgba(255,255,255,0.95); padding: 18px; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }}
 .metric-card:hover {{ transform: translateY(-3px); }}
@@ -485,6 +492,7 @@ tr:hover {{ background: #e8f4f8; }}
     .metrics-grid {{ grid-template-columns: repeat(2,1fr); }}
     .card-grid {{ grid-template-columns: 1fr; }}
     .two-col {{ grid-template-columns: 1fr; }}
+    .edge-grid {{ grid-template-columns: 1fr; }}
     .content {{ padding: 20px; }}
 }}
 </style>
@@ -495,7 +503,14 @@ tr:hover {{ background: #e8f4f8; }}
 <!-- 封面 -->
 <div class="cover">
     <h1>酒店订单时权ABS/RWA<br>融合分析报告</h1>
-    <div class="subtitle">超远期住宿权发行 + 二级市场交易 + 三元兑付机制</div>
+    <div class="subtitle">超远期住宿权发行 + 平台做市商 + 时段差异化定价 + 三元兑付机制</div>
+    <div class="highlight-tags">
+        <span class="tag">A级可行性</span>
+        <span class="tag">80酒店资产池</span>
+        <span class="tag">3时段Token化</span>
+        <span class="tag">平台收购+做市</span>
+        <span class="tag">ERC-3643 RWA</span>
+    </div>
     <div class="meta">
         版本: {d['report_metadata']['version']}<br>
         日期: {d['report_metadata']['date']}<br>
@@ -509,6 +524,7 @@ tr:hover {{ background: #e8f4f8; }}
     <ul>
         <li><a href="#sec-summary">执行摘要</a></li>
         <li><a href="#sec-innovation">创新模型</a></li>
+        <li><a href="#sec-benchmark">行业对标</a></li>
         <li><a href="#sec-pool">资产池</a></li>
         <li><a href="#sec-tranche">分层结构</a></li>
         <li><a href="#sec-mc">蒙特卡洛</a></li>
@@ -517,7 +533,7 @@ tr:hover {{ background: #e8f4f8; }}
         <li><a href="#sec-compare">对比分析</a></li>
         <li><a href="#sec-risk">风险敏感</a></li>
         <li><a href="#sec-feasibility">可行性</a></li>
-        <li><a href="#sec-rwa">RWA架构</a></li>
+        <li><a href="#sec-rwa">RWA架构与合规</a></li>
         <li><a href="#sec-viz">可视化</a></li>
     </ul>
 </nav>
@@ -532,6 +548,14 @@ tr:hover {{ background: #e8f4f8; }}
         时权ABS模式相比传统经营可实现<strong>NPV提升{d.get('comparison_analysis',{}).get('npv_uplift',{}).get('percentage',0):.1f}%</strong>，<br>
         平台方可获得<strong>{fmt_money(d.get('tripartite_benefit_analysis',{}).get('platform',{}).get('total_platform_revenue',0))}</strong>综合收益，<br>
         用户平均可获得<strong>{d.get('tripartite_benefit_analysis',{}).get('user',{}).get('user_roi',0):.1f}%</strong>投资回报率。
+    </div>
+    <div class="competitive-edge">
+        <h4 style="color:white; margin-bottom:12px; opacity:0.95;">核心竞争优势</h4>
+        <div class="edge-grid">
+            <div class="edge-item"><strong>vs 传统酒店ABS</strong><br>时段差异化定价(节假日1.65x/周末1.20x/平日0.85x)，3年期限 vs 行业5-8年，无集团担保依赖</div>
+            <div class="edge-item"><strong>vs 分时度假REITs</strong><br>Token可拆分交易，平台做市商提供流动性，投资门槛灵活</div>
+            <div class="edge-item"><strong>vs 海外RWA项目</strong><br>平台承担兑付风险(收购+做市模式)，结构化分层信用增级，ERC-3643合规代币</div>
+        </div>
     </div>
     <div class="metrics-grid">
         <div class="metric-card"><div class="icon">🏨</div><div class="value">{len(d['asset_pool']['hotels'])}</div><div class="label">资产池酒店数</div></div>
@@ -582,6 +606,73 @@ tr:hover {{ background: #e8f4f8; }}
 <tr><td>资产流动性</td><td>无（酒店资产不可分）</td><td>高（Token可拆分交易）</td></tr>
 <tr><td>风险分散</td><td>单一酒店经营风险</td><td>80家酒店组合+分层保护</td></tr>
 </table>
+
+<h3>1.3 与行业标杆案例的差异化对比</h3>
+<table>
+<tr><th>维度</th><th>传统酒店ABS<br><small>(世茂26.9亿/北辰10.5亿)</small></th><th>海外RWA Tokenization<br><small>(LABS Group/CitaDAO)</small></th><th>本方案<br><small>时权ABS/RWA融合</small></th></tr>
+<tr><td>底层资产</td><td>未来收益权打包</td><td>产权/收益权NFT</td><td><strong>时段差异化时间权Token</strong></td></tr>
+<tr><td>发行模式</td><td>一次性信托受益权转让</td><td>分份出售给投资者</td><td><strong>平台收购+做市商模式</strong></td></tr>
+<tr><td>产品期限</td><td>5-8年(长期锁定)</td><td>不定/永续</td><td><strong>3年(灵活可控)</strong></td></tr>
+<tr><td>增信方式</td><td>集团担保+差额补足+抵押</td><td>智能合约+超额抵押</td><td><strong>结构化分层+超发倍数+储备金</strong></td></tr>
+<tr><td>流动性</td><td>低(ABS持有到期)</td><td>中(NFT二级市场)</td><td><strong>高(Token+平台做市商)</strong></td></tr>
+<tr><td>季节性设计</td><td>无</td><td>无</td><td><strong>节假日/周末/平日差异化</strong></td></tr>
+<tr><td>用户选择权</td><td>被动持有固定收益</td><td>被动持有+治理投票</td><td><strong>现金/实物/转让三元兑付</strong></td></tr>
+<tr><td>兑付风险承担</td><td>原始权益人(酒店集团)</td><td>投资者自担</td><td><strong>平台承担(收购后做市)</strong></td></tr>
+<tr><td>技术架构</td><td>传统信托+专项计划</td><td>ERC-721/ERC-20</td><td><strong>ERC-3643 T-REX+瀑布分配</strong></td></tr>
+<tr><td>投资门槛</td><td>高(机构为主)</td><td>低($100起)</td><td><strong>中等(灵活分级)</strong></td></tr>
+</table>
+
+<h2 id="sec-benchmark">第1章附录 行业标杆案例对标</h2>
+<h3>1.4 国内酒店ABS典型案例</h3>
+<div class="card-grid">
+    <div class="card blue">
+        <h4>世茂酒店ABS (2016)</h4>
+        <div class="big-value">26.9亿</div>
+        <div class="small-text">博时资本发行，国内最大规模酒店ABS。以旗下14家五星级酒店未来收益权打包，期限8年，采用专项计划+信托模式。</div>
+        <div class="small-text" style="margin-top:8px;"><strong>增信:</strong> 优先/次级分层+现金流超额覆盖120%+差额补足+抵押担保</div>
+    </div>
+    <div class="card green">
+        <h4>北辰洲际酒店ABS (2018)</h4>
+        <div class="big-value">10.5亿</div>
+        <div class="small-text">天风证券发行，标的为长沙北辰洲际酒店。优先A类5.27亿(AAA,5.20%)+优先B类4.73亿(AA+,6.20%)。</div>
+        <div class="small-text" style="margin-top:8px;"><strong>增信:</strong> 差额补足+北辰实业连带责任担保</div>
+    </div>
+    <div class="card orange">
+        <h4>中信启航REITs (2014)</h4>
+        <div class="big-value">58.0亿</div>
+        <div class="small-text">国内首单酒店类REITs，投资北京/深圳中信证券大厦。A类7.7亿(AAA)+B类49.3亿(AA+)，期限18年。</div>
+        <div class="small-text" style="margin-top:8px;"><strong>结构:</strong> 专项计划嵌套契约式基金，股+债形式间接持有</div>
+    </div>
+</div>
+
+<h3>1.5 海外RWA/Hospitality Tokenization案例</h3>
+<div class="card-grid">
+    <div class="card purple">
+        <h4>LABS Group - Kunang Resort</h4>
+        <div class="big-value">365 RTS-NFTs</div>
+        <div class="small-text">将印尼Kunang Kunang Glamping Resort转化为365份Rewarding Timeshare NFTs。$100起投，收益权+住宿权+治理权三合一。</div>
+        <div class="small-text" style="margin-top:8px;"><strong>框架:</strong> Wyoming LLC+Refinable交易平台</div>
+    </div>
+    <div class="card blue">
+        <h4>Holiday Inn Club Vacations</h4>
+        <div class="big-value">$14亿+</div>
+        <div class="small-text">Orange Lake系列分时度假贷款证券化，7期信托累计超14亿美元。传统分时度假证券化的标杆。</div>
+        <div class="small-text" style="margin-top:8px;"><strong>模式:</strong> 分时度假贷款打包+信托发行</div>
+    </div>
+    <div class="card green">
+        <h4>RWA Tokenization趋势</h4>
+        <div class="big-value">$16万亿</div>
+        <div class="small-text">Accenture估计Tokenization可解锁全球超16万亿美元非流动资产。酒店/度假租赁市场预计2028年达$1135亿。</div>
+        <div class="small-text" style="margin-top:8px;"><strong>技术:</strong> ERC-3643/ERC-1400安全代币标准</div>
+    </div>
+</div>
+
+<div class="info-box">
+    <h4>对标启示</h4>
+    <p><strong>传统酒店ABS的核心局限：</strong>期限长(5-8年)、依赖集团担保、流动性差、无季节性设计、投资者被动持有。</p>
+    <p><strong>海外RWA项目的核心局限：</strong>兑付风险由投资者自担、缺乏专业做市商、合规框架尚不成熟、定价机制不透明。</p>
+    <p><strong>本方案的融合创新：</strong>将传统ABS的结构化分层信用增级与RWA的Token化流动性优势结合，通过<strong>平台收购+做市商</strong>模式解决兑付风险分配问题，通过<strong>时段差异化定价</strong>解决收益匹配问题，通过<strong>ERC-3643标准</strong>解决合规准入问题。</p>
+</div>
 
 <!-- 第2章 -->
 <h2 id="sec-pool">第2章 资产池特征</h2>
@@ -809,7 +900,15 @@ tr:hover {{ background: #e8f4f8; }}
         
         html += f"""
 <h2 id="sec-tripartite">第6章 三方收益分析 - 平台收购+做市商模式</h2>
-<p>时权ABS模式采用<strong>平台收购+做市商</strong>机制：酒店发行时段差异化时权后，由平台方一次性收购，平台担任做市商面向二级市场交易，到期由平台负责兑付。</p>
+<p>时权ABS模式采用<strong>平台收购+做市商</strong>机制：酒店发行时段差异化时权后，由平台方以95%发行价一次性全额收购，平台作为特许做市商(Licensed Market Maker)面向二级市场提供双边报价，到期由平台统一负责兑付。</p>
+
+<div class="info-box">
+    <h4>平台做市商模式设计原理</h4>
+    <p><strong>Inventory Risk Management:</strong> 平台通过一次性收购获得全部时权库存(inventory)，承担时段错配和价格波动风险。通过时段差异化定价(节假日+25%/周末+15%/平日+8%)对冲库存风险。</p>
+    <p><strong>Two-Sided Market Making:</strong> 平台向买方提供即时流动性(Ask Price = 发行价 x 时段溢价)，向卖方提供回购流动性(Bid Price = 即期价 x 95%)，买卖价差(Bid-Ask Spread)构成核心利润来源之一。</p>
+    <p><strong>Redemption Risk Transfer:</strong> 与传统分时度假不同，用户到期兑付风险完全由平台承担(而非酒店或投资者)，酒店获得即时确定现金流，用户获得灵活选择权，平台通过风险定价获取风险溢价。</p>
+    <p><strong>参考案例:</strong> 此模式借鉴了高盛等投行在传统ABS中的做市经验，以及Centrifuge、Maple等DeFi RWA协议的流动性提供机制，但创新性地将风险集中在平台方而非分散给终端投资者。</p>
+</div>
 
 <h3>6.1 酒店方收益</h3>
 <div class="card-grid">
@@ -1097,19 +1196,29 @@ tr:hover {{ background: #e8f4f8; }}
 </ul>
 
 <!-- 第10章: RWA代币化架构 -->
-<h2 id="sec-rwa">第10章 RWA代币化架构</h2>
+<h2 id="sec-rwa">第10章 RWA代币化架构与合规框架</h2>
 
 <h3>10.1 链下架构</h3>
 <div class="info-box">
     <h4>SPV（特殊目的载体）</h4>
-    <p>在开曼群岛/新加坡注册，实现破产隔离，持有酒店未来住宿订单收益权。</p>
+    <p>在开曼群岛/新加坡注册，实现破产隔离，持有酒店未来住宿订单收益权。参考中信启航REITs的专项计划嵌套基金结构。</p>
 </div>
 <div class="info-box">
     <h4>服务商</h4>
-    <p>负责时权发行管理、月度现金流归集、违约监控、储备金管理。</p>
+    <p>负责时权发行管理、月度现金流归集、违约监控、储备金管理。参考世茂ABS中的信托计划受托人角色。</p>
 </div>
 
-<h3>10.2 链上架构</h3>
+<h3>10.2 全球合规框架</h3>
+<table>
+<tr><th>司法管辖区</th><th>监管框架</th><th>适用性</th><th>合规要点</th></tr>
+<tr><td>欧盟</td><td>MiCA (Markets in Crypto-Assets)</td><td>ERC-3643代币发行</td><td>资产参考代币(ART)分类、白皮书披露、投资者保护</td></tr>
+<tr><td>美国</td><td>SEC Regulation D / Reg S</td><td>面向合格投资者</td><td>506(c)私募豁免、KYC/AML、禁售期</td></tr>
+<tr><td>新加坡</td><td>MAS PSA / SFA</td><td>SPV注册地首选</td><td>数字支付代币牌照、证券型代币豁免</td></tr>
+<tr><td>香港</td><td>SFC VASP / 证券条例</td><td>亚洲投资者入口</td><td>虚拟资产服务提供商牌照、证券型代币1号牌</td></tr>
+<tr><td>中国内地</td><td>ABS专项计划/REITs试点</td><td>底层资产合规</td><td>交易所挂牌、评级机构评估、分层设计备案</td></tr>
+</table>
+
+<h3>10.3 链上架构</h3>
 <table>
 <tr><th>组件</th><th>详情</th></tr>
 <tr><td>代币标准</td><td>ERC-3643 (T-REX Protocol)</td></tr>
@@ -1118,7 +1227,7 @@ tr:hover {{ background: #e8f4f8; }}
 <tr><td>智能合约</td><td>代币合约 + 瀑布分配合约 + 储备金合约 + 触发器合约</td></tr>
 </table>
 
-<h3>10.3 代币详情</h3>
+<h3>10.4 代币详情</h3>
 <table>
 <tr><th>代币名称</th><th>符号</th><th>对应分层</th><th>功能</th></tr>
 """
@@ -1129,7 +1238,7 @@ tr:hover {{ background: #e8f4f8; }}
         html += """
 </table>
 
-<h3>10.4 时权生命周期</h3>
+<h3>10.5 时权生命周期</h3>
 <ol>
 """
         

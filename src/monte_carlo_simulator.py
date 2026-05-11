@@ -5,10 +5,15 @@
 对标：穆迪理想损失(EL)和极端损失(WCL)评级框架。
 """
 
+import os
+import pickle
 import numpy as np
 import pandas as pd
 from scipy import stats
+from tqdm import tqdm
+from joblib import Parallel, delayed
 from waterfall_engine import WaterfallEngine
+from config import OUTPUT_DIR
 
 
 class MonteCarloSimulator:
@@ -50,67 +55,102 @@ class MonteCarloSimulator:
         self.default_matrix = None
         self.loss_matrix = None  # 每期实际损失
     
+    def _generate_batch(self, batch_size, L, monthly_pds):
+        """生成一个批次的违约矩阵（供joblib并行调用）"""
+        Z = np.random.standard_normal((batch_size, self.n_hotels))
+        correlated_Z = Z @ L.T
+
+        batch_defaults = np.zeros((batch_size, self.n_hotels, self.n_months), dtype=bool)
+
+        for t in range(self.n_months):
+            epsilon = np.random.standard_normal((batch_size, self.n_hotels)) * 0.5
+            u = correlated_Z * 0.7 + epsilon * 0.3
+            uniform = stats.norm.cdf(u)
+            defaulted = uniform < monthly_pds.reshape(1, -1)
+
+            if t > 0:
+                defaulted = defaulted | batch_defaults[:, :, t-1]
+
+            batch_defaults[:, :, t] = defaulted
+
+        return batch_defaults
+
     def generate_defaults(self):
         """
-        使用Gaussian Copula生成违约事件矩阵
+        使用Gaussian Copula生成违约事件矩阵（joblib并行 + tqdm进度条）
         """
         np.random.seed(self.seed)
-        
+
         if self.n_hotels == 0:
             self.default_matrix = np.zeros((self.n_paths, 0, self.n_months), dtype=bool)
             return
-        
+
+        # 尝试从checkpoint缓存加载
+        cache_path = os.path.join(OUTPUT_DIR, '.mc_default_cache.pkl')
+        if os.path.exists(cache_path):
+            try:
+                with open(cache_path, 'rb') as f:
+                    cached = pickle.load(f)
+                if (cached['n_paths'] == self.n_paths
+                        and cached['n_hotels'] == self.n_hotels
+                        and cached['n_months'] == self.n_months
+                        and cached['seed'] == self.seed):
+                    self.default_matrix = cached['default_matrix']
+                    self._compute_losses()
+                    return
+            except Exception:
+                pass  # 缓存损坏，重新生成
+
         # 月度违约概率
         monthly_pds = 1 - (1 - self.pds) ** (1 / 12)
         monthly_pds = np.clip(monthly_pds, 0.00001, 0.5)
-        
-        # Cholesky分解
+
+        # Cholesky分解（加固版）
         try:
             L = np.linalg.cholesky(self.corr_matrix + np.eye(self.n_hotels) * 0.001)
         except np.linalg.LinAlgError:
-            eigvals, eigvecs = np.linalg.eigh(self.corr_matrix)
-            eigvals = np.maximum(eigvals, 0.001)
-            corr_fixed = eigvecs @ np.diag(eigvals) @ eigvecs.T
-            L = np.linalg.cholesky(corr_fixed)
-        
-        default_matrix = np.zeros((self.n_paths, self.n_hotels, self.n_months), dtype=bool)
-        
-        # 为效率，批量处理
+            try:
+                eigvals, eigvecs = np.linalg.eigh(self.corr_matrix)
+                eigvals = np.maximum(eigvals, 0.001)
+                corr_fixed = eigvecs @ np.diag(eigvals) @ eigvecs.T
+                # 确保对称性和正定性
+                corr_fixed = (corr_fixed + corr_fixed.T) / 2
+                L = np.linalg.cholesky(corr_fixed)
+            except np.linalg.LinAlgError:
+                # 最终兜底：对角线加载
+                L = np.linalg.cholesky(np.eye(self.n_hotels))
+
+        # joblib并行批次处理
         batch_size = 500
         n_batches = (self.n_paths + batch_size - 1) // batch_size
-        
-        for batch in range(n_batches):
-            start = batch * batch_size
-            end = min((batch + 1) * batch_size, self.n_paths)
-            actual_batch = end - start
-            
-            if (batch + 1) % 2 == 0 or batch == n_batches - 1:
-                print(f"    违约路径生成: {end}/{self.n_paths} ({end/self.n_paths*100:.0f}%)")
-            
-            # 生成系统因子
-            Z = np.random.standard_normal((actual_batch, self.n_hotels))
-            correlated_Z = Z @ L.T
-            
-            for t in range(self.n_months):
-                # 异质性因子
-                epsilon = np.random.standard_normal((actual_batch, self.n_hotels)) * 0.5
-                u = correlated_Z * 0.7 + epsilon * 0.3
-                
-                # 转换为uniform
-                uniform = stats.norm.cdf(u)
-                
-                # 违约判断
-                defaulted = uniform < monthly_pds.reshape(1, -1)
-                
-                # 已违约的保持违约
-                if t > 0:
-                    previously_defaulted = default_matrix[start:end, :, t-1]
-                    defaulted = defaulted | previously_defaulted
-                
-                default_matrix[start:end, :, t] = defaulted
-        
-        self.default_matrix = default_matrix
-        
+        batch_sizes = []
+        for i in range(n_batches):
+            start = i * batch_size
+            end = min((i + 1) * batch_size, self.n_paths)
+            batch_sizes.append(end - start)
+
+        batches = Parallel(n_jobs=-1)(
+            delayed(self._generate_batch)(bs, L, monthly_pds)
+            for bs in tqdm(batch_sizes, desc="  Generating default paths", unit="batch")
+        )
+
+        # 组装
+        self.default_matrix = np.concatenate(batches, axis=0)
+
+        # 保存checkpoint缓存
+        try:
+            os.makedirs(OUTPUT_DIR, exist_ok=True)
+            with open(cache_path, 'wb') as f:
+                pickle.dump({
+                    'default_matrix': self.default_matrix,
+                    'n_paths': self.n_paths,
+                    'n_hotels': self.n_hotels,
+                    'n_months': self.n_months,
+                    'seed': self.seed,
+                }, f)
+        except Exception:
+            pass
+
         # 计算每期实际损失（考虑LGD）
         self._compute_losses()
     
