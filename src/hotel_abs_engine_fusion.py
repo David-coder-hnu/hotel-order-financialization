@@ -533,8 +533,110 @@ class HotelTimeRightABSEngine:
             'sensitivity_discount_rate': sensitivity,
             'issue_discount_current': self.issue_discount if hasattr(self, 'issue_discount') else 0.10,
             'issue_discount_sensitivity_note': 'Run engine with engine.issue_discount = X before run_full_analysis() to test different values. Suggested range: 0.0 (no discount) to 0.30 (30% discount).',
+            'hotel_secondary_participation': self._compute_hotel_secondary(tr_cashflows, annual_issue, FEN_TO_YUAN),
+            'over_issuance_analysis': self._analyze_over_issuance(),
         }
-    
+
+    def _compute_hotel_secondary(self, tr_cashflows, annual_issue, FEN_TO_YUAN):
+        """
+        酒店二级市场参与模型
+
+        假设酒店作为知情交易者参与自己时权的二级市场:
+        - 当 P_secondary < 0.85 × P_issue: 回购（赚取差价）
+        - 当 P_secondary > 1.15 × P_issue: 追加发行（获取溢价）
+        - 正常区间: 持有观望
+
+        参数基于市场微观结构文献和保守估计。
+        """
+        issue_price_yuan = annual_issue / (60 * 365 * 0.62 * 66)  # 近似每间夜发行价(元)
+
+        # 保守假设
+        secondary_volume_pct = 0.15   # 15% 的发行量在二级市场被酒店交易
+        buyback_discount = 0.85       # 回购触发: P < 85% 发行价
+        resell_premium = 1.15         # 增发触发: P > 115% 发行价
+        avg_spread_on_trades = 0.10   # 平均每笔交易获利 10%
+
+        # 年化二级市场利润
+        secondary_annual_profit = annual_issue * secondary_volume_pct * avg_spread_on_trades
+
+        # 热市场追加发行: 假设 10% 概率遇到需求旺盛, 追加 20% 发行量, 溢价 10%
+        hot_market_prob = 0.10
+        extra_issuance_pct = 0.20
+        hot_market_premium = 1.10
+        extra_issuance_annual = annual_issue * hot_market_prob * extra_issuance_pct * hot_market_premium
+
+        total_secondary_benefit = secondary_annual_profit + extra_issuance_annual
+
+        return {
+            'model_description': 'Hotel as informed secondary-market participant: buyback when cheap, extra issuance when hot',
+            'secondary_trading_profit_annual': round(float(secondary_annual_profit), 0),
+            'extra_hot_market_issuance_annual': round(float(extra_issuance_annual), 0),
+            'total_secondary_benefit_annual': round(float(total_secondary_benefit), 0),
+            'pct_of_issue_revenue': round(float(total_secondary_benefit / annual_issue * 100), 1),
+            'assumptions': {
+                'secondary_volume_pct': secondary_volume_pct,
+                'buyback_trigger_discount': buyback_discount,
+                'resell_trigger_premium': resell_premium,
+                'avg_spread': avg_spread_on_trades,
+                'hot_market_probability': hot_market_prob,
+                'extra_issuance_in_hot_market': extra_issuance_pct,
+                'hot_market_price_premium': hot_market_premium,
+            },
+            'note': 'All assumptions are conservative JUDGMENT estimates. Real values depend on market liquidity and hotel activeness.',
+        }
+
+    def _analyze_over_issuance(self):
+        """
+        超发倍率 (ω) 安全性分析
+
+        公式: ω = (1 / occupancy) × safety_factor
+
+        经济含义:
+        - 1/occupancy: 每实现1次入住需要卖出的间夜数（补偿取消/No-show）
+        - safety_factor: 安全缓冲 (<1 = 保守, =1 = 统计中性, >1 = 激进)
+
+        风险: fractional-reserve 类比
+        - 如果实际入住率 > 预期，时权兑付需求 > 物理容量 → 兑付失败
+        - 尾部风险: 极端事件(疫情/地震) → 入住率崩塌且不可抗力 → 系统性兑付危机
+        """
+        occupancy = 0.62
+        safety_factor = 0.80
+        omega = (1.0 / occupancy) * safety_factor
+
+        # 压力测试: 在不同 occupancy 下 ω 的安全边际
+        stress_scenarios = []
+        for occ_stress in [0.80, 0.70, 0.62, 0.50, 0.40, 0.30]:
+            implied_sf = omega * occ_stress  # 在该入住率下需要的 safety_factor
+            stress_scenarios.append({
+                'occupancy': occ_stress,
+                'omega': omega,
+                'implied_physical_demand_ratio': omega,  # 每物理房间卖出的时权数
+                'safe': occ_stress >= (1.0 / omega),  # 物理容量能否满足兑付
+                'buffer_pct': round((occ_stress - (1.0 / omega)) / (1.0 / omega) * 100, 1) if (1.0 / omega) > 0 else float('inf'),
+            })
+
+        return {
+            'formula': 'omega = (1 / occupancy) * safety_factor',
+            'current_omega': round(omega, 3),
+            'current_occupancy': occupancy,
+            'current_safety_factor': safety_factor,
+            'physical_capacity_coverage': f'{1/omega*100:.1f}%',  # 需要的物理入住率
+            'stress_scenarios': stress_scenarios,
+            'fractional_reserve_analogy': (
+                'Similar to fractional-reserve banking: hotel sells more room-nights than physical capacity, '
+                'relying on statistical cancellation patterns. Safety_factor < 1 provides a buffer. '
+                'At omega=1.29 and occ=0.62, the system requires 77.5% physical occupancy to honor all time-rights. '
+                'Current expected occupancy (62%) is BELOW this threshold — creating a structural shortfall risk '
+                'if redemption patterns concentrate in specific time windows.'
+            ),
+            'safety_recommendation': (
+                '1. Tier-specific omega: lower for luxury (stable occupancy), higher for economy (volatile). '
+                '2. Time-window diversification: spread redemptions to avoid clustering. '
+                '3. Reserve pool: hold back 5-10% of issuance as liquidity buffer. '
+                '4. Dynamic omega: adjust based on real-time cancellation data.'
+            ),
+        }
+
     def _compute_tripartite_benefits(self):
         """计算酒店/平台/用户三方收益分析 - 平台收购+做市商模式"""
         total_issue_revenue = float(self.time_right_df['total_face_value'].sum())

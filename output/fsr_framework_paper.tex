@@ -637,6 +637,38 @@ Our multi-dimensional feasibility evaluation yields an overall score of 91.2/100
 Key success factors include robust credit protection (Senior 68\% absorbs losses), high geographic dispersion (HHI = 0.220), over-issuance safety buffer (1.29$\times$), and the ternary settlement mechanism.
 Critical risks include: (i) the wide divergence between Merton and KMV PD estimates, which implies substantial model uncertainty in credit risk assessment; (ii) the absence of a hotel default calibration benchmark; (iii) regulatory uncertainty in China's ABS/RWA framework; and (iv) nascent secondary market liquidity.
 
+\subsection{Hotel as Secondary-Market Participant}
+
+A significant omission in the baseline Time-Right model is the hotel's ability to participate in the secondary market for its own Time-Rights.
+As the original issuer with private information about its own operations, the hotel is a natural informed trader.
+We model this participation under conservative assumptions: the hotel trades 15\% of its issued volume on the secondary market, buying back when the market price falls below 85\% of the issue price and issuing additional Time-Rights when demand drives the price above 115\% of the issue price.
+The average spread captured on these trades is 10\%, and hot-market conditions (price $>$ 115\% of issue) occur with approximately 10\% probability.
+
+Under these conservative assumptions, secondary-market participation adds approximately \yen 40.7 million per year to the 66-hotel pool (\yen 0.62 million per hotel per year, or 3.7\% of annual issue revenue).
+While modest relative to base issuance, this revenue stream is entirely absent from the baseline model and represents a pure gain from the hotel's informational advantage.
+In more optimistic scenarios---higher secondary-market velocity, wider bid-ask spreads, or more frequent demand surges---the contribution could reach 10--15\% of base issuance revenue.
+
+The broader implication is that the Time-Right system transforms the hotel from a passive price-taker into an active market participant.
+The hotel's ability to trade its own Time-Rights creates a feedback loop: better-operated hotels develop reputations that support higher secondary-market prices, which in turn enable more profitable trading and lower future issuance discounts.
+This reputational mechanism aligns hotel incentives with investor interests, reducing moral hazard.
+
+\subsection{Over-Issuance Safety Analysis}
+
+The over-issuance multiplier $\omega = 1.29\times$ is determined by the formula $\omega = (1 / \rho) \cdot \phi$, where $\rho = 0.62$ is the expected occupancy rate and $\phi = 0.80$ is a conservative safety factor.
+This formula has a clear economic interpretation: $1/\rho = 1.61$ room-nights must be sold for each realized stay (compensating for cancellations and no-shows), and the safety factor $\phi < 1$ provides an additional 20\% buffer against adverse realized occupancy.
+
+At $\omega = 1.29$, honoring all outstanding Time-Rights requires a physical occupancy rate of $1/\omega = 77.5\%$.
+The expected occupancy rate of 62\% is \emph{below} this threshold, creating a structural gap of 15.5 percentage points.
+This gap is bridged by three mechanisms: (i) not all Time-Right holders exercise physical redemption---many choose cash settlement or secondary-market transfer; (ii) physical redemptions are spread across a 36-month window, smoothing peak demand; and (iii) the safety factor $\phi = 0.80$ already embeds a 20\% buffer against the cancellation rate.
+
+However, the structural gap creates a tail risk analogous to fractional-reserve banking: if an exogenous shock (pandemic, natural disaster, regulatory action) simultaneously elevates physical redemption demand and suppresses hotel capacity, a cascade of redemption failures could trigger a market-wide confidence collapse.
+Mitigations include: tier-specific $\omega$ calibrated to each hotel tier's cancellation history; a mandatory reserve pool holding 5--10\% of issuance proceeds as a liquidity backstop; time-window diversification requirements to prevent redemption clustering; and dynamic $\omega$ adjustment based on real-time cancellation data.
+
+We recommend that the safety factor $\phi$ be treated as a tunable regulatory parameter rather than a fixed model constant.
+At $\phi = 1.0$ (statistically neutral), $\omega = 1.61\times$ and the required occupancy rises to 62\%---equal to the expected rate, leaving no safety margin.
+At $\phi = 0.60$ (highly conservative), $\omega = 0.97\times$ and the system is over-collateralized but hotel revenue is minimized.
+The current $\phi = 0.80$ represents a middle ground, but its appropriateness depends on the specific hotel tier and market conditions.
+
 % ============================================================
 \section{Discussion: FSR Beyond Hotels}
 % ============================================================
