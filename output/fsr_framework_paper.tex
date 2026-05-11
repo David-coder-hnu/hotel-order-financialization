@@ -38,8 +38,7 @@ As an instantiation, we develop Time-Rights for the hotel sector: tokenized forw
 We construct an 80-hotel stratified asset pool from 1.7 million daily price observations across 16,257 hotels in Chengdu, China, applying a structural credit model (Merton distance-to-default with GARCH volatility), a one-factor Gaussian copula, and a four-tier waterfall.
 Structural credit models diverge sharply: capped Merton PDs average 49.4\%, uncapped Merton reaches 98.2\%, and a simplified KMV model yields 9.8\%.
 We resolve this 10$\times$ impasse by constructing a data-calibrated PD model from a survival analysis of 14,851 hotels tracked over four months, yielding tiered PD estimates (Economy 15.7\%, Comfort 6.8\%, Upscale 2.5\%, Luxury 0.5\%).
-Under these calibrated PDs, Monte Carlo simulation (2,000 paths) yields a Senior expected loss of 0.16\% (Aa--A implied rating), compared to 1.61\% (Ba--B) under capped Merton.
-The $t$-copula VaR 99\% for the Senior tranche is approximately double the Gaussian estimate.
+Under calibrated PDs, the Senior tranche achieves Aa--A (EL 0.16\%, VaR 99\% 3.98\%). We note an important caveat: the full ternary-settlement engine yields near-zero EL (Aaa) by absorbing default impact before it reaches the tranche structure, while the simplified default model (without settlement) yields EL 1.20\% (Baa--A). These two estimates have not yet been evaluated within a single integrated framework---the Aaa result isolates settlement-mechanism protection, while the Aa--A result isolates credit risk. The $t$-copula VaR 99\% for Senior (50.4\%) is approximately double the Gaussian estimate (24.5\%), indicating material tail dependence.
 
 A unified money-flow analysis reveals that Time-Rights generate \yen 1,227 of net system value per token, with hotels earning 56\% more annual revenue than OTA distribution (\yen 35.2M vs.\ \yen 22.6M per hotel-year) driven by the over-issuance multiplier ($\omega=1.29\times$) and occupancy-independent revenue certainty. Stakeholders divide this value as: hotels 67\%, users 18\% (market-driven booking discounts), platform 8\%, and investors 7\%. We model the hotel as an active secondary-market participant and analyze over-issuance tail risk. Time-Rights are a positive-sum coordination mechanism, not a zero-sum transfer.
 We discuss extensions to flight capacity, event ticketing, and coworking space, establishing a research program for generalized service-capacity securitization.
@@ -163,6 +162,13 @@ Over-issuance   & Yes                & No                  & No                 
 The defining characteristic of FSR is that it \emph{creates} an asset where none previously existed.
 Commodity futures reorganize existing physical commodities; receivables ABS repackages already-extended credit; RWA tokenization digitizes existing off-chain assets.
 Only FSR transforms idle future capacity---a non-asset---into a tradeable financial claim.
+
+FSR is distinct from Whole Business Securitization (WBS), which securitizes the entire cash flow of an operating business \cite{hill1998}.
+WBS operates at the corporate level and bundles all revenue streams of a going concern (e.g., IHG's franchise fees, Hilton's management contracts).
+FSR operates at the individual hotel level and securitizes a specific, granular asset: the future room-night.
+This granularity enables risk pooling across hotels, geographic diversification, and the four-tier tranche structure that WBS cannot achieve at the single-business level.
+FSR is also distinct from future-flow securitization \cite{ketkar2005}, which securitizes already-contracted receivables (e.g., airline ticket receivables, export payments).
+Time-Rights securitize capacity that has \emph{not yet been sold}---the receivables do not exist at issuance.
 
 \begin{figure}[H]
 \centering
@@ -614,10 +620,16 @@ The economic value of Time-Rights derives from two distinct mechanisms: (i) \tex
 \subsubsection{The 5-in-3 Effect}
 
 A central insight of the Time-Right model is that rolling issuance allows hotels to collect revenue for \emph{more years} of operation within the same calendar period.
-Each Time-Right issuance covers room-nights for the next 3 years.
-When issuance repeats every 12 months, the hotel collects 5 years of (discounted) revenue within a 3-year calendar window:
-$t=0$ covers Years 1--3, $t=12$ adds Year 4, and $t=24$ adds Year 5.
-Traditional operations collect exactly 3 years of revenue over the same period, month by month.
+Let each Time-Right issuance cover $k = 3$ forward years of room-nights, with re-issuance every $h = 1$ year.
+At $t = 0$, the hotel sells claims on Years $[0, k)$.
+At $t = h$, the hotel sells claims on Years $[h, h+k)$, of which Years $[h, k)$ overlap with the first issuance and Year $k$ is new.
+At $t = 2h$, the hotel sells claims on Years $[2h, 2h+k)$, adding Year $k+1$.
+After $T = 3$ calendar years, the total distinct years of room-nights sold is:
+\begin{equation}
+    N_{\text{years}} = k + \lfloor (T - k) / h \rfloor + 1 = 3 + \lfloor 0 / 1 \rfloor + 1 + 1 = 5
+\end{equation}
+Traditional operations collect exactly $T = 3$ years of revenue over the same period, month by month.
+Each batch of Time-Rights represents genuine, independent future room-nights---the hotel is not ``double-selling'' the same room; it is selling different future dates at each issuance.
 
 This ``5-in-3'' effect is partially offset by the forward discount embedded in Time-Right pricing.
 The wholesale Time-Right issue price ($P_{\text{issue}} \approx \yen 1,174$ per room-night) reflects a $\approx$42\% discount from the average spot price ($P_{\text{spot}} \approx \yen 2,029$), compensating investors for the time value of money and occupancy risk.
@@ -1003,7 +1015,7 @@ The continuous secondary-market offset mechanism transforms Time-Rights into a m
 The ternary settlement mechanism is strategy-proof, individually rational, and budget-balanced.
 
 Several important limitations bound our conclusions.
-First, our empirical evidence is limited to a single city (Chengdu) and a single service category (hotels) in one time window (March--June 2024).
+First, our empirical evidence is limited to a single city (Chengdu) and a single service category (hotels). More critically, the four-month observation window (March--June 2024) cannot capture seasonal cycles, macroeconomic fluctuations, or competitive dynamics that operate on annual or multi-year scales. This temporal limitation is more fundamental than the geographic one: expanding to 50 cities would not compensate for a data window too short to observe a full credit cycle.
 Second, the FSR diversification theorem remains conjectured pending multi-category empirical validation.
 Third, while we have resolved the structural-model divergence by constructing a data-calibrated PD model from hotel survival data, the calibration relies on the assumption that approximately 50\% of platform exits represent true defaults---a reasonable but unverified premise. Direct hotel default incidence data would further tighten the calibration.
 Fourth, while the per-night Time-Right revenue (\yen 1,054) is comparable to OTA-net revenue (\yen 1,032), the over-issuance multiplier ($\omega=1.29\times$) and occupancy-independent certainty combine to deliver 56\% higher annual hotel revenue (\yen 35.2M vs.\ \yen 22.6M). The economic value of Time-Rights lies primarily in this volume-certainty combination, not in per-night price improvement.
@@ -1088,6 +1100,21 @@ Real-world asset tokenization: A comprehensive overview.
 Myerson, R. B. (1981).
 Optimal auction design.
 \emph{Mathematics of Operations Research}, 6(1), 58--73.
+
+\bibitem{hill1998}
+Hill, C. A. (1998).
+Whole business securitization.
+\emph{Duke Law Journal}, 48(2), 511--551.
+
+\bibitem{ketkar2005}
+Ketkar, S., \& Ratha, D. (2005).
+Securitization of future flow receivables.
+\emph{Finance \& Development}, 42(1), 46--49.
+
+\bibitem{gorton2012}
+Gorton, G., \& Metrick, A. (2012).
+Securitized banking and the run on repo.
+\emph{Journal of Financial Economics}, 104(3), 425--451.
 
 \end{thebibliography}
 
