@@ -1,0 +1,32 @@
+{
+  "per_tr": {
+    "issue": 1174,
+    "spot": 2029,
+    "sec_price": 1267.92,
+    "sale_proc": 1264,
+    "user_extra": 765,
+    "user_total": 1939,
+    "user_save": 90,
+    "user_disc_pct": 4.4
+  },
+  "hotel": {
+    "tr_stay": 1602,
+    "ota_stay": 1664,
+    "tr_avail": 1602,
+    "ota_avail": 1032,
+    "tr_vs_ota": 155.3
+  },
+  "dist": {
+    "hotel": 809319787,
+    "plat": 9725322,
+    "inst": 168752654,
+    "user": 52059912,
+    "tot": 1039857675
+  },
+  "share": {
+    "hotel": 77.8,
+    "plat": 0.9,
+    "inst": 16.2,
+    "user": 5.0
+  }
+}

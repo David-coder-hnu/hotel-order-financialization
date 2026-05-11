@@ -42,7 +42,7 @@ The $t$-copula VaR 99\% for the Senior tranche is approximately double the Gauss
 
 A discounted cash-flow analysis reveals that Time-Right issuance generates lower absolute NPV than traditional operations ($-42\%$ at baseline), reflecting the forward discount investors demand for bearing occupancy risk: Time-Rights are a risk-transfer and cash-flow-front-loading instrument, not a revenue-growth instrument.
 We model the hotel as an active secondary-market participant (adding $\approx$3.7\% of annual revenue) and analyze the over-issuance mechanism's fractional-reserve-like tail risk.
-A stakeholder analysis reveals a positive-sum coordination mechanism: hotels capture $\approx$79\% of net benefits, institutional investors 17\%, and the platform 4\%, with the system most valuable for economy-tier hotels facing high OTA dependence and costly financing.
+A stakeholder analysis reveals a positive-sum coordination mechanism: hotels capture $\approx$78\% of net benefits, institutional investors 16\%, users 5\% (through market-driven booking discounts), and the platform $\approx$1\%. Per available room-night, the Time-Right model delivers 55\% more hotel revenue than OTA distribution, because Time-Right revenue is guaranteed occupancy-independent.
 We discuss extensions to flight capacity, event ticketing, and coworking space, establishing a research program for generalized service-capacity securitization.
 
 \bigskip
@@ -84,9 +84,14 @@ Copula sensitivity analysis confirms that the Gaussian copula understates tail d
 A discounted cash-flow analysis reveals that Time-Right issuance generates lower absolute NPV than traditional hotel operations ($-42\%$ at baseline parameters), reflecting the forward discount that investors demand for bearing occupancy risk---Time-Rights are a risk-transfer and cash-flow-front-loading instrument, not a revenue-growth instrument.
 We further model the hotel as an active secondary-market participant (adding $\approx$3.7\% of annual issue revenue through buybacks and hot-market issuance) and analyze the over-issuance mechanism's fractional-reserve-like tail risk ($\omega = 1.29\times$; required occupancy 77.5\% vs.\ expected 62\%).
 
-The stakeholder analysis reveals a positive-sum coordination mechanism rather than a zero-sum transfer: hotels capture approximately 79\% of the system's net benefit through front-loaded certain cash, institutional investors earn 17\% through fixed-income tranche coupons, and the platform captures 4\% as market infrastructure.
+A stakeholder analysis reveals a positive-sum coordination mechanism.
+Hotels capture approximately 78\% of the system's net benefit (\yen 809M/year for the 66-hotel pool), primarily through front-loaded certain cash that eliminates occupancy risk and OTA commissions.
+Critically, when computed per \emph{available} room-night (accounting for the 62\% expected occupancy under traditional operations), the Time-Right model delivers 55\% more hotel revenue than OTA distribution (\yen 1,602 vs.\ \yen 1,032 per available room-night)---because Time-Right revenue is guaranteed regardless of whether the room is occupied.
+Institutional investors earn 16\% through fixed-income tranche coupons.
+Users capture 5\% of system value through market-driven booking discounts (\yen 90 saved per room-night, or 4.4\% below spot), funded entirely by secondary-market liquidity rather than hotel margin compression.
+The platform earns approximately 1\% as market infrastructure, with a deliberate fee structure that charges 5$\times$ more for cash redemption than secondary-market trading, incentivizing users to recycle value within the ecosystem.
 Retail investors earn $\approx$73\% nominal return on Time-Right holdings, compensated for bearing hotel default risk and illiquidity.
-Crucially, the system's value is asymmetric across hotel tiers: economy and comfort-tier hotels with high OTA dependence and costly financing are the natural early adopters, while luxury hotels with brand-direct bookings and stable occupancy derive less benefit---a feature consistent with the historical role of financial innovation in completing incomplete markets for the most constrained borrowers.
+The system's value is asymmetric across hotel tiers: economy and comfort-tier hotels with high OTA dependence and costly financing benefit most, while luxury hotels with stable occupancy and brand-direct bookings benefit least.
 
 The paper proceeds as follows.
 Section 2 defines FSR and derives its theoretical properties.
@@ -667,6 +672,35 @@ Luxury, brand-direct bookings           & Minimal& None           & Negative (be
 
 The system's natural early adopters are economy and comfort-tier hotels in competitive markets with high OTA dependence---precisely the segment least served by traditional bank financing.
 This asymmetric value proposition is a feature, not a bug: it directs capital to the most constrained borrowers, consistent with the historical role of financial innovation in completing incomplete markets.
+
+\subsubsection{Stakeholder Benefit Distribution}
+
+With the enhanced secondary-market offset mechanism, the system generates measurable benefits for all four stakeholder groups.
+Table \ref{tab:stakeholders} presents the annualized distribution for the 66-hotel calibration pool.
+
+\begin{table}[H]
+\centering
+\caption{Stakeholder benefit distribution (66-hotel pool, annualized, CNY)}
+\label{tab:stakeholders}
+\begin{tabular}{@{}lrll@{}}
+\toprule
+\textbf{Stakeholder} & \textbf{Net Benefit} & \textbf{Share} & \textbf{Value Proposition} \\
+\midrule
+Hotels         & \yen 809M & 77.8\% & Guaranteed revenue, no OTA, no debt \\
+Institutional  & \yen 169M & 16.2\% & Senior Aaa-rated fixed income (4.5\%) \\
+Users          & \yen 52M  &  5.0\% & Market-driven booking discount (4.4\% vs.\ spot) \\
+Platform       & \yen 10M  &  0.9\% & Asset-light infrastructure, scales with volume \\
+\midrule
+\textbf{Total} & \textbf{\yen 1,040M} & \textbf{100\%} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The key metric for hotel adoption is revenue per \emph{available} room-night: under the Time-Right model, the hotel earns \yen 1,602 per available room-night (guaranteed, occupancy-independent), compared to \yen 1,032 under OTA distribution (expected, at 62\% occupancy and 18\% commission).
+This 55\% advantage per available room-night is the system's primary value proposition for hotel operators.
+
+Users benefit through market-driven discounts: by purchasing a Time-Right at \yen 1,174, selling it on the secondary market at \yen 1,268 (netting \yen 1,264 after the 0.3\% trading fee), and applying the proceeds to a \yen 2,029 hotel booking, the user's total out-of-pocket cost is \yen 1,939---a \yen 90 (4.4\%) saving versus booking directly.
+Critically, this discount is funded by secondary-market liquidity, not by hotel margin compression: the hotel receives the full spot price for the booked room.
 
 \subsection{Credit Risk Calibration: Model Sensitivity and Empirical Benchmarks}
 
