@@ -33,11 +33,17 @@
 We introduce Future Service Rights (FSR), a new asset class defined as the contingent claim on a service provider's future capacity within a specified time window.
 Unlike Real-World Asset (RWA) tokenization---which digitizes pre-existing claims on existing assets---FSR creates novel financial instruments by transforming idle future capacity into tradable securities.
 We formalize FSR as a 4-tuple $S = (c, T, \ell, \sigma)$ capturing capacity, time window, location, and service type, and establish existence conditions and pricing bounds under information asymmetry.
-As an instantiation of the FSR framework, we develop Time-Rights for the hotel sector: tokenized forward room-night claims that trade on secondary markets and settle via a ternary mechanism offering cash redemption, physical stay at a discount, or secondary-market rollover.
-We construct an 80-hotel stratified asset pool from 1.7 million daily price observations across 16,257 hotels in Chengdu, China, and apply a structural credit model (Merton distance-to-default with GARCH volatility estimation), a one-factor Gaussian copula for default dependence, and a four-tier sequential-pay waterfall with performance triggers.
-Monte Carlo simulation over 10,000 paths and 36 months yields near-zero expected losses and Aaa-implied ratings for all tranches under benchmark and stressed scenarios, though we document that these results are sensitive to model specification: the capped Merton PD estimates (49.4\% weighted average) diverge sharply from uncapped Merton (98.2\%) and KMV alternatives (9.8\%), and the Gaussian copula understates tail dependence relative to the $t$-copula.
-A discounted cash-flow analysis reveals that Time-Right issuance generates lower absolute NPV than traditional operations ($-42\%$ at baseline parameters), reflecting the forward discount that investors demand for bearing occupancy risk---Time-Rights are a risk-transfer and cash-flow-front-loading instrument, not a revenue-growth instrument.
-We discuss extensions to flight capacity, event ticketing, and coworking space, and provide a comprehensive audit of model parameters with sensitivity analysis, establishing a research program for generalized service-capacity securitization.
+As an instantiation, we develop Time-Rights for the hotel sector: tokenized forward room-night claims that trade on secondary markets and settle via a ternary mechanism offering cash redemption, discounted physical stay, or secondary-market rollover.
+
+We construct an 80-hotel stratified asset pool from 1.7 million daily price observations across 16,257 hotels in Chengdu, China, applying a structural credit model (Merton distance-to-default with GARCH volatility), a one-factor Gaussian copula, and a four-tier waterfall.
+Monte Carlo simulation (10,000 paths, 36 months) yields near-zero expected losses and Aaa-implied ratings for all tranches, though these results are sensitive to model specification: capped Merton PDs average 49.4\% (65 of 66 hotels at the 50\% ceiling), uncapped Merton reaches 98.2\%, and a simplified KMV model yields 9.8\%.
+An empirical survival analysis of 14,851 hotels reveals tiered attrition rates---economy $\approx$36\%, comfort $\approx$14\%, upscale $\approx$5\%, luxury $\approx$0\%---providing a data-driven benchmark between the two model extremes.
+The $t$-copula VaR 99\% for the Senior tranche is approximately double the Gaussian estimate, confirming material tail dependence.
+
+A discounted cash-flow analysis reveals that Time-Right issuance generates lower absolute NPV than traditional operations ($-42\%$ at baseline), reflecting the forward discount investors demand for bearing occupancy risk: Time-Rights are a risk-transfer and cash-flow-front-loading instrument, not a revenue-growth instrument.
+We model the hotel as an active secondary-market participant (adding $\approx$3.7\% of annual revenue) and analyze the over-issuance mechanism's fractional-reserve-like tail risk.
+A stakeholder analysis reveals a positive-sum coordination mechanism: hotels capture $\approx$79\% of net benefits, institutional investors 17\%, and the platform 4\%, with the system most valuable for economy-tier hotels facing high OTA dependence and costly financing.
+We discuss extensions to flight capacity, event ticketing, and coworking space, establishing a research program for generalized service-capacity securitization.
 
 \bigskip
 \noindent\textbf{Keywords:} Future Service Rights, Time-Right, Asset-Backed Securities, Tokenization, Real-World Assets, Merton Model, Gaussian Copula, Mechanism Design, Hotel Finance
@@ -53,30 +59,42 @@ We discuss extensions to flight capacity, event ticketing, and coworking space, 
 
 The global hotel industry generates approximately \$600 billion in annual revenue, yet the financial architecture for monetizing future service capacity remains primitive.
 Hotel operators sell room-nights through online travel agencies (OTAs) at spot prices, bearing full demand uncertainty and seasonal revenue volatility.
-Meanwhile, the tokenization of real-world assets (RWA) has emerged as a significant trend in decentralized finance, with platforms such as Ondo Finance and Centrifuge digitizing treasury bonds, invoices, and real estate \cite{chen2023rwa}.
+Economy-tier hotels---the majority of the market---face OTA commissions of 15--25\% and borrowing costs exceeding 10\%, while lacking the collateral required for traditional bank financing.
+Meanwhile, the tokenization of real-world assets (RWA) has emerged as a significant trend in decentralized finance, with platforms digitizing treasury bonds, invoices, and real estate \cite{chen2023rwa}.
 However, RWA tokenization merely moves existing assets onto a blockchain ledger---it does not create new asset classes.
 
-This paper introduces \textbf{Future Service Rights (FSR)}: a novel asset class representing the contingent claim on a service provider's future capacity.
-Unlike RWA, which digitizes pre-existing claims, FSR \emph{creates} assets by transforming idle future capacity into tradable financial instruments.
+This paper introduces \textbf{Future Service Rights (FSR)}: a novel asset class representing the contingent claim on a service provider's future capacity within a specified time window.
+Unlike RWA, which digitizes pre-existing claims, FSR \emph{creates} assets by transforming idle future capacity---a non-asset---into tradable financial instruments.
 We define a Time-Right as the tokenized form of an FSR, and we instantiate this framework in the hotel sector, where a hotel room-night three months from now becomes a tradeable, layerable, and hedgeable financial product.
 
-The economic rationale is straightforward.
-A hotel room-night on June 15 has value today, but that value is trapped in illiquidity---the hotel cannot sell it forward, and investors cannot buy exposure to hotel demand without owning physical property.
-By tokenizing these future room-nights as Time-Rights and structuring them into tranched ABS (Asset-Backed Securities), we unlock several efficiency gains: (i) hotels receive upfront capital, converting uncertain future revenue into certain present cash; (ii) investors gain exposure to a new, diversifying asset class; (iii) consumers benefit from price stability and flexible settlement options.
+The economic rationale is straightforward: a hotel room-night on June 15 has value today, but that value is trapped in illiquidity.
+By tokenizing future room-nights as Time-Rights and structuring them into tranched ABS, we unlock three efficiency gains: (i) hotels receive upfront capital, converting uncertain future revenue into certain present cash---particularly valuable for economy-tier hotels with limited financing options; (ii) investors gain exposure to a new, diversifying asset class with attractive risk-adjusted returns; (iii) consumers benefit from price stability and a ternary settlement mechanism offering cash redemption, discounted physical stays, or secondary-market liquidity.
 
-We make three contributions.
-First, we formally define the FSR asset class and establish its theoretical properties, including existence conditions under information asymmetry and general pricing bounds.
-Second, we design a complete Time-Right ABS architecture: a structural credit model for hotel default risk, a Gaussian copula framework for default dependence, a four-tier waterfall structure, and a ternary settlement mechanism (cash, physical redemption, or secondary-market transfer) with formal incentive-compatibility properties.
-Third, we calibrate the framework using a unique dataset of 1.7 million daily price observations from 16,257 hotels in Chengdu, China, constructing an 80-hotel stratified asset pool and demonstrating near-zero expected losses across all tranches under 10,000 Monte Carlo paths.
-We further conduct a suite of robustness checks---including $t$-copula tail dependence modeling, systematic factor sensitivity analysis, and bootstrap confidence intervals---which reveal that while the Gaussian copula understates tail risk (the $t$-copula VaR 99\% is approximately double the Gaussian VaR 99\%), the structural credit protection of 32\% remains sufficient to absorb tail events across all copula specifications.
+We make four contributions.
+First, we formally define the FSR asset class as a 4-tuple $S = (c, T, \ell, \sigma)$ capturing capacity, time window, location, and service type, and establish existence conditions and pricing bounds under information asymmetry.
+Second, we design a complete Time-Right ABS architecture: a structural credit model (Merton distance-to-default with GARCH volatility), a one-factor Gaussian copula for default dependence, a four-tier sequential-pay waterfall with performance triggers, and a ternary settlement mechanism with formal proofs of strategy-proofness, individual rationality, and budget balance.
+Third, we calibrate the framework using 1.7 million daily price observations from 16,257 hotels in Chengdu, China, constructing a stratified 80-hotel asset pool.
+Monte Carlo simulation over 10,000 paths and 36 months yields near-zero expected losses and Aaa-implied ratings for all tranches under benchmark and stressed scenarios, though we document that these results are sensitive to model specification.
+Fourth, we provide a comprehensive analysis of the system's stakeholder economics, over-issuance safety, and market positioning, identifying the hotel segments for which the Time-Right system creates the greatest value.
+
+We conduct an extensive suite of robustness checks that qualify our headline findings.
+Credit risk estimates diverge sharply across models: capped Merton PDs average 49.4\% (with 65 of 66 pool hotels at the 50\% ceiling), uncapped Merton PDs reach 98.2\%, and a simplified KMV model yields 9.8\%.
+An empirical survival analysis of 14,851 hotels over four months reveals a tiered attrition gradient: economy hotels face $\approx$36\% annualized delisting rates, comfort $\approx$14\%, upscale $\approx$5\%, and luxury $\approx$0\%---consistent with economic intuition but lacking a direct default-calibration benchmark.
+Copula sensitivity analysis confirms that the Gaussian copula understates tail dependence: the $t$-copula ($\nu=3$) VaR 99\% for the Senior tranche (50.4\%) is approximately double the Gaussian estimate (24.5\%), though the 32\% Senior credit support absorbs tail events across all specifications.
+A discounted cash-flow analysis reveals that Time-Right issuance generates lower absolute NPV than traditional hotel operations ($-42\%$ at baseline parameters), reflecting the forward discount that investors demand for bearing occupancy risk---Time-Rights are a risk-transfer and cash-flow-front-loading instrument, not a revenue-growth instrument.
+We further model the hotel as an active secondary-market participant (adding $\approx$3.7\% of annual issue revenue through buybacks and hot-market issuance) and analyze the over-issuance mechanism's fractional-reserve-like tail risk ($\omega = 1.29\times$; required occupancy 77.5\% vs.\ expected 62\%).
+
+The stakeholder analysis reveals a positive-sum coordination mechanism rather than a zero-sum transfer: hotels capture approximately 79\% of the system's net benefit through front-loaded certain cash, institutional investors earn 17\% through fixed-income tranche coupons, and the platform captures 4\% as market infrastructure.
+Retail investors earn $\approx$73\% nominal return on Time-Right holdings, compensated for bearing hotel default risk and illiquidity.
+Crucially, the system's value is asymmetric across hotel tiers: economy and comfort-tier hotels with high OTA dependence and costly financing are the natural early adopters, while luxury hotels with brand-direct bookings and stable occupancy derive less benefit---a feature consistent with the historical role of financial innovation in completing incomplete markets for the most constrained borrowers.
 
 The paper proceeds as follows.
 Section 2 defines FSR and derives its theoretical properties.
 Section 3 develops the Time-Right pricing framework.
 Section 4 presents the credit risk and structuring methodology.
 Section 5 formalizes the ternary settlement mechanism.
-Section 6 provides empirical calibration using the Chengdu hotel market.
-Section 7 discusses extensions to non-hotel FSR categories.
+Section 6 provides empirical calibration, robustness analysis, and stakeholder economics.
+Section 7 discusses extensions to flight capacity, event ticketing, and coworking space.
 Section 8 concludes.
 
 % ============================================================
