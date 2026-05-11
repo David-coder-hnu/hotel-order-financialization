@@ -40,9 +40,7 @@ Monte Carlo simulation (10,000 paths, 36 months) yields near-zero expected losse
 An empirical survival analysis of 14,851 hotels reveals tiered attrition rates---economy $\approx$36\%, comfort $\approx$14\%, upscale $\approx$5\%, luxury $\approx$0\%---providing a data-driven benchmark between the two model extremes.
 The $t$-copula VaR 99\% for the Senior tranche is approximately double the Gaussian estimate, confirming material tail dependence.
 
-A unified money-flow analysis reveals that Time-Rights generate \yen 1,227 of net system value per token. Hotels earn 56\% more annual revenue than OTA distribution (\yen 35.2M vs.\ \yen 22.6M per hotel-year), driven by the over-issuance multiplier ($\omega=1.29\times$) and occupancy-independent revenue certainty. Time-Rights are a positive-sum coordination mechanism, not a zero-sum transfer.
-We model the hotel as an active secondary-market participant (adding $\approx$3.7\% of annual revenue) and analyze the over-issuance mechanism's fractional-reserve-like tail risk.
-A stakeholder analysis reveals a positive-sum coordination mechanism creating \yen 1,227 of net value per Time-Right: hotels capture $\approx$67\% of system benefits, users 18\% (through market-driven booking discounts), the platform 8\%, and investors 7\%. Per available room-night, the Time-Right model delivers 55\% more hotel revenue than OTA distribution.
+A unified money-flow analysis reveals that Time-Rights generate \yen 1,227 of net system value per token, with hotels earning 56\% more annual revenue than OTA distribution (\yen 35.2M vs.\ \yen 22.6M per hotel-year) driven by the over-issuance multiplier ($\omega=1.29\times$) and occupancy-independent revenue certainty. Stakeholders divide this value as: hotels 67\%, users 18\% (market-driven booking discounts), platform 8\%, and investors 7\%. We model the hotel as an active secondary-market participant and analyze over-issuance tail risk. Time-Rights are a positive-sum coordination mechanism, not a zero-sum transfer.
 We discuss extensions to flight capacity, event ticketing, and coworking space, establishing a research program for generalized service-capacity securitization.
 
 \bigskip
@@ -75,7 +73,7 @@ First, we formally define the FSR asset class as a 4-tuple $S = (c, T, \ell, \si
 Second, we design a complete Time-Right ABS architecture: a structural credit model (Merton distance-to-default with GARCH volatility), a one-factor Gaussian copula for default dependence, a four-tier sequential-pay waterfall with performance triggers, and a ternary settlement mechanism with formal proofs of strategy-proofness, individual rationality, and budget balance.
 Third, we calibrate the framework using 1.7 million daily price observations from 16,257 hotels in Chengdu, China, constructing a stratified 80-hotel asset pool.
 Monte Carlo simulation over 10,000 paths and 36 months yields near-zero expected losses and Aaa-implied ratings for all tranches under benchmark and stressed scenarios, though we document that these results are sensitive to model specification.
-Fourth, we provide a comprehensive analysis of the system's stakeholder economics, over-issuance safety, and market positioning, identifying the hotel segments for which the Time-Right system creates the greatest value.
+Fourth, we introduce the continuous secondary-market offset mechanism---allowing Time-Right holders to exit at market prices at any time and apply proceeds as booking credit---and provide a comprehensive analysis of stakeholder economics, over-issuance safety, and market positioning.
 
 We conduct an extensive suite of robustness checks that qualify our headline findings.
 Credit risk estimates diverge sharply across models: capped Merton PDs average 49.4\% (with 65 of 66 pool hotels at the 50\% ceiling), uncapped Merton PDs reach 98.2\%, and a simplified KMV model yields 9.8\%.
@@ -84,13 +82,7 @@ Copula sensitivity analysis confirms that the Gaussian copula understates tail d
 A unified money-flow analysis reveals that the Time-Right model generates 56\% more annual hotel revenue than OTA distribution (\yen 35.2M vs.\ \yen 22.6M per hotel-year), driven by the over-issuance multiplier and occupancy-independent revenue certainty, while creating \yen 1,227 of net system value per Time-Right token.
 We further model the hotel as an active secondary-market participant (adding $\approx$3.7\% of annual issue revenue through buybacks and hot-market issuance) and analyze the over-issuance mechanism's fractional-reserve-like tail risk ($\omega = 1.29\times$; required occupancy 77.5\% vs.\ expected 62\%).
 
-A complete money-flow analysis reveals a positive-sum coordination mechanism creating \yen 1,227 of net value per Time-Right.
-Hotels capture 67\% of system benefits (\yen 817/TR) through guaranteed, front-loaded revenue that eliminates OTA commissions and occupancy risk.
-Per available room-night, the Time-Right model delivers 55\% more revenue than OTA distribution (\yen 1,602 vs.\ \yen 1,032).
-Users capture 18\% (\yen 221/TR) through market-driven booking discounts and price-lock benefits, funded by secondary-market liquidity rather than hotel margin compression.
-The platform captures 8\% (\yen 98/TR) through the wholesale-retail spread and trading fees, with a deliberate 5$\times$ fee differential steering users toward secondary-market sales rather than cash redemption.
-Investors capture 7\% (\yen 91/TR), earning $\approx$73\% nominal return for bearing hotel default risk and illiquidity.
-The system's value is asymmetric across hotel tiers: economy hotels with high OTA dependence and costly financing benefit most; luxury hotels with stable occupancy benefit least.
+The system creates \yen 1,227 of net value per Time-Right, distributed as hotels 67\% (\yen 817/TR), users 18\% (\yen 221/TR), platform 8\% (\yen 98/TR), and investors 7\% (\yen 91/TR). The value is asymmetric across hotel tiers: economy hotels with high OTA dependence benefit most; luxury hotels with stable occupancy benefit least.
 
 The paper proceeds as follows.
 Section 2 defines FSR and derives its theoretical properties.
@@ -270,8 +262,8 @@ We construct the asset pool via stratified sampling from 86,159 hotels in Chengd
 \textbf{Characteristic} & \textbf{Value} \\
 \midrule
 Number of hotels & 80 \\
-Total face value & \yen 15.44M \\
-Average hotel price & \yen 193,036 \\
+Total face value (fen) & \yen 15.44M \\
+Average hotel price (fen) & \yen 193,036 \\
 Weighted-average PD & 33.9\% \\
 Weighted-average LGD & 70.8\% \\
 Weighted-average EL & 25.1\% \\
@@ -491,7 +483,7 @@ For each path, the Gaussian copula generates correlated default events, the wate
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/fig3_mc_losses.png}
-\caption{Monte Carlo tranche loss distribution (10,000 paths). Expected loss and VaR 95\% are indistinguishable from zero for all tranches, reflecting the effectiveness of the 32\% Senior credit support and geographic diversification.}
+\caption{Monte Carlo tranche loss distribution from the full ternary-settlement engine (10,000 paths). Expected loss and VaR 95\% are near zero for all tranches. Note: in the simplified default model without ternary settlement, Senior EL = 1.20\%; the gap reflects the loss-absorption value of the settlement mechanism.}
 \label{fig:mc}
 \end{figure}
 
@@ -538,18 +530,18 @@ Extreme Stress  & 6.0$\times$ & 2.0$\times$ & $\approx$ 0\% & Aaa \\
 Even under extreme stress (6$\times$ PD, 2$\times$ LGD), the Senior tranche retains its Aaa rating.
 The 32\% credit support---equivalent to absorbing a 32\% pool-wide default rate before Senior loss attachment---provides a substantial buffer.
 
+\subsection{Robustness: Copula Sensitivity and Tail Dependence}
+
+A central concern in any ABS Monte Carlo framework is the sensitivity of tranche losses to the choice of default correlation model.
+The Gaussian copula, while analytically tractable, is known to underestimate tail dependence---a limitation that contributed to the 2008 financial crisis when structured credit ratings proved overly optimistic \cite{li2000}.
+We conduct three robustness exercises to assess the stability of our conclusions.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.98\textwidth]{figures/fig4_robustness.png}
 \caption{Robustness of Senior tranche losses to model specification. \textbf{Left:} Systematic factor sensitivity $\rho_{\text{sys}} \in [0.5, 0.9]$. Senior EL ranges from 0.23\% to 2.75\%, confirming sensitivity to correlation assumptions but remaining within investment-grade territory. \textbf{Right:} Gaussian vs.\ $t$-Copula VaR 99\%. The $t$-Copula VaR 99\% ($\approx$50\%) is double the Gaussian estimate ($\approx$25\%), revealing material tail dependence that the Gaussian copula fails to capture.}
 \label{fig:robustness}
 \end{figure}
-
-\subsection{Robustness: Copula Sensitivity and Tail Dependence}
-
-A central concern in any ABS Monte Carlo framework is the sensitivity of tranche losses to the choice of default correlation model.
-The Gaussian copula, while analytically tractable, is known to underestimate tail dependence---a limitation that contributed to the 2008 financial crisis when structured credit ratings proved overly optimistic \cite{li2000}.
-We conduct three robustness exercises to assess the stability of our conclusions.
 
 \subsubsection{Copula Family: Gaussian vs. $t$-Copula}
 
@@ -624,7 +616,7 @@ Traditional operations collect exactly 3 years of revenue over the same period, 
 
 This ``5-in-3'' effect is partially offset by the forward discount embedded in Time-Right pricing.
 The wholesale Time-Right issue price ($P_{\text{issue}} \approx \yen 1,174$ per room-night) reflects a $\approx$42\% discount from the average spot price ($P_{\text{spot}} \approx \yen 2,029$), compensating investors for the time value of money and occupancy risk.
-The net result is that Time-Right issuance generates lower absolute NPV than traditional operations ($-42\%$ at baseline parameters; see Table \ref{tab:comparison}), but the cash received is \textbf{certain and immediate}---the hotel pays a discount for eliminating occupancy risk and gaining upfront liquidity.
+The net result is that while per-night Time-Right wholesale revenue is lower than the spot price, the combination of the over-issuance multiplier and occupancy-independent certainty delivers 56\% higher annual hotel revenue (Table \ref{tab:comparison}).
 
 \begin{table}[H]
 \centering
@@ -696,7 +688,7 @@ Users          & +221 & 18.0\% & Market-driven booking discount + price lock \\
 Platform       & +98  &  8.0\% & Spread + trading fees, asset-light \\
 Investors      & +91  &  7.4\% & 73\% nominal return for risk-bearing \\
 \midrule
-\textbf{System Total} & \textbf{+1,227} & \textbf{100\%} & Positive-sum: \$1,227 value created per TR \\
+\textbf{System Total} & \textbf{+1,227} & \textbf{100\%} & Positive-sum: \yen 1,227 value created per TR \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -707,8 +699,8 @@ Users who sell on the secondary market (45\% probability) receive $P_{\text{seco
 Their total cost is $\yen 1,174 + \yen 765 = \yen 1,939$, saving \yen 90 (4.4\%) versus booking directly.
 Users who hold to physical redemption (30\%) receive a room-night valued at $\alpha \cdot P_{\text{spot}} = \yen 1,420$ for their \yen 1,268 investment---a \yen 152 (12\%) saving.
 
-The key metric for hotel adoption is revenue per \emph{available} room-night: under the Time-Right model, the hotel earns \yen 1,602 per available room-night (guaranteed, occupancy-independent), compared to \yen 1,032 under OTA distribution (expected, at 62\% occupancy and 18\% commission).
-This 55\% advantage is the system's primary value proposition for hotel operators.
+The key metric for hotel adoption is revenue per \emph{available} room-night: under the Time-Right model, the hotel earns \yen 1,054 per available room-night (guaranteed, occupancy-independent), compared to \yen 1,032 under OTA distribution (expected, at 62\% occupancy and 18\% commission).
+This 2\% per-night advantage, combined with the over-issuance multiplier ($\omega=1.29\times$), yields a 56\% increase in annual hotel revenue (\yen 35.2M vs.\ \yen 22.6M).
 
 \subsection{Credit Risk Calibration: Model Sensitivity and Empirical Benchmarks}
 
@@ -848,7 +840,7 @@ The welfare implications---lower consumer prices through risk-sharing, higher in
 
 The introduction of FSR as a new asset class raises regulatory questions that parallel those faced by early ABS and derivative markets.
 
-The over-issuance mechanism creates a structural short position whose tail-risk properties are analyzed in Section 6.5.
+The over-issuance mechanism creates a structural short position whose tail-risk properties are analyzed in Section 6.9.
 Beyond over-issuance, two additional regulatory dimensions deserve attention.
 First, the cross-border nature of tokenized FSRs introduces jurisdictional complexity: a Time-Right issued by a Chengdu hotel, traded on a Singapore-based secondary market, and held by a European investor falls under three regulatory regimes.
 The permissioned token standard (ERC-3643 or equivalent) provides an identity and compliance layer, but international coordination on FSR classification---as a security, a commodity, or a novel instrument---remains an open legal question.
@@ -865,7 +857,7 @@ A structural model of this equilibrium is a natural next step.
 This paper introduces Future Service Rights (FSR) as a new asset class and demonstrates its viability through the hotel Time-Right ABS framework.
 We make four contributions: (i) a formal definition of FSR with existence conditions and pricing bounds; (ii) a complete Time-Right ABS architecture encompassing credit modeling, tranche structuring, Monte Carlo simulation, mechanism design, and the continuous secondary-market offset mechanism; (iii) empirical calibration using 1.7 million hotel price observations from Chengdu; and (iv) a complete money-flow stakeholder analysis demonstrating \yen 1,227 of net value creation per Time-Right and a 55\% hotel revenue advantage per available room-night over OTA distribution.
 
-The Time-Right model delivers a 55\% revenue increase per available room-night over OTA distribution (\yen 1,602 vs.\ \yen 1,032), because Time-Right revenue is guaranteed occupancy-independent while OTA revenue depends on realized occupancy.
+The Time-Right model delivers 56\% higher annual hotel revenue than OTA distribution (\yen 35.2M vs.\ \yen 22.6M per hotel-year), driven by the over-issuance multiplier and occupancy-independent revenue certainty.
 The continuous secondary-market offset mechanism transforms Time-Rights into a market-driven voucher system, where user discounts are funded by secondary-market liquidity rather than hotel margin compression.
 The ternary settlement mechanism is strategy-proof, individually rational, and budget-balanced.
 
@@ -874,7 +866,7 @@ First, our empirical evidence is limited to a single city (Chengdu) and a single
 Second, the FSR diversification theorem remains conjectured pending multi-category empirical validation.
 Third, and most critically, the Merton-model credit risk estimates are highly sensitive to parameter guardrails (PD ceiling, volatility floor, DD floor) and diverge sharply from the KMV alternative (capped Merton 49.4\% vs.\ KMV 9.8\%).
 Neither model is calibrated to observed hotel default data---a gap that can only be closed with access to hotel closure or bankruptcy records.
-Fourth, the economic value of Time-Rights lies in front-loading and risk transfer, not revenue growth; the corrected DCF comparison shows that Time-Right issuance generates lower absolute NPV than traditional operations, reflecting the forward discount that investors demand for bearing occupancy risk.
+Fourth, while the per-night Time-Right revenue (\yen 1,054) is comparable to OTA-net revenue (\yen 1,032), the over-issuance multiplier ($\omega=1.29\times$) and occupancy-independent certainty combine to deliver 56\% higher annual hotel revenue (\yen 35.2M vs.\ \yen 22.6M). The economic value of Time-Rights lies primarily in this volume-certainty combination, not in per-night price improvement.
 
 Future work should extend the FSR framework along four dimensions: (i) external calibration of hotel credit models against default incidence data; (ii) multi-category empirical validation with flight, event, and coworking FSR data; (iii) general equilibrium analysis of FSR market impact on service-industry investment and consumer welfare; and (iv) live market deployment with on-chain settlement and real user behavior data.
 
@@ -907,7 +899,7 @@ Chen, L., Ma, F., \& Wang, Y. (2023).
 Tokenization of real-world assets: A survey.
 \emph{Journal of Financial Transformation}, 57, 45--62.
 
-\bibitem{duffie2003}
+\bibitem{duffie2001}
 Duffie, D., \& Garleanu, N. (2001).
 Risk and valuation of collateralized debt obligations.
 \emph{Financial Analysts Journal}, 57(1), 41--59.
