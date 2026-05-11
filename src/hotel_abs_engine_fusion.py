@@ -114,9 +114,10 @@ class HotelTimeRightABSEngine:
         
         # 计算时权参数
         print("\n【步骤3b】计算时权发行参数...")
+        issue_discount = getattr(self, 'issue_discount', 0.10)
         self.time_right_df = builder.compute_time_right_params(
             self.pool_df, discount_rate=0.08, safety_factor=0.8,
-            issue_discount=0.25, time_to_maturity_months=36
+            issue_discount=issue_discount, time_to_maturity_months=36
         )
         
         total_issue_value = self.time_right_df['total_face_value'].sum()
@@ -328,20 +329,29 @@ class HotelTimeRightABSEngine:
     def _compute_traditional_mode(self):
         """计算传统经营模式下酒店的现金流和NPV
 
-        注意：原始价格数据单位为分(fen, 1/100 CNY)。此处统一转换为元。
+        注意：
+        - 原始价格数据单位为分(fen, 1/100 CNY)
+        - time_right_df可能含多个时段条目(同一酒店多行), 需按hotelCode去重聚合
         """
         FEN_TO_YUAN = 100.0
-        n_hotels = len(self.time_right_df)
         n_months = 36
         discount_rate_monthly = 0.08 / 12
 
+        # 按酒店去重聚合(time_right_df可能每个酒店有多行)
+        hotel_groups = self.time_right_df.groupby('hotelCode').agg({
+            'rooms': 'first',
+            'occupancy': 'first',
+            'avg_price': 'first',
+        }).reset_index()
+
+        n_hotels = len(hotel_groups)
         monthly_cashflows = []
         total_annual_revenue = 0
 
-        for i in range(n_hotels):
-            rooms = self.time_right_df.iloc[i]['rooms']
-            occupancy = self.time_right_df.iloc[i]['occupancy']
-            avg_price_fen = self.time_right_df.iloc[i]['avg_price']
+        for _, row in hotel_groups.iterrows():
+            rooms = row['rooms']
+            occupancy = row['occupancy']
+            avg_price_fen = row['avg_price']
             avg_price_yuan = avg_price_fen / FEN_TO_YUAN
 
             annual_revenue = rooms * occupancy * avg_price_yuan * 365
@@ -520,7 +530,9 @@ class HotelTimeRightABSEngine:
                 'traditional_first12_ratio': round(float(trad_frontloading), 1),
                 'improvement_pp': round(float(frontloading_ratio - trad_frontloading), 1),
             },
-            'sensitivity': sensitivity,
+            'sensitivity_discount_rate': sensitivity,
+            'issue_discount_current': self.issue_discount if hasattr(self, 'issue_discount') else 0.10,
+            'issue_discount_sensitivity_note': 'Run engine with engine.issue_discount = X before run_full_analysis() to test different values. Suggested range: 0.0 (no discount) to 0.30 (30% discount).',
         }
     
     def _compute_tripartite_benefits(self):

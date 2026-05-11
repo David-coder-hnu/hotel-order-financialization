@@ -1,0 +1,65 @@
+[
+  {
+    "issue_discount": 0.0,
+    "trad_npv_ph": 43696054.85612896,
+    "tr_npv_ph": 28832584.433310147,
+    "uplift_pct": -34.0,
+    "issue_revenue": 1920048373.0100334,
+    "hotel_net": 1371553970.9040189,
+    "redemption": 548494402.1060146
+  },
+  {
+    "issue_discount": 0.05,
+    "trad_npv_ph": 43696054.85612896,
+    "tr_npv_ph": 27284701.46033135,
+    "uplift_pct": -37.6,
+    "issue_revenue": 1824045954.3595312,
+    "hotel_net": 1291095716.2105944,
+    "redemption": 532950238.14893675
+  },
+  {
+    "issue_discount": 0.1,
+    "trad_npv_ph": 43696054.85612896,
+    "tr_npv_ph": 25736818.487352576,
+    "uplift_pct": -41.1,
+    "issue_revenue": 1728043535.70903,
+    "hotel_net": 1210637461.517171,
+    "redemption": 517406074.191859
+  },
+  {
+    "issue_discount": 0.15,
+    "trad_npv_ph": 43696054.85612896,
+    "tr_npv_ph": 24188935.514373768,
+    "uplift_pct": -44.6,
+    "issue_revenue": 1632041117.0585282,
+    "hotel_net": 1130179206.8237472,
+    "redemption": 501861910.23478115
+  },
+  {
+    "issue_discount": 0.2,
+    "trad_npv_ph": 43696054.85612896,
+    "tr_npv_ph": 22641052.541394982,
+    "uplift_pct": -48.2,
+    "issue_revenue": 1536038698.4080267,
+    "hotel_net": 1049720952.1303233,
+    "redemption": 486317746.2777034
+  },
+  {
+    "issue_discount": 0.25,
+    "trad_npv_ph": 43696054.85612896,
+    "tr_npv_ph": 21093169.568416193,
+    "uplift_pct": -51.7,
+    "issue_revenue": 1440036279.7575247,
+    "hotel_net": 969262697.4368992,
+    "redemption": 470773582.32062554
+  },
+  {
+    "issue_discount": 0.3,
+    "trad_npv_ph": 43696054.85612896,
+    "tr_npv_ph": 19545286.595437407,
+    "uplift_pct": -55.3,
+    "issue_revenue": 1344033861.1070232,
+    "hotel_net": 888804442.7434756,
+    "redemption": 455229418.3635477
+  }
+]
