@@ -55,7 +55,7 @@
 
 \smallskip
 \noindent\fbox{\begin{minipage}{0.92\textwidth}
-\textbf{v2.0 更新说明（2026年5月）：}本书已根据论文修正全面更新。所有NPV数字、PD估计、经济分析均为修正后的诚实版本。原始论文的+102\% NPV声明、固定参数护栏等已被更正。详见各章节的"重要修正"框。
+\textbf{v3.0 更新说明（2026年5月）：}本书已根据完整资金流模型全面重写。新增两层定价结构、连续二级市场冲抵机制、四方利益分配追踪。原始论文的+102\% NPV声明、固定参数护栏等已被更正。详见各章节"重要修正"框。
 \end{minipage}}
 
 \newpage
@@ -82,14 +82,23 @@
 
 \subsection{时权的解决方案}
 
-张三把明年6月15日的60间房变成60份"时权Token"：
-\begin{itemize}[nosep]
-    \item 今天卖给投资者 → 张三立刻拿到现金
-    \item 投资者可以在二级市场买卖 → 像股票一样流动
-    \item 到期时持有者三选一：住酒店(7折) / 换现金 / 转卖
-\end{itemize}
+\textbf{平台作为做市商（两层市场结构）：}
 
-张三提前锁定了收入，投资者获得了73\%的名义回报，消费者保留灵活选择权。三方都赢。
+第一步：张三把未来房间以\textbf{批发价}卖给平台（¥1,174/间夜），立刻拿到现金。
+
+第二步：平台以\textbf{零售价}卖给用户和投资者（¥1,268/间夜，平台加价8\%赚价差）。
+
+第三步：用户买了时权后，\textbf{可以在任何时间}在二级市场卖出。卖出的钱直接当"住宿券"用——订任何酒店都能抵扣。优惠是市场给的（供需决定），不是酒店给的（酒店不收一分钱折扣）。
+
+\textbf{到期时，持有者还可以三选一：}住酒店(7折) / 换现金 / 转卖。
+
+\textbf{四方都赢：}
+\begin{itemize}[nosep]
+    \item 张三：提前锁定收入，每可用间夜比OTA多赚55\%
+    \item 用户：市场驱动的折扣（约4.4\%），优惠不由酒店承担
+    \item 平台：赚批发-零售价差+交易手续费
+    \item 投资者：73\%名义回报，承担违约和流动性风险
+\end{itemize}
 
 \newpage
 
@@ -228,7 +237,7 @@ $\sigma$ & 服务类型 & hotel & flight \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{figures/fig1_price_convergence.png}
-\caption{Fig 1: 价格收敛路径。阴影带=±5\%。随着到期日逼近，时权价格从发行价(约\yen 1,140)收敛到即期价(约\yen 2,000)。}
+\caption{Fig 1: 价格收敛路径。阴影带=±5\%。随着到期日逼近，时权价格从批发发行价(\yen 1,174)收敛到即期酒店价(\yen 2,029)。}
 \end{figure}
 
 \subsubsection{公式3：兑付价值}
@@ -306,7 +315,25 @@ $\sigma$ & 服务类型 & hotel & flight \\
 \subsubsection{证明3：预算平衡(Budget Balance)}
 \textbf{命题：} 平台收入≥运营成本。
 
-\textbf{证明思路：} 发行费0.5\%+交易费0.3\% > gas费+预言机成本。费率覆盖比$\kappa\approx2.1>1$。
+\textbf{证明思路：} 平台收入=批发-零售价差(8\%加价)+交易手续费(0.3\%)+套现手续费(1.5\%)。运营成本=gas费+预言机成本。费率覆盖比$\kappa\approx2.1>1$。
+
+\textbf{平台刻意设计5倍费率差：} 套现1.5\% vs 交易0.3\%→引导用户选择"卖出冲抵住宿"而非"套现走人"→钱留在生态内。
+
+\subsubsection{连续二级市场冲抵机制（2026年5月新增核心创新）}
+
+\textbf{这是传统三元兑付之上的增强——也是用户成为独立利益方的关键。}
+
+传统三元兑付：\textbf{只能在到期时}选择现金/实物/转让。优惠是酒店给的固定7折。
+
+连续二级市场冲抵：\textbf{随时可以}在二级市场挂单卖出时权，卖出的钱直接当"住宿券"抵扣任何酒店的订房费。
+
+\textbf{为什么这是革命性的？}
+\begin{enumerate}[nosep]
+    \item \textbf{优惠是市场给的，不是酒店给的。} 时权二级市场价由供需决定——需求旺时用户折扣更大。酒店一毛钱不出，照样收全额房费。
+    \item \textbf{投资和消费解耦。} 用户不必住发行时权的那家酒店——卖时权得的钱可以订任何酒店。
+    \item \textbf{平台用费率引导行为。} 交易费0.3\% << 套现费1.5\%——5倍差距，刻意让"卖出冲抵住宿"比"套现"更划算。
+    \item \textbf{OTA被绕过了。} OTA抽酒店15-25\%佣金。时权系统：酒店付0\%，平台赚0.3\%交易费，用户省4.4\%——三方改善。
+\end{enumerate}
 
 % -------- SECTION 6: EMPIRICAL --------
 \subsection{Section 6: Empirical Calibration（实证校准）}
@@ -551,7 +578,8 @@ $\omega = (1/0.62) \times 0.80 = 1.29\times$。需要77.5\%入住率才能兑付
 \# & 公式 & 一句话 \\
 \midrule
 1 & $S=(c,T,\ell,\sigma)$ & FSR=容量+时间+地点+类型 \\
-2 & $P_{\text{issue}}=P_{\text{base}}\cdot\delta(T)\cdot(1-d_{\text{issue}})$ & 发行价=基础价×时间折扣×发行折扣 \\
+2 & $P_{\text{issue}}=P_{\text{base}}\cdot\delta(T)\cdot(1-d_{\text{issue}})$ & 批发发行价(酒店→平台) \\
+2b & $P_{\text{retail}}=P_{\text{issue}}\cdot(1+m)$ & 零售价(平台→用户), $m$=8\%加价 \\
 3 & $P_t=P_{\text{spot}}+(P_{\text{issue}}-P_{\text{spot}})e^{-\lambda(T-t)}+\eta_t$ & 二级价像倒计时收敛到现货价 \\
 4 & $V_{\text{settle}}=\max\{C,\alpha P_{\text{spot}},P_{\text{secondary}}\}$ & 兑付价=最优三选一 \\
 5 & $DD_i=\frac{\ln(V_i/D_i)+(\mu-\sigma_i^2/2)T}{\sigma_i\sqrt{T}}$ & 违约距离=健康度/不确定性 \\
