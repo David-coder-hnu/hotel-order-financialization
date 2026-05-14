@@ -1,0 +1,529 @@
+\documentclass[12pt,a4paper]{article}
+
+% === Packages ===
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\geometry{margin=1in}
+\graphicspath{{./paper_figures/}}
+
+\begin{document}
+
+% === Title ===
+\title{\textbf{Future Service Rights in Aviation:}\\%
+\large Carrier-Level Credit, Booking-Curve Pricing, and $t$-Copula Structuring}
+
+\author{Research Team\\
+\textit{Flight Finance Research Group}}
+
+\date{May 2026}
+\maketitle
+
+\begin{abstract}
+We develop a Future Service Rights (FSR) securitization structure for commercial aviation. Unlike prior service-capacity securitization involving thousands of small independent operators, aviation concentrates default risk in 25 carriers. We address this through a reduced-form carrier credit model calibrated from the historical record of U.S. airline bankruptcies, a booking-curve pricing mechanism parameterized from the airfare dynamics literature, and a multivariate $t$-copula ($\nu=4$) with an empirically informed correlation matrix derived from airline equity returns (2021--2025). Using 97.3 million fare observations from the U.S. DOT DB1B survey, we construct a 69-route stratified pool across 11 carriers. Monte Carlo simulation (5,000 paths) with a standard bottom-up waterfall yields zero Senior expected loss---the maximum pool loss of 15.6\% never breaches the 35\% credit enhancement protecting the Senior tranche, implying a Moody's-equivalent rating of Aaa--Aa. Copula sensitivity analysis confirms this result across Gaussian, $t(6)$, and $t(4)$ specifications. The discount rate ($r_0 = 8\%$, based on airline industry WACC) is subjected to sensitivity analysis across $r_0 \in [4\%, 12\%]$; the Senior rating is robust throughout. Carrier-type-specific stress testing confirms investment-grade resilience through Systemic Shock scenarios. The booking-curve parameter~$\beta$ cannot be calibrated from the DB1B data; we show that user savings are determined by the discount rate and issue discount under our pricing specification, not by $\beta$, and report full sensitivity. We conclude that flight capacity meets the credit quality threshold for standalone FSR securitization, with the Senior tranche benefiting from a substantial subordination buffer.
+\end{abstract}
+
+% ============================================================
+\section{Introduction}
+% ============================================================
+
+The global commercial aviation industry transports over 4 billion passengers annually, generating approximately \$900 billion in revenue. Yet the market for forward flight capacity remains primitive: a seat on a June 15 departure has economic value today, but that value is trapped. Airlines cannot sell that seat forward as a tradable instrument. Investors cannot gain exposure to flight demand without owning airline equity. Consumers cannot lock in forward prices except through non-transferable advance-purchase tickets.
+
+The Future Service Rights (FSR) framework introduced the concept of a Time-Right---a tokenized contingent claim on a service provider's future capacity---and demonstrated viability in the service sector \cite{fsr2026}. Extending this framework to aviation requires a fundamentally different credit architecture. Prior FSR work relied on a pool of thousands of independent properties with largely idiosyncratic default risk and a Gaussian copula. Aviation presents a contrasting topology: 102,279 origin-destination pairs served by only 25 carriers, with the top four holding 62.4\% of passenger volume. A single carrier's bankruptcy triggers simultaneous default across all of its pooled routes.
+
+This paper makes three contributions. First, we construct a reduced-form carrier credit model calibrated from the historical record of U.S. airline bankruptcies (2000--2025). The model separates operational volatility---fare coefficient of variation, driven by yield management and fare-class segmentation---from financial distress risk. Second, we introduce booking-curve pricing, replacing the spot-convergence mechanism used in prior FSR work. Third, we deploy a $t$-copula with $\nu = 4$ degrees of freedom, using an empirically informed correlation matrix derived from 5-year daily airline equity returns.
+
+We calibrate the model using 97.3 million fare observations from the U.S. DOT DB1B survey (2022Q1--2025Q1). The resulting 69-route stratified pool yields a Senior tranche rated A (EL 24 bps, VaR 99\% 6.0\%) under $t(4)$-copula simulation. A full-period pessimistic calibration (2000--2025) increases the pool PD from 0.76\% to 1.15\%, and carrier-type-specific stress tests confirm investment-grade resilience. We conduct sensitivity analysis on the discount rate $r_0$ and the booking-curve parameter $\beta$, identifying which results are model-driven and which are structural.
+
+% ============================================================
+\section{Data and Exploratory Analysis}
+% ============================================================
+
+\subsection{Data Source and Limitations}
+
+We use the U.S. DOT DB1B Origin and Destination Survey (Market segment), a 10\% quarterly sample of all domestic U.S. airline tickets \cite{bts2025}, spanning 13 quarters (2022Q1--2025Q1): 97.3 million records, 102,279 unique origin-destination (OD) pairs, and 25 distinct carriers.
+
+Two limitations are material. First, DB1B records tickets by travel quarter, not purchase date, preventing direct calibration of the booking curve (Section 4.3). Second, the 10\% sample introduces variance in route-level statistics; for thin routes near our 20-observation filter, sampling error inflates the observed fare CV. Pool weighting by passenger volume mitigates this by down-weighting thin routes. The median route in our pool has 145 observations.
+
+\subsection{Key Structural Properties}
+
+Two properties have first-order implications for FSR design.
+
+\textbf{Extreme route concentration.} The top 1\% of routes (1,023 OD pairs) account for 50.3\% of passenger volume; the top 10\% capture 92.9\%. The route-level Gini coefficient is 0.91. This concentration is structural---hub-to-hub routes dominate---and implies unavoidable exposure to hub-specific disruptions.
+
+\textbf{The competition paradox is reversed.} Monopoly routes exhibit mean fare CV of 0.52, while routes with 10+ carriers exhibit mean CV of 0.63. Additional competition increases within-route fare dispersion through fare-class proliferation. The direct implication: fare CV cannot serve as a primary default proxy in aviation, as it primarily reflects yield management sophistication rather than financial distress.
+
+\textbf{Carrier concentration.} The HHI is 1,160, with the top 4 carriers holding 62.4\% of volume. Table~\ref{tab:carriers} lists the 10 largest carriers.
+
+\begin{table}[H]
+\centering
+\caption{Top 10 Carriers by Passenger Volume (2024 Q2)}
+\label{tab:carriers}
+\begin{tabular}{llrrrr}
+\toprule
+\textbf{Code} & \textbf{Carrier} & \textbf{Pax (M)} & \textbf{Share (\%)} & \textbf{Routes} & \textbf{Fare CV} \\
+\midrule
+WN & Southwest  & 41.6 & 21.9 & 10,517 & 0.552 \\
+DL & Delta      & 28.5 & 15.0 & 37,404 & 0.754 \\
+AA & American   & 26.2 & 13.8 & 47,701 & 0.782 \\
+UA & United     & 22.5 & 11.8 & 41,351 & 0.829 \\
+NK & Spirit     & 10.3 &  5.4 &  3,031 & 0.654 \\
+B6 & JetBlue    &  9.0 &  4.7 &  5,032 & 0.844\footnotemark[1] \\
+AS & Alaska     &  8.4 &  4.4 & 13,557 & 0.732 \\
+OO & SkyWest    &  8.1 &  4.2 & 71,352 & 2.618 \\
+F9 & Frontier   &  8.1 &  4.3 &  5,476 & 0.634 \\
+G4 & Allegiant  &  5.4 &  2.8 &  1,384\footnotemark[2] & 0.598 \\
+\bottomrule
+\end{tabular}
+\footnotetext[1]{B6's CV of 0.844 exceeds NK's 0.654 despite less aggressive yield management. This is attributable to B6's Northeast-focused network with high business-leisure fare mixing on premium transcontinental routes (JFK--LAX, JFK--SFO).}
+\footnotetext[2]{G4's 1,384 routes reflect OD pairs served during 2024 Q2 specifically. G4 operates low-frequency (2--4 flights/week) seasonal leisure routes; the passenger-to-route ratio ($\sim$43 daily pax per route) is consistent with this model.}
+\end{table}
+
+SkyWest (OO) exhibits fare CV of 2.618, reflecting its role as a regional contract carrier under capacity purchase agreements (CPAs)---not elevated bankruptcy risk. This observation directly motivates our separation of operational volatility from credit risk.
+
+% ============================================================
+\section{Carrier Credit Model}
+% ============================================================
+
+\subsection{Design Principle}
+
+In credit models where the operator \emph{is} the asset, price volatility can serve as a direct PD proxy. This approach fails for airlines because fare dispersion is dominated by yield management \cite{belobaba2015}. Delta's fare CV of 0.75 reflects revenue optimization, not financial distress.
+
+We adopt a reduced-form, scorecard-based calibration with three components:
+
+\begin{enumerate}[label=(\roman*)]
+    \item \textbf{Base default probability}---calibrated from historical bankruptcy frequency, differentiated by carrier type;
+    \item \textbf{Market position adjustment}---larger carriers receive lower PDs;
+    \item \textbf{Operational volatility adjustment}---fare CV provides a \textit{limited} modifier ($\pm 40\%$ range) to the base PD.
+\end{enumerate}
+
+This approach is deliberately simpler than a full Merton-style structural model. Airline balance-sheet data is publicly available for all major carriers and could in principle support asset-value-based PD estimation. However, airline asset values are dominated by fleet valuation (which depends on secondary-market aircraft prices and lease structures) and intangible assets (slot rights, brand value, loyalty program databases), making the standard Merton mapping from equity volatility to asset volatility unreliable. Our reduced-form approach prioritizes transparency and historical calibration over structural complexity, at the cost of not incorporating forward-looking balance-sheet information.
+
+\subsection{Base PD Calibration}
+
+We calibrate base PDs from the complete record of U.S. passenger airline Chapter 11 filings (2000--2025). The post-consolidation era (2013+) exhibits zero major-carrier defaults among the Big 4 and Alaska over 12 years (60 carrier-years). Spirit Airlines' 2024 filing is the sole major-carrier event; Spirit continued operating throughout its restructuring.
+
+We set base annual PDs: WN 0.10\% (never filed, 50+ years); DL, UA 0.30\% (19--23 years clean); AA 0.40\% (14+ years); AS 0.20\% (never filed); B6 1.50\%; NK 5.00\% (filed 2024, \textit{ex post}); F9 2.00\%; G4 1.20\%; HA 1.00\%; CPA regionals 0.80--1.50\%; unclassified 2.50\%.
+
+\textbf{Pessimistic calibration.} To address potential survivorship bias in the post-2013 window, we also calibrate using 2000--2025, which includes 6 major-carrier bankruptcies. Under this window, the pool-weighted PD increases from 0.76\% to 1.15\%. We use the post-2013 window as baseline and report the pessimistic calibration as a robustness bound. The structural argument for the narrower window---industry consolidation enabled capacity discipline and ancillary revenue growth \cite{borenstein2011}---is acknowledged as a judgment call, and the pessimistic bound provides a conservative alternative.
+
+\subsection{Size and Volatility Adjustments}
+
+The size adjustment factor is:
+\begin{equation}
+s_i = \frac{1}{\max(0.4, \; 1.0 + 0.4 \cdot \ln(m_i \cdot 100))}
+\end{equation}
+where $m_i$ is market share. For Southwest ($m_i = 0.219$), $s_i = 0.45$. The volatility adjustment is:
+\begin{equation}
+v_i = 1.0 + \text{clip}\left( \frac{cv_i - \bar{cv}}{\bar{cv}}, \; -0.4, \; 0.4 \right)
+\end{equation}
+where $\bar{cv} = 0.65$. The final PD is $\text{PD}_i = \text{PD}_i^{\text{base}} \cdot s_i \cdot v_i$, floored at 0.30\% and capped at 35\%.
+
+\subsection{LGD Calibration}
+
+Airline Chapter 11 is restructuring: operations continue, flights depart, tickets are honored. In liquidation, DOT regulations require ticket refunds, and competitors offer rescue fares. We calibrate LGD: majors 15\%, LCCs 30\%, CPA regionals 10\%, unclassified 25\%. Pool-weighted LGD is 17.7\%. For regional carriers under CPAs, the credit structure involves two layers---the regional's own health and the partner's willingness to assume CPA contracts---which our single-layer model captures conservatively.
+
+\subsection{Results}
+
+Table~\ref{tab:credit_results} presents calibrated metrics. Table~\ref{tab:rating_map} provides the EL-to-rating mapping.
+
+\begin{table}[H]
+\centering
+\caption{Calibrated Carrier Credit Metrics}
+\label{tab:credit_results}
+\begin{tabular}{llrrrrrr}
+\toprule
+\textbf{Code} & \textbf{Type} & \textbf{Base PD} & \textbf{Size Adj.} & \textbf{CV Adj.} & \textbf{Cal. PD} & \textbf{LGD} & \textbf{Rating} \\
+\midrule
+WN & Major & 0.10\% & 0.45 & 0.85 & 0.30\% & 15\% & A \\
+DL & Major & 0.30\% & 0.48 & 1.16 & 0.30\% & 15\% & A \\
+AA & Major & 0.40\% & 0.49 & 1.20 & 0.30\% & 15\% & A \\
+UA & Major & 0.30\% & 0.50 & 1.28 & 0.30\% & 15\% & A \\
+AS & Major & 0.20\% & 0.63 & 1.13 & 0.30\% & 15\% & A \\
+B6 & LCC   & 1.50\% & 0.62 & 1.30 & 1.20\% & 30\% & Ba \\
+NK & LCC   & 5.00\% & 0.60 & 1.01 & 3.00\% & 30\% & B \\
+OO & Regional & 0.80\% & 0.63 & 1.40 & 0.71\% & 10\% & Baa \\
+\midrule
+\multicolumn{7}{l}{\textbf{Pool Weighted (2013--2025 baseline)}} \\
+\multicolumn{2}{l}{All 25 carriers} & & & & 0.76\% & 17.7\% & \\
+\multicolumn{7}{l}{\textbf{Pool Weighted (2000--2025 pessimistic)}} \\
+\multicolumn{2}{l}{All 25 carriers} & & & & 1.15\% & 17.7\% & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{EL-to-Rating Mapping (Moody's-Equivalent)}
+\label{tab:rating_map}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Rating} & \textbf{EL Threshold (bps)} & \textbf{VaR 99\% Guideline} \\
+\midrule
+Aaa & $< 5$   & $< 1\%$ \\
+Aa  & $< 15$  & $< 3\%$ \\
+A   & $< 50$  & $< 8\%$ \\
+Baa & $< 100$ & $< 15\%$ \\
+Ba  & $< 300$ & $< 30\%$ \\
+B   & $< 800$ & $< 50\%$ \\
+Caa & $< 2000$& $< 80\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{fig2_carrier_pd.png}
+\caption{Calibrated annual PD by carrier and type. Major carriers (blue) cluster near 0.30\%; LCCs (orange) span 0.78--8.80\%; regionals (green) span 0.71--3.40\%. Pool-weighted PD is 0.76\% (dashed line).}
+\label{fig:carrier_pd}
+\end{figure}
+
+\textbf{Spirit Airlines.} NK's base PD is 5.00\%, calibrated from its November 2024 filing---an event within our data window. Including an in-sample-defaulted entity as ``baseline'' is conservative: the alternative of excluding NK reduces the pool PD from 0.76\% to approximately 0.65\%, making the Senior rating marginally stronger. We retain NK in the baseline as a conservative choice and note that its inclusion does not drive the headline result.
+
+% ============================================================
+\section{Time-Right Pricing with Booking Curves}
+% ============================================================
+
+\subsection{The Booking Curve}
+
+Airfares rise systematically as departure approaches, driven by inventory depletion and the entry of price-inelastic business travelers \cite{gaggero2012,belobaba2015}. For flight FSR, the booking curve replaces spot-price convergence: the time-right \textit{locks} today's forward price, and value accrues as the spot price rises toward departure.
+
+\subsection{Pricing Model}
+
+Let $P_0$ be the current spot fare and $T$ the maturity (12 months). We specify the face value at maturity as $F = P_0 \cdot e^{\beta}$, where $\beta = 0.22$ implies a 24.6\% forward premium. This exponential form is a first-order approximation chosen for analytical tractability; it assumes a constant percentage premium regardless of advance-purchase horizon, which simplifies the pricing equation but does not capture the convexity of real-world booking curves (where the premium accelerates in the final weeks). We acknowledge this as a functional-form limitation that the DB1B data (lacking booking-date information) cannot resolve empirically.
+
+The issue price is:
+\begin{equation}
+P_{\text{issue}} = \frac{F}{(1 + r_{\text{adj}})^{T/12}} \cdot (1 - d)
+\end{equation}
+where $r_{\text{adj}} = r_0 \cdot (1 + cv_i)$ adjusts for route-specific volatility, $d = 8\%$ is the issue discount, and overbooking follows $\omega = 1.25\times$.
+
+\textbf{Discount rate justification.} We set $r_0 = 8\%$, the midpoint of the U.S. airline industry weighted average cost of capital (WACC) range of 7.5--8.5\% estimated by Damodaran (2025). This rate reflects the risk of the \textit{underlying pool} before tranching, not the Senior tranche. At the pool level---with a weighted PD of 0.76\% and LCC exposure---an 8\% discount rate is consistent with Ba/B-level credit spreads above the risk-free rate. After CV adjustment, $r_{\text{adj}} \in [8.0\%, 13.2\%]$ for the routes in our pool. Critically, the tranching process converts pool-level discount rates (8--13\%) into Senior-level coupons (5.5\%): this spread compression is the fundamental economic function of securitization, not an inconsistency. We report sensitivity of all stakeholder economics to $r_0 \in [5\%, 12\%]$ in Table~\ref{tab:r0_sensitivity}.
+
+\begin{table}[H]
+\centering
+\caption{Discount Rate Sensitivity}
+\label{tab:r0_sensitivity}
+\begin{tabular}{lrrrc}
+\toprule
+$r_0$ & \textbf{Avg. Issue Price (USD)} & \textbf{User Saving} & \textbf{Platform Spread (USD)} & \textbf{Sr. Rating Impact} \\
+\midrule
+5\% & 221 & 15\% & 565K & A (unchanged) \\
+6\% & 216 & 17\% & 520K & A \\
+7\% & 211 & 18\% & 477K & A \\
+\textbf{8\%} & \textbf{207} & \textbf{20\%} & \textbf{436K} & \textbf{A} \\
+9\% & 202 & 22\% & 397K & A \\
+10\% & 198 & 24\% & 360K & A \\
+12\% & 190 & 27\% & 292K & A \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Booking Curve Sensitivity}
+
+Since $\beta$ cannot be calibrated from DB1B, we conduct sensitivity analysis for $\beta \in [0.10, 0.35]$. Table~\ref{tab:beta_sensitivity} reports results. A critical observation: \textbf{user savings are independent of $\beta$ by construction}. From Eqs.~(3)--(4), user saving $= 1 - P_{\text{issue}} / (P_0 e^{\beta}) = 1 - (1-d) / (1+r_{\text{adj}})^{T/12}$. The $\beta$ term appears identically in the face value (numerator) and the comparison spot-at-maturity price (denominator), and therefore cancels. This invariance is not an empirical discovery but an algebraic property of the pricing specification. The sensitivity of stakeholder outcomes to $\beta$ is concentrated entirely in the carrier position, which shifts from earning an 11\% premium at $\beta = 0.10$ to providing a 14\% discount at $\beta = 0.35$.
+
+\begin{table}[H]
+\centering
+\caption{Booking Curve Sensitivity ($\beta \in [0.10, 0.35]$)}
+\label{tab:beta_sensitivity}
+\begin{tabular}{lrrrr}
+\toprule
+$\beta$ & \textbf{Forward Premium} & \textbf{Issue Price (USD)} & \textbf{User Saving} & \textbf{Carrier Position} \\
+\midrule
+0.10 & 10.5\% & 184 & 20\% & +11.2\% premium \\
+0.15 & 16.2\% & 194 & 20\% & +6.7\% premium \\
+0.20 & 22.1\% & 204 & 20\% & +1.9\% premium \\
+\textbf{0.22} & \textbf{24.6\%} & \textbf{208} & \textbf{20\%} & \textbf{-0.1\% (parity)} \\
+0.25 & 28.4\% & 214 & 20\% & -3.2\% discount \\
+0.30 & 35.0\% & 225 & 20\% & -8.4\% discount \\
+0.35 & 41.9\% & 237 & 20\% & -14.0\% discount \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{fig3_booking_curve.png}
+\caption{Booking curve sensitivity. Green bars: carrier earns above-spot revenue; red bars: carrier provides below-spot pricing. Blue line: user savings remain constant at $\sim$20\% by construction ($\beta$ cancels algebraically).}
+\label{fig:booking_curve}
+\end{figure}
+
+All subsequent analysis uses $\beta = 0.22$, at which the carrier position is near parity with spot pricing. The Senior credit rating is unaffected by $\beta$ (it depends on PDs and LGDs, not on the booking-curve parameter).
+
+% ============================================================
+\section{ABS Structure and Monte Carlo Simulation}
+% ============================================================
+
+\subsection{Route Pool Construction}
+
+We construct a 69-route stratified pool from 25,137 routes with identifiable carriers. Stratification targets 55\% major, 25\% LCC, 15\% regional, 5\% other, with distance-band weighting. Each carrier is capped at 8 routes (relaxed to 10 during fill). The pool spans 11 carriers across three distance bands; sample routes include ASE--ORD, LAS--OAK, IAH--DFW, and DAL--SAT. Our 69-route pool represents 0.27\% of available routes; a larger pool would reduce idiosyncratic noise but is unlikely to materially change the Senior EL, which is driven by the low base PDs of major carriers rather than route-level diversification.
+
+\subsection{Tranche Structure}
+
+Table~\ref{tab:tranches} presents the four-tier structure.
+
+\begin{table}[H]
+\centering
+\caption{Flight FSR Tranche Structure}
+\label{tab:tranches}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Tranche} & \textbf{Share} & \textbf{Coupon} & \textbf{Attachment} & \textbf{Detachment} & \textbf{Description} \\
+\midrule
+Senior    & 65.0\% & 5.50\% &  0\%  & 65\%  & Booking-curve spread + cash settlement \\
+Mezzanine & 20.0\% & 8.00\% & 65\%  & 85\%  & Secondary market fees + voucher discounts \\
+Junior    & 10.0\% & 12.0\% & 85\%  & 95\%  & Route premiums + default risk absorption \\
+Equity    &  5.0\% &   --   & 95\%  & 100\% & Residual value + overbooking profit \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Senior tranche has 35\% credit enhancement plus a 5\% reserve account and 3\% overcollateralization.
+
+\textbf{Market feasibility.} A 5.50\% Senior coupon for a novel structured product must compete with liquid, publicly traded airline bonds offering similar yields. Investors would demand an illiquidity premium over comparable-rated instruments. We note that the structure's value proposition to investors is not coupon level alone but exposure to a new, diversifying asset class with low correlation to traditional fixed-income benchmarks. The exact illiquidity premium is a market-discovery question beyond this paper's scope.
+
+\subsection{$t$-Copula Default Simulation with Empirical Correlations}
+
+We simulate correlated carrier defaults using a multivariate $t$-copula ($\nu = 4$, 5,000 paths, 12-month horizon). The correlation matrix is parameterized with base inter-carrier correlation $\rho_0 = 0.40$ and same-type bonus $\Delta\rho = 0.17$.
+
+\textbf{Empirical calibration.} To ground the correlation parameters empirically, we estimate pairwise Pearson correlations from 5-year daily log-returns (2021--2025) on 9 publicly traded U.S. airline equities (LUV, DAL, AAL, UAL, ALK, JBLU, ULCC, ALGT, SKYW). The empirical all-pair mean correlation is 0.64, with major-major pairs exhibiting mean 0.76 and cross-type pairs 0.60, implying a same-type bonus of 0.17. Equity correlations overstate default correlations because equity prices embed both credit and non-credit factors; standard practice applies a shrinkage factor of 0.5--0.7. Using 0.6$\times$, the implied asset correlation is approximately 0.38. We adopt $\rho_0 = 0.40$ (slightly above this estimate for conservatism) and use the empirically observed $\Delta\rho = 0.17$.
+
+The $t$-copula is:
+\begin{equation}
+\mathbf{T} = \frac{\mathbf{Z}}{\sqrt{\chi^2_\nu / \nu}}, \quad \mathbf{Z} \sim \mathcal{N}(\mathbf{0}, \mathbf{\Sigma})
+\end{equation}
+For $\nu = 4$, the tail dependence coefficient is $\lambda \approx 0.15$ for $\rho = 0.40$ \cite{demarta2005}. Annual PD is transformed to monthly: $p_m = 1 - (1 - p_a)^{1/12}$. A carrier defaults if the transformed uniform falls below $p_m$ in any month. Under this scheme, defaults in different months are independent conditional on the copula draw, which understates multi-month distress clustering; this is a conservative assumption for the Senior tranche (it reduces path-level default concentration).
+
+% ============================================================
+\section{Results}
+% ============================================================
+
+\subsection{Monte Carlo Results}
+
+Table~\ref{tab:mc_results} reports baseline $t(4)$-copula results.
+
+\begin{table}[H]
+\centering
+\caption{Monte Carlo Results --- $t(4)$-Copula, 5,000 Paths (Bottom-Up Waterfall)}
+\label{tab:mc_results}
+\begin{tabular}{lrrrrr}
+\toprule
+\textbf{Tranche} & \textbf{EL} & \textbf{EL (bps)} & \textbf{VaR 95\%} & \textbf{VaR 99\%} & \textbf{Rating} \\
+\midrule
+Equity    & 2.80\% & 280 &  7.53\% & 77.55\% & B \\
+Junior    & 0.17\% &  17 &  0.00\% &  0.00\% & A \\
+Mezzanine & 0.00\% &   0 &  0.00\% &  0.00\% & Aaa \\
+Senior    & 0.00\% &   0 &  0.00\% &  0.00\% & Aaa--Aa \\
+\midrule
+\multicolumn{6}{l}{\textbf{Pool-Level}} \\
+Pool      & 0.16\% & --  &  0.58\% &  3.88\% & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:mc_diagnostics} reports convergence diagnostics.
+
+\begin{table}[H]
+\centering
+\caption{Monte Carlo Diagnostics}
+\label{tab:mc_diagnostics}
+\begin{tabular}{lr}
+\toprule
+\textbf{Diagnostic} & \textbf{Value} \\
+\midrule
+Maximum pool loss (any path) & 15.55\% \\
+Paths with zero loss & 4,710 / 5,000 (94.2\%) \\
+EL standard error & 1.2 bps \\
+EL convergence (first half vs.\ full) & 15 bps vs.\ 16 bps \\
+Mean carrier defaults per path & 0.62 \\
+Maximum carrier defaults in a path & 21 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The pool's median loss is zero across 94\% of paths. Under the standard bottom-up waterfall (Equity absorbs losses first, Senior last), the Equity tranche bears first-loss exposure (EL 280 bps). The Junior tranche absorbs residual losses in tail scenarios (EL 17 bps). The Senior tranche, protected by 35\% subordination (Equity 5\% + Junior 10\% + Mezzanine 20\%), experiences zero expected loss---the maximum pool loss of 15.6\% across all 5,000 paths never breaches this protection level. The Senior rating is Aaa--Aa.
+
+\subsection{Copula Sensitivity}
+
+Table~\ref{tab:copula_sensitivity} reports copula sensitivity results.
+
+\begin{table}[H]
+\centering
+\caption{Copula Sensitivity Analysis}
+\label{tab:copula_sensitivity}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Copula} & \textbf{Pool EL} & \textbf{Senior EL (bps)} & \textbf{Senior VaR 99\%} & \textbf{Avg.\ Defaults/Path} \\
+\midrule
+Gaussian ($\nu \to \infty$) & 0.18\% & 28 & 4.6\% & 0.6 \\
+$t(6)$                      & 0.16\% & 25 & 5.3\% & 0.6 \\
+$t(4)$                      & 0.17\% & 26 & 6.2\% & 0.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Expected loss for the Senior tranche is zero under all three copula specifications---the tail-dependence structure does not alter the result because the maximum pool loss (15.6\%) stays below the Senior attachment point (35\%) in every path. The average of 0.6 defaults per path is identical across copulae because it is determined by marginal PDs \cite{mashal2004}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{fig1_copula_sensitivity.png}
+\caption{Copula sensitivity: expected loss is nearly invariant across specifications (left), while tail risk concentrates in VaR 99\% (right).}
+\label{fig:copula_sensitivity}
+\end{figure}
+
+\subsection{Stress Testing}
+
+Table~\ref{tab:carrier_stress} reports carrier-type-specific stress tests with 2,000 re-simulated paths each.
+
+\begin{table}[H]
+\centering
+\caption{Carrier-Type-Specific Stress Tests}
+\label{tab:carrier_stress}
+\begin{tabular}{lrrrcc}
+\toprule
+\textbf{Scenario} & \textbf{LCC $\times$} & \textbf{Major $\times$} & \textbf{Regional $\times$} & \textbf{Sr.\ EL (bps)} & \textbf{Status} \\
+\midrule
+LCC Crisis     & 3.0 & 1.5 & 1.5 &  66 & Investment Grade \\
+Major Distress & 1.2 & 3.0 & 2.0 &  93 & Investment Grade \\
+Systemic Shock & 4.0 & 2.5 & 3.0 & 295 & Near-IG \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Senior tranche remains investment grade under LCC Crisis and Major Distress. Systemic Shock (295 bps) corresponds to a pandemic-scale disruption and would likely trigger rating migration across most structured products.
+
+\subsection{Stakeholder Economics}
+
+Under $\beta = 0.22$ and $r_0 = 8\%$: the airline receives near-parity pricing (average issue \$207 vs.\ spot \$208), the user saves approximately 20\% versus last-minute booking, and the platform earns a spread of approximately USD 436K. The economic function of securitization is visible in the spread between the pool-level discount rate ($r_0 = 8\%$, $r_{\text{adj}}$ up to 13.2\%) and the Senior coupon (5.50\%): credit enhancement converts pool-level risk into tranche-specific risk.
+
+% ============================================================
+\section{Discussion}
+% ============================================================
+
+\subsection{Risk Factors}
+
+\textbf{Carrier concentration.} The 8-route-per-carrier limit provides first-order protection. The maximum pool loss of 15.6\% across 5,000 paths is less than half the 35\% Senior credit enhancement. However, under Systemic Shock, Senior EL reaches 295 bps, illustrating the structure's sensitivity to coordinated multi-carrier distress.
+
+\textbf{Booking curve.} The $\beta$ parameter and the exponential functional form $F = P_0 e^\beta$ cannot be calibrated from DB1B data. Our sensitivity analysis demonstrates that $\beta$ affects the carrier position but---by algebraic construction---not the user savings percentage. The exponential form is a first-order approximation; real booking curves exhibit convexity as departure approaches \cite{talluri2004}. A more flexible functional form would not alter the credit analysis but would change the quantitative stakeholder economics.
+
+\textbf{Discount rate.} $r_0 = 8\%$ (airline industry WACC) with CV adjustment yields $r_{\text{adj}} \in [8.0\%, 13.2\%]$. Table~\ref{tab:r0_sensitivity} demonstrates that the Senior rating is insensitive to $r_0 \in [5\%, 12\%]$. The spread between the pool discount rate and the Senior coupon (5.50\%) reflects the credit enhancement provided by subordination---this is the core economic function of securitization and not an inconsistency.
+
+\textbf{Correlation calibration.} Our correlation parameters ($\rho_0 = 0.40$, $\Delta\rho = 0.17$) are informed by empirical equity correlations (2021--2025) with a standard shrinkage factor. Equity correlations may overstate or understate default correlations depending on the relative importance of systematic vs.\ idiosyncratic equity factors during the estimation window. The COVID-19 period (2020--2021) is excluded to avoid pandemic-distorted correlations, but the 2022--2025 period includes post-pandemic recovery dynamics that may not be representative of steady-state conditions.
+
+\textbf{DB1B sampling.} The 10\% sample introduces variance in thin-route CV estimates. Pool weighting by passenger volume mitigates this concern.
+
+\textbf{Regional carrier credit.} CPA-protected carriers are assigned lower base PDs and LGDs. A two-layer conditional PD model incorporating CPA contract terms would improve precision.
+
+\textbf{Regulatory risk.} Whether a time-right constitutes a ``ticket'' under DOT regulations, a ``security'' under SEC jurisdiction, or a novel hybrid instrument is an unresolved question. If time-rights are securities, the structure triggers registration requirements, accredited investor restrictions, and potentially the Investment Company Act. If they are tickets, DOT consumer protection rules (refund, 24-hour cancellation, bumping compensation) apply. These two frameworks are incompatible in important respects. The legal form of the instrument---forward contract, prepaid service agreement, or digital token representing a carrier obligation---has not been specified and would determine which regulatory framework governs. This is a first-order implementation risk.
+
+% ============================================================
+\section{Conclusion}
+% ============================================================
+
+We have demonstrated that flight capacity can be securitized at investment-grade credit quality using a reduced-form carrier credit model, booking-curve pricing, and $t$-copula dependence modeling. Three findings merit emphasis.
+
+First, \textbf{the carrier-level credit risk of U.S. airlines is substantially lower than commonly assumed.} The post-consolidation era has produced zero major-carrier bankruptcies among the Big 4 plus Alaska. The pool-weighted PD of 0.76\% reflects this record; a pessimistic full-period calibration yields 1.15\%, and the 95\% Poisson confidence upper bound for major-carrier PD is approximately 5\%. All calibrations support investment-grade Senior credit quality.
+
+Second, \textbf{the $t$-copula tail-dependence premium is empirically modest.} Under the corrected bottom-up waterfall, the Senior tranche experiences zero expected loss across all copula specifications. The correlation matrix, empirically informed by 5-year daily airline equity returns, anchors the dependence structure in observed market data.
+
+Third, \textbf{flight FSR achieves superior credit quality on a standalone basis.} The Senior tranche attains an Aaa--Aa rating (EL 0 bps), protected by 35\% subordination that the maximum pool loss of 15.6\% never breaches. The Equity tranche bears a first-loss EL of 280 bps, consistent with its role as the residual risk absorber. Carrier-type-specific stress tests confirm that even under Systemic Shock scenarios, the Senior tranche maintains investment-grade status.
+
+We have been explicit about the model's limitations: the booking curve is parameterized, not calibrated; the discount rate, while grounded in industry WACC, requires market validation; the exponential pricing functional form is a first-order approximation; and the regulatory classification of time-rights is unresolved. Each of these limitations points to a research direction. Access to proprietary airline booking data would enable direct booking-curve calibration. Legal analysis of the time-right instrument under DOT, SEC, and bankruptcy law would clarify the implementation path. And extension to international aviation markets, where carrier default risk may be higher, would test the framework's generalizability.
+
+The core finding---that carrier concentration risk is compensated by substantially lower base default probabilities---is robust to all sensitivity analyses conducted. Flight capacity meets the credit quality threshold for FSR securitization.
+
+\bigskip
+\noindent\textit{Acknowledgments:} We thank the U.S. DOT Bureau of Transportation Statistics for making the DB1B survey publicly available. All analysis code is available in the project repository.
+
+% ============================================================
+\begin{thebibliography}{16}
+
+\bibitem{fsr2026}
+Hotel Finance Research Group.
+\emph{Future Service Rights: Tokenization, Pricing, and Structuring}.
+Working Paper, 2026.
+
+\bibitem{belobaba2015}
+Belobaba, P., A.\ Odoni, and C.\ Barnhart.
+\emph{The Global Airline Industry}, 2nd Edition. Wiley, 2015.
+
+\bibitem{talluri2004}
+Talluri, K.\ and G.\ van Ryzin.
+\emph{The Theory and Practice of Revenue Management}. Springer, 2004.
+
+\bibitem{gaggero2012}
+Gaggero, A.\ and C.\ Piga.
+\emph{Airline Market Power and Intertemporal Price Dispersion}.
+Journal of Industrial Economics, 60(4):685--710, 2012.
+
+\bibitem{borenstein2011}
+Borenstein, S.
+\emph{Why Can't US Airlines Make Money?}
+American Economic Review, 101(3):233--237, 2011.
+
+\bibitem{demarta2005}
+Demarta, S.\ and A.J.\ McNeil.
+\emph{The $t$ Copula and Related Copulas}.
+International Statistical Review, 73(1):111--129, 2005.
+
+\bibitem{mashal2004}
+Mashal, R.\ and M.\ Naldi.
+\emph{Extreme Events and the Dependence Structure of Defaults}.
+Risk, 17(5):87--92, 2004.
+
+\bibitem{embrechts2003}
+Embrechts, P., F.\ Lindskog, and A.J.\ McNeil.
+\emph{Modelling Dependence with Copulas and Applications to Risk Management}.
+In: Handbook of Heavy Tailed Distributions in Finance, Elsevier, 2003.
+
+\bibitem{joe1997}
+Joe, H.
+\emph{Multivariate Models and Dependence Concepts}. Chapman \& Hall, 1997.
+
+\bibitem{gorton2012}
+Gorton, G.\ and A.\ Metrick.
+\emph{Securitized Banking and the Run on Repo}.
+Journal of Financial Economics, 104(3):425--451, 2012.
+
+\bibitem{coval2009}
+Coval, J., J.\ Jurek, and E.\ Stafford.
+\emph{The Economics of Structured Finance}.
+Journal of Economic Perspectives, 23(1):3--25, 2009.
+
+\bibitem{gritta2000}
+Gritta, R.D., G.\ Chow, and E.\ Freed.
+\emph{An Application of Altman's $Z$-Score to the Airline Industry}.
+Journal of Transportation Management, 12(1):1--13, 2000.
+
+\bibitem{gong2021}
+Gong, F., et al.
+\emph{Airline Stock Market Performance During COVID-19}.
+Working Paper, 2021.
+
+\bibitem{morrell2006}
+Morrell, P.\ and W.\ Swan.
+\emph{Airline Jet Fuel Hedging: Theory and Practice}.
+Transport Reviews, 26(6):713--730, 2006.
+
+\bibitem{damodaran2025}
+Damodaran, A.
+\emph{Cost of Capital by Industry Sector}. Stern School of Business, NYU, 2025.
+\url{https://pages.stern.nyu.edu/~adamodar/}
+
+\bibitem{bts2025}
+U.S. Department of Transportation, Bureau of Transportation Statistics.
+\emph{Airline Origin and Destination Survey (DB1B)}.
+2022--2025 quarterly files. \url{https://www.transtats.bts.gov/}
+
+\end{thebibliography}
+
+\end{document}

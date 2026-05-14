@@ -1,0 +1,14 @@
+{
+  "db1b_total_rows": 97356700,
+  "db1b_total_passengers": 190501428.0,
+  "db1b_quarters": 13,
+  "flight_avg_fare": 273.21477343030944,
+  "flight_median_fare": 228.0,
+  "flight_cv": 0.8280369418118158,
+  "flight_routes": 63563,
+  "flight_carriers": 37,
+  "hotel_count": 16257,
+  "hotel_avg_price": 24872.101192797312,
+  "hotel_median_price": 17136.0,
+  "hotel_cv": 1.2611968900554817
+}

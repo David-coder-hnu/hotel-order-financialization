@@ -1,0 +1,266 @@
+{
+  "phase2_adaptability": {
+    "flight_total_score": 6.300000000000001,
+    "hotel_total_score": 7.25,
+    "dimensions": [
+      {
+        "dimension": "Asset Granularity",
+        "flight_score": 6,
+        "hotel_score": 9,
+        "weight": 0.15,
+        "flight_weighted": 0.8999999999999999,
+        "hotel_weighted": 1.3499999999999999
+      },
+      {
+        "dimension": "Price Predictability",
+        "flight_score": 4,
+        "hotel_score": 8,
+        "weight": 0.2,
+        "flight_weighted": 0.8,
+        "hotel_weighted": 1.6
+      },
+      {
+        "dimension": "Default Visibility",
+        "flight_score": 5,
+        "hotel_score": 7,
+        "weight": 0.15,
+        "flight_weighted": 0.75,
+        "hotel_weighted": 1.05
+      },
+      {
+        "dimension": "Seasonality Structure",
+        "flight_score": 6,
+        "hotel_score": 7,
+        "weight": 0.1,
+        "flight_weighted": 0.6000000000000001,
+        "hotel_weighted": 0.7000000000000001
+      },
+      {
+        "dimension": "Perishability Alignment",
+        "flight_score": 9,
+        "hotel_score": 9,
+        "weight": 0.15,
+        "flight_weighted": 1.3499999999999999,
+        "hotel_weighted": 1.3499999999999999
+      },
+      {
+        "dimension": "Capacity Standardization",
+        "flight_score": 7,
+        "hotel_score": 6,
+        "weight": 0.1,
+        "flight_weighted": 0.7000000000000001,
+        "hotel_weighted": 0.6000000000000001
+      },
+      {
+        "dimension": "Secondary Market Depth",
+        "flight_score": 8,
+        "hotel_score": 4,
+        "weight": 0.15,
+        "flight_weighted": 1.2,
+        "hotel_weighted": 0.6
+      }
+    ],
+    "flight_route_gini": 0.9106570029211957,
+    "airline_hhi": 1138.6875826641412,
+    "hotel_gini": 0.1218631296063647,
+    "vol_decomposition": {
+      "flight_route_var_pct": 42.92613115401677,
+      "flight_carrier_var_pct": 89.70183601143457,
+      "flight_qtr_var_pct": NaN,
+      "hotel_property_var_pct": 93.73212069170745,
+      "hotel_month_var_pct": 0.10713616471402622
+    }
+  },
+  "phase3_credit": {
+    "pool_wtd_pd": 0.10250926245126245,
+    "airline_pds": [
+      {
+        "carrier": "MX",
+        "passengers": 100588.0,
+        "market_share": 0.00626917827693703,
+        "fare_cv": 0.5499483268156241,
+        "dd": 0.9863388199697236,
+        "pd_raw": 0.16198343809375304,
+        "pd_calibrated": 0.4
+      },
+      {
+        "carrier": "SY",
+        "passengers": 104226.0,
+        "market_share": 0.006495917754523789,
+        "fare_cv": 0.6369527186890871,
+        "dd": 0.7781998139241046,
+        "pd_raw": 0.21822561325085316,
+        "pd_calibrated": 0.4
+      },
+      {
+        "carrier": "OH",
+        "passengers": 120830.0,
+        "market_share": 0.007530767200881828,
+        "fare_cv": 0.5447782534720057,
+        "dd": 1.049696372762028,
+        "pd_raw": 0.14692886598161853,
+        "pd_calibrated": 0.4
+      },
+      {
+        "carrier": "MQ",
+        "passengers": 146459.0,
+        "market_share": 0.009128102569510483,
+        "fare_cv": 0.6071150533559642,
+        "dd": 0.9354286379791916,
+        "pd_raw": 0.17478372198696607,
+        "pd_calibrated": 0.4
+      },
+      {
+        "carrier": "9E",
+        "passengers": 149920.0,
+        "market_share": 0.009343810467236644,
+        "fare_cv": 0.5499268708834757,
+        "dd": 1.1004790332955126,
+        "pd_raw": 0.13556172999438887,
+        "pd_calibrated": 0.4
+      },
+      {
+        "carrier": "HA",
+        "passengers": 211752.0,
+        "market_share": 0.013197509031872291,
+        "fare_cv": 0.9053968408126223,
+        "dd": 0.46045208388426534,
+        "pd_raw": 0.3225958786083948,
+        "pd_calibrated": 0.4
+      },
+      {
+        "carrier": "B6",
+        "passengers": 685696.0,
+        "market_share": 0.04273621572933763,
+        "fare_cv": 0.8560972576683747,
+        "dd": 1.0047395218473656,
+        "pd_raw": 0.15751114608835054,
+        "pd_calibrated": 0.4
+      },
+      {
+        "carrier": "OO",
+        "passengers": 398710.0,
+        "market_share": 0.024849724328921574,
+        "fare_cv": 0.6476110642672989,
+        "dd": 1.228191408310435,
+        "pd_raw": 0.10968756159690862,
+        "pd_calibrated": 0.32906268479072587
+      },
+      {
+        "carrier": "YX",
+        "passengers": 288928.0,
+        "market_share": 0.018007527152332906,
+        "fare_cv": 0.5899500546805303,
+        "dd": 1.2397185252147667,
+        "pd_raw": 0.10753976134077425,
+        "pd_calibrated": 0.32261928402232276
+      },
+      {
+        "carrier": "AS",
+        "passengers": 675234.0,
+        "market_share": 0.04208416833667335,
+        "fare_cv": 0.683641970554208,
+        "dd": 1.44154876601901,
+        "pd_raw": 0.07471485536104532,
+        "pd_calibrated": 0.22414456608313593
+      },
+      {
+        "carrier": "G4",
+        "passengers": 438291.0,
+        "market_share": 0.027316622421929136,
+        "fare_cv": 0.5770836987840237,
+        "dd": 1.5109288904009177,
+        "pd_raw": 0.0654032846019093,
+        "pd_calibrated": 0.19620985380572792
+      },
+      {
+        "carrier": "F9",
+        "passengers": 710382.0,
+        "market_share": 0.044274778330686375,
+        "fare_cv": 0.6182179674850139,
+        "dd": 1.7030768181414355,
+        "pd_raw": 0.04427684678112441,
+        "pd_calibrated": 0.13283054034337322
+      },
+      {
+        "carrier": "NK",
+        "passengers": 923315.0,
+        "market_share": 0.05754589355360594,
+        "fare_cv": 0.6410445985788557,
+        "dd": 1.8430603936799554,
+        "pd_raw": 0.03266009660406093,
+        "pd_calibrated": 0.09798028981218279
+      },
+      {
+        "carrier": "UA",
+        "passengers": 1767658.0,
+        "market_share": 0.11016983273008665,
+        "fare_cv": 0.8320576350163287,
+        "dd": 1.8744836169906423,
+        "pd_raw": 0.030431899028931824,
+        "pd_calibrated": 0.09129569708679547
+      },
+      {
+        "carrier": "99",
+        "passengers": 1340095.0,
+        "market_share": 0.08352183623326769,
+        "fare_cv": 0.7068079125954129,
+        "dd": 1.9761680984549,
+        "pd_raw": 0.02406787086316073,
+        "pd_calibrated": 0.07220361258948219
+      },
+      {
+        "carrier": "AA",
+        "passengers": 2011176.0,
+        "market_share": 0.12534716755773162,
+        "fare_cv": 0.8040796803339985,
+        "dd": 2.1563498682947624,
+        "pd_raw": 0.015528178023864626,
+        "pd_calibrated": 0.04658453407159388
+      },
+      {
+        "carrier": "DL",
+        "passengers": 2385659.0,
+        "market_share": 0.14868693660257007,
+        "fare_cv": 0.7361791169138845,
+        "dd": 2.7611752853535334,
+        "pd_raw": 0.00287968781511574,
+        "pd_calibrated": 0.00863906344534722
+      },
+      {
+        "carrier": "WN",
+        "passengers": 3585927.0,
+        "market_share": 0.22349401172189498,
+        "fare_cv": 0.528095164471526,
+        "dd": 6.248734969758161,
+        "pd_raw": 2.0689518271355893e-10,
+        "pd_calibrated": 0.005
+      }
+    ]
+  },
+  "phase4_fsr_flight": {
+    "time_discount_rate": 0.1,
+    "safety_factor": 0.75,
+    "issue_discount": 0.12,
+    "maturity_months": 24,
+    "wtd_spot_fare": 279.7336446142368,
+    "wtd_issue_price": 182.80372357084914,
+    "wtd_face_value": 290.9229903988063,
+    "senior_pct": 0.62,
+    "senior_el": 0.06811544220595474,
+    "senior_el_bps": 681.1544220595474,
+    "senior_var99": 0.14181206285345485,
+    "senior_rating": "Caa-C",
+    "pool_mean_loss": 0.04223157416769193,
+    "pool_var99_loss": 0.08792347896914202
+  },
+  "phase5_combined": {
+    "correlation_estimate": 0.25,
+    "diversification_benefit_pct": 8.491735161885899,
+    "combined_wtd_pd": 0.09920370498050499,
+    "combined_senior_el_bps": 544.7331010248273,
+    "combined_senior_var99": 0.10484561022673188,
+    "flight_weight": 0.4,
+    "hotel_weight": 0.6
+  }
+}

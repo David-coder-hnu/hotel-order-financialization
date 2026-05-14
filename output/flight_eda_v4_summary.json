@@ -1,0 +1,322 @@
+{
+  "dataset": {
+    "total_rows": 97343919,
+    "n_quarters": 13,
+    "n_routes": 102279,
+    "n_carriers": 25,
+    "total_passengers_m": 190.5
+  },
+  "global_fare": {
+    "mean": 273.59,
+    "std": 305.38,
+    "min": 0.0,
+    "max": 1345400.0
+  },
+  "concentration": {
+    "route_gini": -0.9398,
+    "carrier_hhi": 1160.0,
+    "top4_carrier_pct": 62.4
+  },
+  "route_volatility": {
+    "n_routes": 65915,
+    "mean_cv": 0.5638,
+    "median_cv": 0.5566,
+    "p95_cv": 0.7967
+  },
+  "carrier_risk": [
+    {
+      "carrier": "WN",
+      "passengers_m": 41.63,
+      "avg_fare": 213.0,
+      "fare_cv": 0.5519,
+      "n_routes": 10517,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "DL",
+      "passengers_m": 28.49,
+      "avg_fare": 334.0,
+      "fare_cv": 0.7541,
+      "n_routes": 37404,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "AA",
+      "passengers_m": 26.23,
+      "avg_fare": 312.0,
+      "fare_cv": 0.7821,
+      "n_routes": 47701,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "UA",
+      "passengers_m": 22.51,
+      "avg_fare": 338.0,
+      "fare_cv": 0.8285,
+      "n_routes": 41351,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "NK",
+      "passengers_m": 10.33,
+      "avg_fare": 124.0,
+      "fare_cv": 0.6539,
+      "n_routes": 3031,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "B6",
+      "passengers_m": 9.0,
+      "avg_fare": 268.0,
+      "fare_cv": 0.844,
+      "n_routes": 5032,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "AS",
+      "passengers_m": 8.44,
+      "avg_fare": 312.0,
+      "fare_cv": 0.7316,
+      "n_routes": 13557,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "F9",
+      "passengers_m": 8.12,
+      "avg_fare": 109.0,
+      "fare_cv": 0.6343,
+      "n_routes": 5476,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "OO",
+      "passengers_m": 8.07,
+      "avg_fare": 299.0,
+      "fare_cv": 2.6182,
+      "n_routes": 71352,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "G4",
+      "passengers_m": 5.36,
+      "avg_fare": 95.0,
+      "fare_cv": 0.5981,
+      "n_routes": 1384,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "YX",
+      "passengers_m": 4.09,
+      "avg_fare": 244.0,
+      "fare_cv": 0.6833,
+      "n_routes": 22576,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "MQ",
+      "passengers_m": 2.91,
+      "avg_fare": 301.0,
+      "fare_cv": 0.6434,
+      "n_routes": 42171,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "HA",
+      "passengers_m": 2.68,
+      "avg_fare": 364.0,
+      "fare_cv": 0.9809,
+      "n_routes": 1972,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "9E",
+      "passengers_m": 2.58,
+      "avg_fare": 283.0,
+      "fare_cv": 0.6902,
+      "n_routes": 26449,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "OH",
+      "passengers_m": 2.58,
+      "avg_fare": 275.0,
+      "fare_cv": 0.6101,
+      "n_routes": 27897,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "QX",
+      "passengers_m": 1.26,
+      "avg_fare": 252.0,
+      "fare_cv": 0.7121,
+      "n_routes": 8120,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "YV",
+      "passengers_m": 1.16,
+      "avg_fare": 290.0,
+      "fare_cv": 0.6647,
+      "n_routes": 23841,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "SY",
+      "passengers_m": 1.16,
+      "avg_fare": 177.0,
+      "fare_cv": 0.6456,
+      "n_routes": 1988,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "MX",
+      "passengers_m": 0.88,
+      "avg_fare": 118.0,
+      "fare_cv": 0.6161,
+      "n_routes": 676,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "PT",
+      "passengers_m": 0.82,
+      "avg_fare": 291.0,
+      "fare_cv": 0.5864,
+      "n_routes": 20202,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "XP",
+      "passengers_m": 0.66,
+      "avg_fare": 104.0,
+      "fare_cv": 0.6104,
+      "n_routes": 268,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "C5",
+      "passengers_m": 0.57,
+      "avg_fare": 297.0,
+      "fare_cv": 0.6534,
+      "n_routes": 16478,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "ZW",
+      "passengers_m": 0.44,
+      "avg_fare": 280.0,
+      "fare_cv": 0.6214,
+      "n_routes": 18525,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "G7",
+      "passengers_m": 0.39,
+      "avg_fare": 280.0,
+      "fare_cv": 0.6848,
+      "n_routes": 12030,
+      "pd_proxy_pct": 40
+    },
+    {
+      "carrier": "3M",
+      "passengers_m": 0.14,
+      "avg_fare": 189.0,
+      "fare_cv": 19.5154,
+      "n_routes": 1198,
+      "pd_proxy_pct": 40
+    }
+  ],
+  "wtd_pd_proxy_pct": 40.0,
+  "quarterly": [
+    {
+      "quarter": "Origin_and_Destination_Survey_DB1BMarket_2024_2",
+      "n_rows": 8533078,
+      "mean_fare": 272.78,
+      "std_fare": 215.29,
+      "routes_in_qtr": 67838
+    },
+    {
+      "quarter": "Origin_and_Destination_Survey_DB1BMarket_2024_3",
+      "n_rows": 8296679,
+      "mean_fare": 259.96,
+      "std_fare": 209.37,
+      "routes_in_qtr": 77713
+    },
+    {
+      "quarter": "Origin_and_Destination_Survey_DB1BMarket_2024_4",
+      "n_rows": 8524191,
+      "mean_fare": 277.81,
+      "std_fare": 224.65,
+      "routes_in_qtr": 83125
+    },
+    {
+      "quarter": "Origin_and_Destination_Survey_DB1BMarket_2025_1",
+      "n_rows": 7296219,
+      "mean_fare": 276.86,
+      "std_fare": 232.85,
+      "routes_in_qtr": 86406
+    },
+    {
+      "quarter": "db1b_2022q1",
+      "n_rows": 6077861,
+      "mean_fare": 238.99,
+      "std_fare": 197.38,
+      "routes_in_qtr": 90178
+    },
+    {
+      "quarter": "db1b_2022q2",
+      "n_rows": 7477542,
+      "mean_fare": 291.25,
+      "std_fare": 225.57,
+      "routes_in_qtr": 93122
+    },
+    {
+      "quarter": "db1b_2022q3",
+      "n_rows": 7044661,
+      "mean_fare": 280.53,
+      "std_fare": 217.44,
+      "routes_in_qtr": 95615
+    },
+    {
+      "quarter": "db1b_2022q4",
+      "n_rows": 7253459,
+      "mean_fare": 285.37,
+      "std_fare": 227.68,
+      "routes_in_qtr": 96994
+    },
+    {
+      "quarter": "db1b_2023q1",
+      "n_rows": 6713197,
+      "mean_fare": 274.96,
+      "std_fare": 793.72,
+      "routes_in_qtr": 98103
+    },
+    {
+      "quarter": "db1b_2023q2",
+      "n_rows": 7615855,
+      "mean_fare": 283.98,
+      "std_fare": 333.12,
+      "routes_in_qtr": 99450
+    },
+    {
+      "quarter": "db1b_2023q3",
+      "n_rows": 7348766,
+      "mean_fare": 265.4,
+      "std_fare": 208.79,
+      "routes_in_qtr": 100802
+    },
+    {
+      "quarter": "db1b_2023q4",
+      "n_rows": 7753349,
+      "mean_fare": 271.01,
+      "std_fare": 221.0,
+      "routes_in_qtr": 101662
+    },
+    {
+      "quarter": "db1b_2024q1",
+      "n_rows": 7409062,
+      "mean_fare": 273.01,
+      "std_fare": 226.27,
+      "routes_in_qtr": 102279
+    }
+  ]
+}
