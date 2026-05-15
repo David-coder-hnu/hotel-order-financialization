@@ -23,26 +23,35 @@ with open(OUT.parent / 'flight_fsr_results_v1.json') as f:
 # Figure 1: Copula Sensitivity
 # ════════════════════════════════════
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.5))
+cs = results.get('copula_sensitivity', {})
 labels = ['Gaussian\n(ν→∞)', 't(6)', 't(4)']
-el_vals = [28, 25, 26]
-var99_vals = [4.6, 5.3, 6.2]
+el_vals = [cs.get('Gaussian', {}).get('senior_el_bps', 0),
+           cs.get('t(6)', {}).get('senior_el_bps', 0),
+           cs.get('t(4)', {}).get('senior_el_bps', 0)]
+var99_vals = [cs.get('Gaussian', {}).get('senior_var99_pct', 0),
+              cs.get('t(6)', {}).get('senior_var99_pct', 0),
+              cs.get('t(4)', {}).get('senior_var99_pct', 0)]
+pool_el_vals = [cs.get('Gaussian', {}).get('pool_mean_loss_pct', 0),
+                cs.get('t(6)', {}).get('pool_mean_loss_pct', 0),
+                cs.get('t(4)', {}).get('pool_mean_loss_pct', 0)]
+defaults_vals = [cs.get('Gaussian', {}).get('avg_carrier_defaults_per_path', 0),
+                 cs.get('t(6)', {}).get('avg_carrier_defaults_per_path', 0),
+                 cs.get('t(4)', {}).get('avg_carrier_defaults_per_path', 0)]
 colors = ['#2196F3', '#4CAF50', '#FF9800']
 
 b1 = ax1.bar(labels, el_vals, color=colors, edgecolor='white', lw=0.8)
-ax1.set_ylabel('Senior EL (bps)'); ax1.set_title('Expected Loss: Near-Invariant')
-ax1.axhline(y=50, color='red', ls='--', lw=0.8, label='A threshold (50 bps)')
+ax1.set_ylabel('Senior EL (bps)'); ax1.set_title('Expected Loss: Zero Across All Copulae')
+ax1.axhline(y=10, color='red', ls='--', lw=0.8, label='Aaa-Aa threshold (10 bps)')
 ax1.legend(fontsize=8)
 for bar, v in zip(b1, el_vals):
-    ax1.text(bar.get_x() + bar.get_width()/2, v + 1, f'{v}', ha='center', fontweight='bold')
+    ax1.text(bar.get_x() + bar.get_width()/2, v + 0.5, f'{v:.0f}', ha='center', fontweight='bold')
 
-b2 = ax2.bar(labels, var99_vals, color=colors, edgecolor='white', lw=0.8)
-ax2.set_ylabel('Senior VaR 99% (%)'); ax2.set_title('Tail Risk: Visible in VaR 99%')
-ax2.axhline(y=8.0, color='red', ls='--', lw=0.8, label='A threshold (8%)')
-ax2.legend(fontsize=8)
-for bar, v in zip(b2, var99_vals):
-    ax2.text(bar.get_x() + bar.get_width()/2, v + 0.3, f'{v}%', ha='center', fontweight='bold')
+b2 = ax2.bar(labels, pool_el_vals, color=colors, edgecolor='white', lw=0.8)
+ax2.set_ylabel('Pool EL (%)'); ax2.set_title('Pool Expected Loss: Stable Across Copulae')
+for bar, v, d in zip(b2, pool_el_vals, defaults_vals):
+    ax2.text(bar.get_x() + bar.get_width()/2, v + 0.01, f'{v:.2f}%\n({d:.1f} defaults)', ha='center', fontsize=8)
 
-fig.suptitle('Figure 1: Copula Sensitivity — Expected Loss vs. Tail Risk', fontweight='bold', y=1.02)
+fig.suptitle('Figure 1: Copula Sensitivity — Senior EL vs. Pool Loss', fontweight='bold', y=1.02)
 plt.tight_layout()
 fig.savefig(OUT / 'fig1_copula_sensitivity.pdf', bbox_inches='tight')
 fig.savefig(OUT / 'fig1_copula_sensitivity.png', bbox_inches='tight')
@@ -81,7 +90,10 @@ plt.close(); print("Fig2 saved")
 fig, ax = plt.subplots(figsize=(10, 5))
 bcs = results.get('booking_curve_sensitivity', [])
 betas = [b['beta'] for b in bcs]
-carrier_pos = [b['carrier_discount_pct'] for b in bcs]  # JSON has this
+carrier_discount_pct = [b['carrier_discount_pct'] for b in bcs]
+# carrier_discount_pct > 0 means issue < spot (carrier discount)
+# Invert: positive = carrier premium (issue > spot), negative = carrier discount
+carrier_pos = [-v for v in carrier_discount_pct]
 user_save = [b['user_saving_pct'] for b in bcs]
 fwd_prem = [b['forward_premium_pct'] for b in bcs]
 

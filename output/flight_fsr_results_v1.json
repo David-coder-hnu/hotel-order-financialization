@@ -1,7 +1,7 @@
 {
   "metadata": {
     "version": "Flight-FSR-V1",
-    "date": "2026-05-15 00:31:06",
+    "date": "2026-05-15 12:45:55",
     "model": "Carrier-Credit + Booking-Curve + t-Copula"
   },
   "carrier_credit": [
@@ -17,7 +17,7 @@
       "size_factor": 2.5,
       "cv_factor": 1.4,
       "pd_calibrated": 0.003,
-      "lgd": 0.25,
+      "lgd": 0.15,
       "el": 0.0219,
       "rating": "Caa",
       "n_routes": 1198
@@ -34,7 +34,7 @@
       "size_factor": 2.5,
       "cv_factor": 1.054,
       "pd_calibrated": 0.003,
-      "lgd": 0.25,
+      "lgd": 0.15,
       "el": 0.0165,
       "rating": "B",
       "n_routes": 12030
@@ -51,7 +51,7 @@
       "size_factor": 2.417,
       "cv_factor": 0.956,
       "pd_calibrated": 0.003,
-      "lgd": 0.25,
+      "lgd": 0.15,
       "el": 0.0144,
       "rating": "B",
       "n_routes": 18525
@@ -68,7 +68,7 @@
       "size_factor": 1.933,
       "cv_factor": 1.005,
       "pd_calibrated": 0.003,
-      "lgd": 0.25,
+      "lgd": 0.15,
       "el": 0.0121,
       "rating": "B",
       "n_routes": 16478
@@ -85,7 +85,7 @@
       "size_factor": 1.736,
       "cv_factor": 0.939,
       "pd_calibrated": 0.003,
-      "lgd": 0.25,
+      "lgd": 0.15,
       "el": 0.0102,
       "rating": "B",
       "n_routes": 268
@@ -102,7 +102,7 @@
       "size_factor": 1.447,
       "cv_factor": 0.948,
       "pd_calibrated": 0.0078,
-      "lgd": 0.25,
+      "lgd": 0.3,
       "el": 0.0086,
       "rating": "B",
       "n_routes": 676
@@ -119,7 +119,7 @@
       "size_factor": 1.509,
       "cv_factor": 0.902,
       "pd_calibrated": 0.0071,
-      "lgd": 0.25,
+      "lgd": 0.1,
       "el": 0.0085,
       "rating": "B",
       "n_routes": 20202
@@ -136,7 +136,7 @@
       "size_factor": 1.198,
       "cv_factor": 1.096,
       "pd_calibrated": 0.0095,
-      "lgd": 0.25,
+      "lgd": 0.1,
       "el": 0.0082,
       "rating": "B",
       "n_routes": 8120
@@ -153,7 +153,7 @@
       "size_factor": 1.248,
       "cv_factor": 1.023,
       "pd_calibrated": 0.0085,
-      "lgd": 0.25,
+      "lgd": 0.1,
       "el": 0.008,
       "rating": "B",
       "n_routes": 23841
@@ -170,7 +170,7 @@
       "size_factor": 1.248,
       "cv_factor": 0.993,
       "pd_calibrated": 0.0084,
-      "lgd": 0.25,
+      "lgd": 0.1,
       "el": 0.0077,
       "rating": "B",
       "n_routes": 1988
@@ -187,7 +187,7 @@
       "size_factor": 0.597,
       "cv_factor": 1.006,
       "pd_calibrated": 0.0408,
-      "lgd": 0.3,
+      "lgd": 0.25,
       "el": 0.009,
       "rating": "B",
       "n_routes": 3031
@@ -204,7 +204,7 @@
       "size_factor": 0.633,
       "cv_factor": 0.976,
       "pd_calibrated": 0.0328,
-      "lgd": 0.3,
+      "lgd": 0.25,
       "el": 0.0037,
       "rating": "Ba",
       "n_routes": 5476
@@ -238,7 +238,7 @@
       "size_factor": 0.766,
       "cv_factor": 1.051,
       "pd_calibrated": 0.03,
-      "lgd": 0.1,
+      "lgd": 0.3,
       "el": 0.0012,
       "rating": "Ba",
       "n_routes": 22576
@@ -255,7 +255,7 @@
       "size_factor": 0.617,
       "cv_factor": 1.298,
       "pd_calibrated": 0.0343,
-      "lgd": 0.3,
+      "lgd": 0.25,
       "el": 0.0036,
       "rating": "Ba",
       "n_routes": 5032
@@ -289,7 +289,7 @@
       "size_factor": 0.855,
       "cv_factor": 0.99,
       "pd_calibrated": 0.0124,
-      "lgd": 0.1,
+      "lgd": 0.3,
       "el": 0.0008,
       "rating": "Baa",
       "n_routes": 42171
@@ -306,7 +306,7 @@
       "size_factor": 0.892,
       "cv_factor": 0.939,
       "pd_calibrated": 0.012,
-      "lgd": 0.1,
+      "lgd": 0.3,
       "el": 0.0008,
       "rating": "Baa",
       "n_routes": 27897
@@ -323,7 +323,7 @@
       "size_factor": 0.707,
       "cv_factor": 0.92,
       "pd_calibrated": 0.031,
-      "lgd": 0.3,
+      "lgd": 0.25,
       "el": 0.0023,
       "rating": "Baa",
       "n_routes": 1384
@@ -340,7 +340,7 @@
       "size_factor": 0.634,
       "cv_factor": 1.4,
       "pd_calibrated": 0.0319,
-      "lgd": 0.1,
+      "lgd": 0.25,
       "el": 0.0007,
       "rating": "Baa",
       "n_routes": 71352
@@ -357,7 +357,7 @@
       "size_factor": 0.48,
       "cv_factor": 1.16,
       "pd_calibrated": 0.0658,
-      "lgd": 0.15,
+      "lgd": 0.25,
       "el": 0.0004,
       "rating": "A",
       "n_routes": 37404
@@ -374,7 +374,7 @@
       "size_factor": 0.627,
       "cv_factor": 1.126,
       "pd_calibrated": 0.034,
-      "lgd": 0.15,
+      "lgd": 0.25,
       "el": 0.0004,
       "rating": "A",
       "n_routes": 13557
@@ -391,7 +391,7 @@
       "size_factor": 0.503,
       "cv_factor": 1.275,
       "pd_calibrated": 0.0486,
-      "lgd": 0.15,
+      "lgd": 0.25,
       "el": 0.0004,
       "rating": "A",
       "n_routes": 41351
@@ -408,7 +408,7 @@
       "size_factor": 0.488,
       "cv_factor": 1.203,
       "pd_calibrated": 0.0578,
-      "lgd": 0.15,
+      "lgd": 0.25,
       "el": 0.0004,
       "rating": "A",
       "n_routes": 47701
@@ -425,7 +425,7 @@
       "size_factor": 0.448,
       "cv_factor": 0.849,
       "pd_calibrated": 0.0875,
-      "lgd": 0.15,
+      "lgd": 0.25,
       "el": 0.0004,
       "rating": "A",
       "n_routes": 10517
@@ -1610,7 +1610,7 @@
     "maturity_months": 12,
     "booking_curve_beta": 0.22,
     "issue_discount": 0.08,
-    "time_discount_rate": 0.09
+    "time_discount_rate": 0.08
   },
   "tranche_structure": [
     {
@@ -1656,90 +1656,96 @@
     "n_routes": 69,
     "t_copula_df": 4.0,
     "pool": {
-      "mean_loss": 0.0015852677871148458,
+      "mean_loss": 0.0015714924369747898,
       "median_loss": 0.0,
-      "std_loss": 0.00821541663109403,
-      "var95": 0.005815126050420168,
+      "std_loss": 0.008306504647432853,
+      "var95": 0.0037647058823529413,
       "var99": 0.03877310924369748,
-      "cvar99": 0.06263909485362773
+      "cvar99": 0.06359911023232823
     },
     "tranches": {
-      "senior": {
-        "el": 0.0024388735186382246,
-        "el_bps": 24.388735186382245,
-        "var95": 0.008946347769877181,
-        "var99": 0.05965093729799612,
-        "rating": "A"
-      },
-      "mezzanine": {
-        "el": 0.0,
-        "el_bps": 0.0,
-        "var95": 0.0,
-        "var99": 0.0
+      "equity": {
+        "el": 0.027986039215686303,
+        "el_bps": 279.86039215686304,
+        "var95": 0.07529411764705893,
+        "var99": 0.7754621848739506
       },
       "junior": {
+        "el": 0.0017108235294117683,
+        "el_bps": 17.108235294117684,
+        "var95": 0.0,
+        "var99": 0.0
+      },
+      "mezzanine": {
+        "el": 5.5406162464986515e-06,
+        "el_bps": 0.055406162464986516,
+        "var95": 0.0,
+        "var99": 0.0
+      },
+      "senior": {
         "el": 0.0,
         "el_bps": 0.0,
         "var95": 0.0,
-        "var99": 0.0
+        "var99": 0.0,
+        "rating": "Aaa-Aa"
       }
     },
     "diagnostics": {
       "max_pool_loss_pct": 15.55,
-      "paths_zero_loss": 4710,
+      "paths_zero_loss": 4723,
       "el_standard_error_bps": 1.2,
-      "el_half_convergence_bps": 15.0,
-      "mean_carrier_defaults_per_path": 0.62,
+      "el_half_convergence_bps": 14.0,
+      "mean_carrier_defaults_per_path": 0.61,
       "max_carrier_defaults_per_path": 21,
       "per_carrier_default_freq": {
         "3M": 8.94,
-        "G7": 6.72,
-        "ZW": 5.3,
-        "C5": 5.72,
-        "XP": 4.44,
-        "MX": 3.62,
-        "PT": 3.36,
-        "QX": 3.54,
-        "YV": 3.52,
-        "SY": 3.52,
-        "NK": 2.98,
-        "F9": 1.0,
-        "HA": 1.3,
-        "YX": 1.0,
+        "G7": 6.6,
+        "ZW": 5.36,
+        "C5": 5.68,
+        "XP": 4.26,
+        "MX": 3.66,
+        "PT": 3.32,
+        "QX": 3.42,
+        "YV": 3.48,
+        "SY": 3.44,
+        "NK": 3.04,
+        "F9": 1.06,
+        "HA": 1.24,
+        "YX": 0.98,
         "B6": 1.16,
-        "9E": 1.04,
-        "MQ": 0.88,
-        "OH": 0.76,
-        "G4": 0.78,
-        "OO": 0.62,
-        "DL": 0.22,
+        "9E": 1.02,
+        "MQ": 0.94,
+        "OH": 0.72,
+        "G4": 0.72,
+        "OO": 0.58,
+        "DL": 0.2,
         "AS": 0.3,
         "UA": 0.36,
         "AA": 0.24,
-        "WN": 0.26
+        "WN": 0.22
       },
-      "mezzanine_zero_el_rationale": "Max pool loss 15.6% << Mezzanine attachment 13%. Avg 0.6 defaults/path \u00d7 ~2.1% pool loss each. Need ~6 simultaneous defaults to breach. Did not occur in 5000 paths."
+      "waterfall_note": "Bottom-up waterfall: Equity (0-5%), Junior (5-15%), Mezzanine (15-35%), Senior (35-100%). Max pool loss 15.6% breaches Equity and Junior but stays below Senior subordination. Senior EL = 0. Equity absorbs first-loss risk."
     }
   },
   "comparison": {
     "carrier": {
       "traditional_revenue": "Variable: spot \u00d7 passengers, exposed to demand",
-      "fsr_revenue": "Fixed: 1,793,048 upfront (total)",
+      "fsr_revenue": "Fixed: 1,818,638 upfront (total)",
       "revenue_certainty": "FSR converts variable future revenue to guaranteed present revenue",
-      "discount_cost": "-0.1% discount vs spot (price of certainty)"
+      "discount_cost": "-1.5% discount vs spot (price of certainty)"
     },
     "platform": {
-      "spread_revenue": 438943.0,
+      "spread_revenue": 413353.0,
       "annual_trading_fee": 6428.134080000001,
-      "total_annual_revenue": 445371.13408
+      "total_annual_revenue": 419781.13408
     },
     "user": {
       "spot_with_booking_curve": 259.0,
-      "time_right_price": 208.0,
-      "saving_per_tr": 51.0,
-      "saving_pct": 19.7
+      "time_right_price": 211.0,
+      "saving_per_tr": 48.0,
+      "saving_pct": 18.5
     },
-    "key_insight": "Flight FSR creates value by: (1) converting uncertain spot revenue to certain forward revenue for carriers, (2) locking lower forward prices for users (save 20% vs last-minute booking), (3) platform captures booking-curve spread + trading fees"
+    "key_insight": "Flight FSR creates value by: (1) converting uncertain spot revenue to certain forward revenue for carriers, (2) locking lower forward prices for users (save 19% vs last-minute booking), (3) platform captures booking-curve spread + trading fees"
   },
   "stress_tests": [
     {
@@ -1748,7 +1754,7 @@
       "lgd_multiplier": 1.0,
       "pool_mean_loss_pct": 0.13,
       "pool_var99_pct": 2.71,
-      "senior_el_bps": 20.0,
+      "senior_el_bps": 0.0,
       "senior_rating": "Investment Grade"
     },
     {
@@ -1757,148 +1763,225 @@
       "lgd_multiplier": 1.15,
       "pool_mean_loss_pct": 0.22,
       "pool_var99_pct": 4.68,
-      "senior_el_bps": 34.0,
+      "senior_el_bps": 0.0,
       "senior_rating": "Investment Grade"
     },
     {
       "scenario": "Moderate Stress",
       "pd_multiplier": 2.5,
       "lgd_multiplier": 1.35,
-      "pool_mean_loss_pct": 0.43,
+      "pool_mean_loss_pct": 0.42,
       "pool_var99_pct": 9.16,
-      "senior_el_bps": 66.0,
+      "senior_el_bps": 0.0,
       "senior_rating": "Investment Grade"
     },
     {
       "scenario": "Severe Stress",
       "pd_multiplier": 4.0,
       "lgd_multiplier": 1.6,
-      "pool_mean_loss_pct": 0.81,
+      "pool_mean_loss_pct": 0.8,
       "pool_var99_pct": 17.37,
-      "senior_el_bps": 125.0,
+      "senior_el_bps": 0.0,
       "senior_rating": "Investment Grade"
     },
     {
       "scenario": "Extreme Stress",
       "pd_multiplier": 6.0,
       "lgd_multiplier": 2.0,
-      "pool_mean_loss_pct": 1.52,
+      "pool_mean_loss_pct": 1.51,
       "pool_var99_pct": 32.57,
-      "senior_el_bps": 234.0,
-      "senior_rating": "Near-IG"
+      "senior_el_bps": 0.0,
+      "senior_rating": "Investment Grade"
     }
   ],
   "copula_sensitivity": {
     "Gaussian": {
       "pool_mean_loss_pct": 0.18,
-      "pool_var99_pct": 2.96,
-      "senior_el_bps": 28.0,
-      "senior_var99_pct": 4.6,
-      "avg_carrier_defaults_per_path": 0.62,
-      "max_carrier_defaults_per_path": 13
+      "pool_var99_pct": 3.04,
+      "senior_el_bps": 0.0,
+      "senior_var99_pct": 0.0,
+      "avg_carrier_defaults_per_path": 0.61,
+      "max_carrier_defaults_per_path": 14
     },
     "t(6)": {
       "pool_mean_loss_pct": 0.16,
-      "pool_var99_pct": 3.46,
-      "senior_el_bps": 25.0,
-      "senior_var99_pct": 5.3,
+      "pool_var99_pct": 3.84,
+      "senior_el_bps": 0.0,
+      "senior_var99_pct": 0.0,
       "avg_carrier_defaults_per_path": 0.58,
       "max_carrier_defaults_per_path": 15
     },
     "t(4)": {
       "pool_mean_loss_pct": 0.17,
-      "pool_var99_pct": 4.04,
-      "senior_el_bps": 26.0,
-      "senior_var99_pct": 6.2,
-      "avg_carrier_defaults_per_path": 0.62,
-      "max_carrier_defaults_per_path": 17
+      "pool_var99_pct": 4.17,
+      "senior_el_bps": 0.0,
+      "senior_var99_pct": 0.0,
+      "avg_carrier_defaults_per_path": 0.61,
+      "max_carrier_defaults_per_path": 21
     }
   },
   "booking_curve_sensitivity": [
     {
       "beta": 0.1,
       "forward_premium_pct": 10.5,
-      "avg_issue_price": 184.0,
-      "user_saving_pct": 19.7,
-      "carrier_discount_pct": 11.2,
-      "platform_spread": 389306.0
+      "avg_issue_price": 187.0,
+      "user_saving_pct": 18.5,
+      "carrier_discount_pct": 9.9,
+      "platform_spread": 366608.0
     },
     {
       "beta": 0.15,
       "forward_premium_pct": 16.2,
-      "avg_issue_price": 194.0,
-      "user_saving_pct": 19.7,
-      "carrier_discount_pct": 6.7,
-      "platform_spread": 409269.0
+      "avg_issue_price": 197.0,
+      "user_saving_pct": 18.6,
+      "carrier_discount_pct": 5.4,
+      "platform_spread": 385407.0
     },
     {
       "beta": 0.2,
       "forward_premium_pct": 22.1,
-      "avg_issue_price": 204.0,
-      "user_saving_pct": 19.6,
-      "carrier_discount_pct": 1.9,
-      "platform_spread": 430248.0
+      "avg_issue_price": 207.0,
+      "user_saving_pct": 18.5,
+      "carrier_discount_pct": 0.5,
+      "platform_spread": 405165.0
     },
     {
       "beta": 0.22,
       "forward_premium_pct": 24.6,
-      "avg_issue_price": 208.0,
-      "user_saving_pct": 19.7,
-      "carrier_discount_pct": -0.1,
-      "platform_spread": 438943.0
+      "avg_issue_price": 211.0,
+      "user_saving_pct": 18.5,
+      "carrier_discount_pct": -1.5,
+      "platform_spread": 413353.0
     },
     {
       "beta": 0.25,
       "forward_premium_pct": 28.4,
-      "avg_issue_price": 214.0,
-      "user_saving_pct": 19.6,
-      "carrier_discount_pct": -3.2,
-      "platform_spread": 452306.0
+      "avg_issue_price": 217.0,
+      "user_saving_pct": 18.5,
+      "carrier_discount_pct": -4.6,
+      "platform_spread": 425935.0
     },
     {
       "beta": 0.3,
       "forward_premium_pct": 35.0,
-      "avg_issue_price": 225.0,
-      "user_saving_pct": 19.7,
-      "carrier_discount_pct": -8.4,
-      "platform_spread": 475501.0
+      "avg_issue_price": 228.0,
+      "user_saving_pct": 18.5,
+      "carrier_discount_pct": -10.0,
+      "platform_spread": 447778.0
     },
     {
       "beta": 0.35,
       "forward_premium_pct": 41.9,
-      "avg_issue_price": 237.0,
-      "user_saving_pct": 19.7,
-      "carrier_discount_pct": -14.0,
-      "platform_spread": 499875.0
+      "avg_issue_price": 240.0,
+      "user_saving_pct": 18.5,
+      "carrier_discount_pct": -15.6,
+      "platform_spread": 470730.0
     }
   ],
   "carrier_stress_results": [
     {
-      "scenario": "LCC Crisis",
-      "shocks": "{'lcc': 3.0, 'major': 1.5, 'regional': 1.5, 'other': 2.0}",
-      "pool_mean_loss_pct": 0.43,
-      "pool_var99_pct": 6.0,
-      "senior_el_bps": 66.0,
-      "senior_var99_pct": 9.2,
-      "mezzanine_el_bps": 0.0
+      "scenario": "9/11-Scale Terror",
+      "historical_reference": "9/11 (2001)",
+      "source": "Gritta et al. (2000), Borenstein (2011)",
+      "pd_shocks": {
+        "lcc": "5.0x",
+        "major": "8.0x",
+        "regional": "6.0x",
+        "other": "5.0x"
+      },
+      "lgd_shocks": {
+        "lcc": "1.3x",
+        "major": "1.5x",
+        "regional": "1.3x",
+        "other": "1.3x"
+      },
+      "pool_mean_loss_pct": 1.24,
+      "pool_var99_pct": 13.95,
+      "pool_max_loss_pct": 23.13,
+      "paths_zero_loss": "1462/2000",
+      "senior_el_bps": 0.0,
+      "senior_var99_pct": 0.0,
+      "mezzanine_el_bps": 13.0,
+      "junior_el_bps": 300.0,
+      "equity_el_bps": 1836.0
     },
     {
-      "scenario": "Major Distress",
-      "shocks": "{'lcc': 1.2, 'major': 3.0, 'regional': 2.0, 'other': 1.5}",
-      "pool_mean_loss_pct": 0.61,
-      "pool_var99_pct": 8.12,
-      "senior_el_bps": 93.0,
-      "senior_var99_pct": 12.5,
-      "mezzanine_el_bps": 0.0
+      "scenario": "2008-Scale Financial",
+      "historical_reference": "Financial Crisis (2008)",
+      "source": "Morrell & Swan (2006), Gong et al. (2021)",
+      "pd_shocks": {
+        "lcc": "3.0x",
+        "major": "4.0x",
+        "regional": "3.0x",
+        "other": "3.0x"
+      },
+      "lgd_shocks": {
+        "lcc": "1.3x",
+        "major": "1.4x",
+        "regional": "1.3x",
+        "other": "1.3x"
+      },
+      "pool_mean_loss_pct": 5.31,
+      "pool_var99_pct": 28.46,
+      "pool_max_loss_pct": 31.8,
+      "paths_zero_loss": "693/2000",
+      "senior_el_bps": 0.0,
+      "senior_var99_pct": 0.0,
+      "mezzanine_el_bps": 303.0,
+      "junior_el_bps": 1917.0,
+      "equity_el_bps": 5578.0
     },
     {
-      "scenario": "Systemic Shock",
-      "shocks": "{'lcc': 4.0, 'major': 2.5, 'regional': 3.0, 'other': 4.0}",
-      "pool_mean_loss_pct": 1.92,
-      "pool_var99_pct": 11.49,
-      "senior_el_bps": 295.0,
-      "senior_var99_pct": 17.7,
-      "mezzanine_el_bps": 0.0
+      "scenario": "COVID-Scale Systemic",
+      "historical_reference": "COVID-19 (2020)",
+      "source": "CARES Act PSP, 10-K filings (2020), Gong et al. (2021)",
+      "pd_shocks": {
+        "lcc": "12.0x",
+        "major": "15.0x",
+        "regional": "10.0x",
+        "other": "12.0x"
+      },
+      "lgd_shocks": {
+        "lcc": "1.5x",
+        "major": "1.6x",
+        "regional": "1.4x",
+        "other": "1.5x"
+      },
+      "pool_mean_loss_pct": 24.9,
+      "pool_var99_pct": 49.03,
+      "pool_max_loss_pct": 49.03,
+      "paths_zero_loss": "80/2000",
+      "senior_el_bps": 329.0,
+      "senior_var99_pct": 21.6,
+      "mezzanine_el_bps": 4948.0,
+      "junior_el_bps": 8171.0,
+      "equity_el_bps": 9388.0
+    },
+    {
+      "scenario": "COVID No-Bailout",
+      "historical_reference": "COVID-19 sans PSP",
+      "source": "Counterfactual: PSP removed, all carriers face market discipline",
+      "pd_shocks": {
+        "lcc": "18.0x",
+        "major": "22.0x",
+        "regional": "15.0x",
+        "other": "18.0x"
+      },
+      "lgd_shocks": {
+        "lcc": "1.8x",
+        "major": "2.0x",
+        "regional": "1.6x",
+        "other": "1.8x"
+      },
+      "pool_mean_loss_pct": 39.27,
+      "pool_var99_pct": 77.23,
+      "pool_max_loss_pct": 77.23,
+      "paths_zero_loss": "80/2000",
+      "senior_el_bps": 1846.0,
+      "senior_var99_pct": 65.0,
+      "mezzanine_el_bps": 6909.0,
+      "junior_el_bps": 8736.0,
+      "equity_el_bps": 9439.0
     }
   ],
   "pessimistic_pd": {
@@ -1907,5 +1990,176 @@
     "baseline_pd_pct": 0.76,
     "ratio": 1.5,
     "note": "2000-2025 full window includes 6 major-carrier bankruptcies"
+  },
+  "issue_discount_sensitivity": [
+    {
+      "issue_discount": 0.04,
+      "avg_issue_price": 220.0,
+      "user_saving_pct": 15.0,
+      "carrier_discount_pct": -5.9,
+      "platform_spread": 334276.0,
+      "total_issue_value": 1897715.0
+    },
+    {
+      "issue_discount": 0.06,
+      "avg_issue_price": 215.0,
+      "user_saving_pct": 16.7,
+      "carrier_discount_pct": -3.7,
+      "platform_spread": 373808.0,
+      "total_issue_value": 1858183.0
+    },
+    {
+      "issue_discount": 0.08,
+      "avg_issue_price": 211.0,
+      "user_saving_pct": 18.5,
+      "carrier_discount_pct": -1.5,
+      "platform_spread": 413353.0,
+      "total_issue_value": 1818638.0
+    },
+    {
+      "issue_discount": 0.1,
+      "avg_issue_price": 206.0,
+      "user_saving_pct": 20.3,
+      "carrier_discount_pct": 0.6,
+      "platform_spread": 452885.0,
+      "total_issue_value": 1779106.0
+    },
+    {
+      "issue_discount": 0.12,
+      "avg_issue_price": 202.0,
+      "user_saving_pct": 22.1,
+      "carrier_discount_pct": 2.9,
+      "platform_spread": 492419.0,
+      "total_issue_value": 1739572.0
+    },
+    {
+      "issue_discount": 0.14,
+      "avg_issue_price": 197.0,
+      "user_saving_pct": 23.8,
+      "carrier_discount_pct": 5.1,
+      "platform_spread": 531956.0,
+      "total_issue_value": 1700035.0
+    }
+  ],
+  "quadripartite_benefits": {
+    "user": {
+      "spot_at_maturity": 259.0,
+      "time_right_price": 211.0,
+      "saving_per_tr": 48.0,
+      "saving_pct": 18.5,
+      "total_aggregate_saving": 413366.0,
+      "secondary_sell_premium": "8%",
+      "weighted_benefit_per_tr": 34.0,
+      "weighted_user_roi_pct": 16.1,
+      "behavior_split": {
+        "secondary_sell": "30%",
+        "hold_redeem": "55%",
+        "cash_settle": "15%"
+      }
+    },
+    "carrier": {
+      "upfront_revenue": 1691333.0,
+      "traditional_revenue": 1791215.0,
+      "premium_vs_spot_pct": 1.5,
+      "cash_advance_benefit": 101480.0,
+      "net_gain": -99882.0,
+      "description": "Carriers sell time-rights at issue price via platform (93% of issue), receiving guaranteed upfront cash instead of uncertain spot revenue"
+    },
+    "platform": {
+      "acquisition_cost": 1691333.0,
+      "sales_revenue": 2000502.0,
+      "gross_spread": 309168.0,
+      "trading_fee_income": 6428.0,
+      "operating_cost": 120030.0,
+      "net_profit": 195566.0,
+      "platform_roi_pct": 11.6
+    },
+    "investor": {
+      "Senior": {
+        "notional": 1450794.0,
+        "coupon_rate": "5.50%",
+        "coupon_income": 79794.0,
+        "expected_loss": 0.0,
+        "el_bps": 0.0,
+        "net_return": 79794.0,
+        "net_yield_pct": 5.5,
+        "risk_profile": "Risk-free+"
+      },
+      "Mezzanine": {
+        "notional": 446398.0,
+        "coupon_rate": "8.00%",
+        "coupon_income": 35712.0,
+        "expected_loss": 2.0,
+        "el_bps": 0.055406162464986516,
+        "net_return": 35709.0,
+        "net_yield_pct": 8.0,
+        "risk_profile": "Investment Grade"
+      },
+      "Junior": {
+        "notional": 223199.0,
+        "coupon_rate": "12.00%",
+        "coupon_income": 26784.0,
+        "expected_loss": 382.0,
+        "el_bps": 17.108235294117684,
+        "net_return": 26402.0,
+        "net_yield_pct": 11.83,
+        "risk_profile": "Investment Grade"
+      },
+      "Equity": {
+        "notional": 111600.0,
+        "coupon_rate": "Residual (0% contractual)",
+        "coupon_income": 0,
+        "expected_loss": 3123.0,
+        "el_bps": 279.86039215686304,
+        "excess_spread_capture": 271064.0,
+        "overbooking_profit": 454660.0,
+        "trading_fee_residual": 1286.0,
+        "total_residual_upside": 727009.0,
+        "net_return": 723885.0,
+        "net_yield_pct": 648.6,
+        "net_yield_breakdown": "Credit loss: 3,123 (279.86039215686304 bps). Spread capture: 271,064. Overbooking: 454,660. Fee residual: 1,286. Net: 723,885 (648.6%)",
+        "risk_profile": "First-loss residual (high risk, high return)"
+      }
+    },
+    "key_insight": "FSR creates quadripartite value: (1) Users save 19% vs last-minute booking, with 16% weighted ROI from secondary trading; (2) Carriers receive 1,691,333 upfront (1.5% premium vs spot); (3) Platform earns 12% ROI from spread + fees; (4) Senior investors earn 5.5% net yield with zero expected loss"
+  },
+  "carrier_secondary": {
+    "secondary_annual_volume": 267839.0,
+    "carrier_buyback_annual": 107136.0,
+    "buyback_profit": 16070.0,
+    "hot_market_benefit": 4821.0,
+    "total_secondary_benefit": 20891.0,
+    "pct_of_issue_revenue": 0.9,
+    "price_floor_per_tr": 173.0,
+    "effective_put_value": 19284.0,
+    "pct_obligations_retired_annual": 5.9,
+    "assumptions": {
+      "secondary_vol_pct": "12%",
+      "buyback_trigger": "82% of issue",
+      "avg_buyback_discount": "15%",
+      "buyback_pct_of_vol": "40%",
+      "hot_market_prob": "8%/qtr",
+      "extra_issuance_pct": "15%"
+    },
+    "mechanism": "Carriers act as informed secondary-market participants. When their own TRs trade below buyback trigger, they repurchase and retire the obligation at a discount \u2014 capturing the spread. When demand is strong (P > resell_premium), they issue additional TRs at a premium. This provides: (1) implicit price floor for secondary market, (2) carrier profit from informed trading, (3) natural alignment \u2014 distressed carriers can retire obligations cheaply, healthy carriers benefit from premium re-issuance."
+  },
+  "overbooking_simulation": {
+    "omega": 1.25,
+    "physical_seats": 6900.0,
+    "overbooked_trs": 1725.0,
+    "effective_physical_pct": "73%",
+    "mean_loss_pct": 0.0,
+    "var99_loss_pct": 0.0,
+    "max_loss_pct": 1.72,
+    "paths_breaching_equity": 0,
+    "equity_buffer_pct": 5.0,
+    "assessment": "Contained within Equity first-loss",
+    "assumptions": {
+      "physical_redemption_pct": "55%",
+      "secondary_then_physical_pct": "60%",
+      "noshow_rate": "8%",
+      "voluntary_bump_cap": "12%",
+      "involuntary_max": "0.05%"
+    }
   }
 }
